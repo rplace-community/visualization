@@ -91,7 +91,7 @@
 							animate();
 						} else {
 							let loadingBar = document.getElementsByClassName('w3-grey')[0];
-							loadingBar.style.width = (100 * (loaded_backs + loaded_filters) / (1.5 * tot_images)) + '%';
+							loadingBar.style.width = (100 * Math.min(loaded_backs/(tot_images + 1), 2*loaded_filters/(tot_images + 1))) + '%';
 						}
 					};
 					im.src = 'assets/img/levelmaps/global/' + i + '.png';
@@ -109,7 +109,7 @@
 							animate();
 						} else {
 							let loadingBar = document.getElementsByClassName('w3-grey')[0];
-							loadingBar.style.width = (100 * (loaded_backs + loaded_filters) / (1.5 * tot_images)) + '%';
+							loadingBar.style.width = (100 * Math.min(loaded_backs/(tot_images + 1), 2*loaded_filters/(tot_images + 1))) + '%';
 						}
 					}
 					back_images[2*i].src = 'assets/img/frames/' + (i*2) + '.png';
