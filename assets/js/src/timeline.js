@@ -24,7 +24,7 @@ var context = svg.append("g")
     .attr("class", "context")
     .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-d3.json("assets/json/levelmaps/global/index.json").then(function(data) { 
+d3.json("assets/json/levelmaps/global.json").then(function(data) { 
   const entries = Object.entries(data['null']);
   const now = new Date(); // TODO put the real date of r/place event
   data = entries.map(entry => {
