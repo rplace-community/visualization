@@ -13,9 +13,9 @@
 		<script src='assets/js/lib/dat.gui.min.js'></script>
 	</head>
 	<body>
-
+    <svg height="500" width="1500" align="center"></svg>
+    <script src='assets/js/src/timeline.js'></script>
 		<div class="lds-circle"><div></div></div>
-
 		<script>
 			if ( WEBGL.isWebGLAvailable() === false ) {
 				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
@@ -384,6 +384,6 @@
 				return Math.sin(2 * Math.PI * f * x + n) * Math.sin(2 * Math.PI * f *x  + n) + Math.sin(2 * Math.PI * f *y + n) * Math.sin(2 * Math.PI * f *y + n);
 			}
 
-		</script>
+    </script>
 	</body>
 </html>
