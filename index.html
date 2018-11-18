@@ -28,7 +28,7 @@
 
 			const tot_images = 145;
 			const filterSize = 200;
-			const steps = 15;
+			const steps = 16;
 
 			let plane_images = new Array();
 			let back_images = new Array();
@@ -88,12 +88,11 @@
 					};
 					im.src = 'assets/img/levelmaps/global/' + i + '.png';
 
-					back_images[i] = new Image();
-					back_images[i].src = 'assets/img/frames/' + (i*2 + 1) + '.png';
-					back_images[i].onload = function() {
+					back_images[2*i] = new Image();
+					back_images[2*i].onload = function() {
 						loaded_backs++;
 
-						if(loaded_backs > tot_images/2 && loaded_filters > tot_images/2 && !launched) {
+						if(loaded_backs > tot_images && loaded_filters > tot_images/2 && !launched) {
 							launched = true;
 							let loading = document.getElementsByClassName('lds-circle')[0];
 							loading.style.display = "none";
@@ -102,6 +101,23 @@
 							animate();
 						}
 					}
+					back_images[2*i].src = 'assets/img/frames/' + (i*2) + '.png';
+
+					back_images[2*i + 1] = new Image();
+					back_images[2*i + 1].onload = function() {
+						loaded_backs++;
+
+						if(loaded_backs > tot_images && loaded_filters > tot_images/2 && !launched) {
+							launched = true;
+							let loading = document.getElementsByClassName('lds-circle')[0];
+							loading.style.display = "none";
+
+							init();
+							animate();
+						}
+					}
+					back_images[2*i + 1].src = 'assets/img/frames/' + (i*2 + 1) + '.png';
+
 				}
 			}
 
@@ -296,8 +312,11 @@
 					let index = index_plane/steps;
 					if(plane_images[index] && plane_images[(index+1)%tot_images]) {
 						interpolator_images = d3.interpolateArray(plane_images[index], plane_images[(index+1)%tot_images]);
-						showBackground(index_plane / steps);
 					}
+				}
+
+				if(index_plane % (steps/2) == 0) {
+					showBackground(2 * index_plane / steps);
 				}
 
 				if(interpolator_images) {
