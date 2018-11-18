@@ -220,11 +220,11 @@
 					//texture2.minFilter = THREE.NearestFilter;
 					//texture2.magFilter = THREE.NearestFilter;
 
-					planeMaterial = new THREE.MeshBasicMaterial({
-					    //color: 0xff0000,
+					planeMaterial = new THREE.MeshPhongMaterial({
+					    //color: 0xAAAAAA,
 					    //wireframe: true,
 							//transparent: false,
-							//specular: 0,
+							specular: 0,
 							//opacity: 1,
 							//map: texture2
 					});
@@ -252,13 +252,13 @@
 
 
 					// lights
-					let light1 = new THREE.DirectionalLight( 0xffffff );
-					light1.position.set( 0.5, 1, 1 );
-					scene.add( light1 );
-					let light2 = new THREE.DirectionalLight( 0x002288 );
-					light2.position.set( - 1, - 1, - 1 );
-					scene.add( light2 );
-					let light3 = new THREE.AmbientLight( 0x222222 );
+					//let light1 = new THREE.DirectionalLight( 0xffffff );
+					//light1.position.set( 0.5, 1, 1 );
+					//scene.add( light1 );
+					//let light2 = new THREE.DirectionalLight( 0xAAAAFF, 3 );
+					//light2.position.set( 10, 10, 10 );
+					//scene.add( light2 );
+					let light3 = new THREE.AmbientLight( 0xEEEEFF, 1.5 );
 					scene.add( light3 );
 					//
 					window.addEventListener( 'resize', onWindowResize, false );
