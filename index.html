@@ -15,7 +15,11 @@
 	<body>
     <svg height="500" width="1500" align="center"></svg>
     <script src='assets/js/src/timeline.js'></script>
-		<div class="lds-circle"><div></div></div>
+		<div class="lds-circle"><div class="lds-circle-inner"></div>
+			<div class="w3-border">
+		   <div class="w3-grey" style="height:24px;width:0%"></div>
+		 </div>
+		</div>
 		<script>
 			if ( WEBGL.isWebGLAvailable() === false ) {
 				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
@@ -77,13 +81,17 @@
 						plane_images[this.i] = data;
 
 						loaded_filters++;
-						if(loaded_backs > tot_images/2 && loaded_filters > tot_images/2 && !launched) {
+						if(loaded_backs > tot_images && loaded_filters > tot_images/2 && !launched) {
 							launched = true;
+
 							let loading = document.getElementsByClassName('lds-circle')[0];
 							loading.style.display = "none";
 
 							init();
 							animate();
+						} else {
+							let loadingBar = document.getElementsByClassName('w3-grey')[0];
+							loadingBar.style.width = (100 * (loaded_backs + loaded_filters) / (1.5 * tot_images)) + '%';
 						}
 					};
 					im.src = 'assets/img/levelmaps/global/' + i + '.png';
@@ -99,6 +107,9 @@
 
 							init();
 							animate();
+						} else {
+							let loadingBar = document.getElementsByClassName('w3-grey')[0];
+							loadingBar.style.width = (100 * (loaded_backs + loaded_filters) / (1.5 * tot_images)) + '%';
 						}
 					}
 					back_images[2*i].src = 'assets/img/frames/' + (i*2) + '.png';

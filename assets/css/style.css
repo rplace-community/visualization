@@ -22,7 +22,7 @@ body {
   margin-left: -45px;
 }
 
-.lds-circle > div {
+.lds-circle-inner {
   display: inline-block;
   width: 51px;
   height: 51px;
@@ -46,6 +46,9 @@ body {
     transform: rotateY(3600deg);
   }
 }
+
+.w3-border{border:1px solid #ccc!important}
+.w3-grey,.w3-hover-grey:hover,.w3-gray,.w3-hover-gray:hover{color:#000!important;background-color:#9e9e9e!important}
 
 .area {
   fill: darkred
