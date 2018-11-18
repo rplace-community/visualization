@@ -13,6 +13,9 @@
 		<script src='assets/js/lib/dat.gui.min.js'></script>
 	</head>
 	<body>
+
+		<div class="lds-circle"><div></div></div>
+
 		<script>
 			if ( WEBGL.isWebGLAvailable() === false ) {
 				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
@@ -47,12 +50,13 @@
 				interpolator_height = d3.scaleLinear().domain([0, max]).range([0, 200]);
 
 
-				preload()
-				init();
-				animate();
+				preload();
 			});
 
 			function preload() {
+
+				let loaded_images = 0;
+
 				for (let i = 0; i < tot_images; i++) {
 					let im = new Image();
 					im.i = i;
@@ -69,11 +73,24 @@
 						}
 
 						plane_images[this.i] = data;
+
+
+
+
+						loaded_images++;
+						if(loaded_images == tot_images) {
+							let loading = document.getElementsByClassName('lds-circle')[0];
+							loading.style.display = "none";
+
+							init();
+							animate();
+						}
+
 					};
 					im.src = 'assets/img/levelmaps/global/' + i + '.png';
 
 					back_images[i] = new Image();
-					back_images[i].src = 'assets/img/frames/' + i*2 + '.png'
+					back_images[i].src = 'assets/img/frames/' + (i*2 + 1) + '.png';
 				}
 			}
 
