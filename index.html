@@ -37,7 +37,7 @@
 			let interpolator_height = x => x;
 			let interpolator_heights = new Array();
 
-			d3.json("assets/json/levelmaps/global/index.json").then(function(data) {
+			d3.json("assets/json/levelmaps/global.json").then(function(data) {
 				console.log()
 				let max = 0;
 				let jsonValues = Object.values(data['null']);
