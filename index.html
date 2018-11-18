@@ -20,7 +20,7 @@
 			if ( WEBGL.isWebGLAvailable() === false ) {
 				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
 			}
-			var camera, controls, scene, renderer;
+			let camera, controls, scene, renderer;
 			let planeGeometry;
 			let planeMaterial;
 			let index_plane = 0;
@@ -222,22 +222,33 @@
 					//texture3.maxFilter = THREE.LinearFilter;
 					//let material3 = new THREE.MeshBasicMaterial( { map: texture3} );
 
-					var planeMesh = new THREE.Mesh( planeGeometry, planeMaterial );
+					let planeMesh = new THREE.Mesh( planeGeometry, planeMaterial );
 					planeMesh.rotateX(-Math.PI/2);
-					//generatePlaneHeights();
 					planeMesh.matrixAutoUpdate  = true;
 					planeMesh.updateMatrix();
 					scene.add( planeMesh );
 
+
+
+
+					let bottomCubeGeometry = new THREE.BoxGeometry( 1000, 1000, 20 );
+					bottomCubeGeometry.translate( 0, 0, -10.01 );
+					let bottomCubeMaterial = new THREE.MeshBasicMaterial( {color: 0xEEEEEE} );
+					let bottomCube = new THREE.Mesh( bottomCubeGeometry, bottomCubeMaterial );
+					bottomCube.rotateX(-Math.PI/2);
+					scene.add( bottomCube );
+
+
+
 					// lights
-					var light = new THREE.DirectionalLight( 0xffffff );
-					light.position.set( 0.5, 1, 1 );
-					scene.add( light );
-					var light = new THREE.DirectionalLight( 0x002288 );
-					light.position.set( - 1, - 1, - 1 );
-					scene.add( light );
-					var light = new THREE.AmbientLight( 0x222222 );
-					scene.add( light );
+					let light1 = new THREE.DirectionalLight( 0xffffff );
+					light1.position.set( 0.5, 1, 1 );
+					scene.add( light1 );
+					let light2 = new THREE.DirectionalLight( 0x002288 );
+					light2.position.set( - 1, - 1, - 1 );
+					scene.add( light2 );
+					let light3 = new THREE.AmbientLight( 0x222222 );
+					scene.add( light3 );
 					//
 					window.addEventListener( 'resize', onWindowResize, false );
 
