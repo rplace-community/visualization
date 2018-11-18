@@ -55,7 +55,9 @@
 
 			function preload() {
 
-				let loaded_images = 0;
+				let loaded_filters = 0;
+				let loaded_backs = 0;
+				let launched = false;
 
 				for (let i = 0; i < tot_images; i++) {
 					let im = new Image();
@@ -74,23 +76,32 @@
 
 						plane_images[this.i] = data;
 
-
-
-
-						loaded_images++;
-						if(loaded_images == tot_images) {
+						loaded_filters++;
+						if(loaded_backs > tot_images/2 && loaded_filters > tot_images/2 && !launched) {
+							launched = true;
 							let loading = document.getElementsByClassName('lds-circle')[0];
 							loading.style.display = "none";
 
 							init();
 							animate();
 						}
-
 					};
 					im.src = 'assets/img/levelmaps/global/' + i + '.png';
 
 					back_images[i] = new Image();
 					back_images[i].src = 'assets/img/frames/' + (i*2 + 1) + '.png';
+					back_images[i].onload = function() {
+						loaded_backs++;
+
+						if(loaded_backs > tot_images/2 && loaded_filters > tot_images/2 && !launched) {
+							launched = true;
+							let loading = document.getElementsByClassName('lds-circle')[0];
+							loading.style.display = "none";
+
+							init();
+							animate();
+						}
+					}
 				}
 			}
 
