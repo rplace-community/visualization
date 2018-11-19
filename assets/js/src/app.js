@@ -12,13 +12,15 @@ var app = new Vue({
   methods: {
     atlasViewCommunityClicked: atlasViewCommunityClicked
   },
-  computed:{
-      searchAtlas: function(){ return atlasSearch( this.atlas.search ) },
+  computed: {
+    searchAtlas: function() {
+      return atlasSearch(this.atlas.search);
+    }
   },
   created: function() {
     // init3d()
-    timelineInit()
-    //atlasInit()
+    timelineInit();
+    atlasInit();
 
     console.log("Visualization loaded!");
     this.loaded = true;

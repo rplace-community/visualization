@@ -35,17 +35,24 @@ var atlasState = {
 };
 
 function atlasInit() {
-  fetch("assets/json/altas.json")
+  fetch("assets/json/atlas.json")
     .then(function(response) {
       return response.json();
     })
     .then(function(obj) {
-      atlasState.atlas = obj;
+      atlasState.atlas = Object.keys(obj).map(function(key) {
+        obj[key].isSelected = false;
+        obj[key].levelmaps = { blobs: [], isLoaded: false };
+        return obj[key];
+      });
     });
 }
 
 function atlasSearch(text) {
-  return atlasState.atlas.filter(value => value.name.includes(text));
+  let res = atlasState.atlas
+    .filter(value => value.name.toLowerCase().includes(text))
+    .slice(0, 20);
+  return res;
 }
 
 function atlasViewCommunityClicked(entry) {
@@ -62,9 +69,9 @@ function atlasLoadLevelmaps(entry) {
         return response.json();
       })
       .then(function(obj) {
-        entry.levelmaps.index = obj;
+        entry.levelmaps.index = obj[entry.id];
 
-        const entries = Object.entries(obj[entry.id]);
+        const entries = Object.entries(entry.levelmaps.index);
         entries.forEach(element => {
           fetch(`assets/img/levelmaps/${entry.id}/${element[1].idx}.png`)
             .then(function(response) {
