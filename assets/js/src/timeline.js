@@ -1,32 +1,44 @@
-var svg = d3.select("svg"),
-    margin = {top: 20, right: 20, bottom: 110, left: 40},
-    margin2 = {top: 430, right: 20, bottom: 30, left: 40},
-    width = +svg.attr("width") - margin.left - margin.right,
-    height2 = +svg.attr("height") - margin2.top - margin2.bottom;
+const div = document.getElementById("timeline-container");
+
+const margin = {
+    top: 10,
+    right: 10,
+    bottom: 10,
+    left: 10
+  },
+  width = div.clientWidth * 0.95,
+  height = 25;
+
+const svg = d3.select("#timeline-container").append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", (height + margin.top + margin.bottom));
 
 var x = d3.scaleTime().range([0, width]),
-    y = d3.scaleLinear().range([height2, 0]);
+    y = d3.scaleLinear().range([height, 0]);
 
 var xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat("%a %H:%M:%S")),
     yAxis = d3.axisLeft(y);
     
 var brush = d3.brushX()
-    .extent([[0, 0], [width, height2]])
+    .extent([[0, 0], [width, height]])
     .on("brush end", brushed);
 
 var area = d3.area()
     .curve(d3.curveMonotoneX)
     .x(function(d) { return x(d.timestamp); })
-    .y0(height2)
+    .y0(height)
     .y1(function(d) { return y(d.counts); });
 
 var context = svg.append("g")
     .attr("class", "context")
-    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+    .attr("id", "timeline")
+    .attr("style", "display: none")
+    .attr("transform", "translate(" + margin.left + "," + 0 + ")");
 
 d3.json("assets/json/levelmaps/global.json").then(function(data) { 
   const entries = Object.entries(data['null']);
-  const now = new Date(); // TODO put the real date of r/place event
+  
+  const now = new Date(); // TODO put the real starting date of r/place event
   data = entries.map(entry => {
     entry[1].timestamp = new Date(now.getTime() + entry[0] * 1000) // (entry[0] / 60) * 60000
     return entry[1];
@@ -42,7 +54,7 @@ d3.json("assets/json/levelmaps/global.json").then(function(data) {
 
   context.append("g")
       .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height2 + ")")
+      .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
   context.append("g")
@@ -52,7 +64,5 @@ d3.json("assets/json/levelmaps/global.json").then(function(data) {
 });
 
 function brushed() {
-  //var s = d3.event.selection || x.range();
-  //x.domain(s.map(x.invert, x));
-  // TODO do whatever we want when we move/select a range
+
 }
