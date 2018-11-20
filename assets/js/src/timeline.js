@@ -44,38 +44,27 @@ d3.json("assets/json/levelmaps/global.json").then(function(data) {
   
   const now = new Date(); // TODO put the real starting date of r/place event
   data = entries.map(entry => {
-    entry[1].timestamp = new Date(now.getTime() + entry[0] * 1000); // (entry[0] / 60) * 60000
+    entry[1].timestamp = new Date(now.getTime() + entry[0] * 1000) // (entry[0] / 60) * 60000
     return entry[1];
   });
+  
+  x.domain(d3.extent(data, function(d) { return d.timestamp; }));
+  y.domain([0, d3.max(data, function(d) { return d.counts; })]);
 
-  x.domain(
-    d3.extent(data, function(d) {
-      return d.timestamp;
-    })
-  );
-  y.domain([
-    0,
-    d3.max(data, function(d) {
-      return d.counts;
-    })
-  ]);
+  context.append("path")
+      .data([data])
+      .attr("class", "area")
+      .attr("d", area);
 
   context.append("g")
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
-  context
-    .append("g")
-    .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
-
-  context
-    .append("g")
-    .attr("class", "brush")
-    .call(brush)
-    .call(brush.move, [now, new Date(now.getTime() + 15 * 60000)].map(x));
+  context.append("g")
+      .attr("class", "brush")
+      .call(brush)
+      .call(brush.move, [now, new Date(now.getTime() + 15 * 60000)].map(x));
 });
 
 function timelineInit() {}
