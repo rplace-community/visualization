@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>r/place communities</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="assets/css/style2.css"
+      media="all"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="assets/js/lib/three.js"></script>
+    <script src="assets/js/lib/WebGL.js"></script>
+    <script src="assets/js/lib/MapControls.js"></script>
+    <script src="assets/js/lib/SubdivisionModifier.js"></script>
+    <script src="assets/js/lib/d3.min.js"></script>
+    <script src="assets/js/lib/dat.gui.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="loading" v-if="!loaded">Loading...</div>
+
+      <div id="3d" v-if="loaded"></div>
+
+      <!-- ATLAS -->
+      <div id="atlas" v-if="loaded">
+        <input v-model="atlas.search" placeholder="Search the altas..." />
+        <div
+          class="atlasresults"
+          v-if="searchAtlas.length>0 && atlas.isVisible"
+        >
+          <div
+            class="atlasresult"
+            v-for="result in searchAtlas"
+            :class="{'selected': result.isSelected}"
+            @click="atlasViewCommunityClicked(result)"
+          >
+            <div class="name">{{ result.name }}</div>
+            <div class="description">{{ result.description }}</div>
+            <div class="website" v-if="showExtLinks">{{ result.website }}</div>
+            <div class="subreddit" v-if="showExtLinks">
+              {{ result.subreddit }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ATLAS END -->
+
+      <div id="timeline" v-if="loaded & timeline.isVisible">
+        <svg height="500" width="1500" align="center"></svg>
+      </div>
+    </div>
+
+    <script src="assets/js/src/atlas.js"></script>
+    <script src="assets/js/src/timeline.js"></script>
+    <script src="assets/js/src/app.js"></script>
+  </body>
+</html>

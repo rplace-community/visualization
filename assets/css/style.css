@@ -61,3 +61,14 @@ svg {
   transform: translate(-50%, 0);
   margin: 0 auto;
 }
+
+div#atlas input{
+    
+}
+
+div#atlas {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+}
