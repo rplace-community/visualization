@@ -13,8 +13,9 @@
 		<script src='assets/js/lib/dat.gui.min.js'></script>
 	</head>
 	<body>
-    <svg height="500" width="1500" align="center"></svg>
-    <script src='assets/js/src/timeline.js'></script>
+    <div id="timeline-container">
+      <script src='assets/js/src/timeline.js'></script>
+    </div>
 		<div class="lds-circle"><div class="lds-circle-inner"></div>
 			<div class="w3-border">
 		   <div class="w3-grey" style="height:24px;width:0%"></div>
@@ -86,6 +87,9 @@
 
 							let loading = document.getElementsByClassName('lds-circle')[0];
 							loading.style.display = "none";
+              
+              const timeline = document.getElementById('timeline');
+              timeline.style.display = null;
 
 							init();
 							animate();
@@ -105,6 +109,9 @@
 							let loading = document.getElementsByClassName('lds-circle')[0];
 							loading.style.display = "none";
 
+              const timeline = document.getElementById('timeline');
+              timeline.style.display = null;
+
 							init();
 							animate();
 						} else {
@@ -122,6 +129,9 @@
 							launched = true;
 							let loading = document.getElementsByClassName('lds-circle')[0];
 							loading.style.display = "none";
+
+              const timeline = document.getElementById('timeline');
+              timeline.style.display = null;
 
 							init();
 							animate();
