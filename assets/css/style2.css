@@ -9,6 +9,10 @@ body {
   overflow: hidden;
 }
 
+.hidden {
+  display: none;
+}
+
 .lds-circle {
   display: inline-block;
   transform: translateZ(1px);
@@ -79,7 +83,6 @@ svg {
   margin: 0 auto;
 }
 
-
 /* ------- ATLAS --------- */
 #atlas input {
   margin-top: 10px;
@@ -114,19 +117,18 @@ svg {
 }
 
 .atlasresult .name {
-    
 }
 
 .atlasresult .description {
-    font-size: .9em;
+  font-size: 0.9em;
 }
 
-.atlasresult .website{
-    visibility: hidden;
+.atlasresult .website {
+  visibility: hidden;
 }
 
-.atlasresult .subreddit{
-    visibility: hidden;
+.atlasresult .subreddit {
+  visibility: hidden;
 }
 
 /* ------- ATLAS END --------- */
