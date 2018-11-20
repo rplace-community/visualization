@@ -68,7 +68,7 @@ d3.json("assets/json/levelmaps/global.json").then(function(data) {
   context
     .append("g")
     .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + height2 + ")")
+    .attr("transform", "translate(0," + height + ")")
     .call(xAxis);
 
   context
