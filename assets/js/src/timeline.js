@@ -8,7 +8,7 @@ const margin = {
   },
   width = div.clientWidth * 0.95,
   height = 25;
-
+  
 const svg = d3.select("#timeline-container").append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", (height + margin.top + margin.bottom));
