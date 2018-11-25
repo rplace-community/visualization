@@ -1,26 +1,37 @@
 var appState = {
   loaded: false,
   showExtLinks: true,
-  atlas: atlasState,
-  timeline: { isVisible: true }, //timelineState,
-  selectedComm: []
+  communities: communitiesState,
+  timeline: timelineState, //{ isVisible: true }, //timelineState,
+  selectedComm: [],
+  speed: 10
 };
 
-var app = new Vue({
+var vm = new Vue({
   el: "#app",
   data: appState,
-  methods: {
-    atlasViewCommunityClicked: atlasViewCommunityClicked
-  },
+  methods: {},
   computed: {
-    searchAtlas: function() {
-      return atlasSearch(this.atlas.search);
+    filteredCommunities: function() {
+      return communitiesSearch(this.communities.search);
+    },
+    displayedCommunities: function() {
+      return this.communities.filter(function(c) {
+        return c.isSelected;
+      });
+    },
+    timelineTime: function() {
+      console.log(this.timeline.time);
+      return timeline.time;
     }
+  },
+  watch: {
+    timelineTime: console.log("seek")
   },
   created: function() {
     // init3d()
     timelineInit();
-    atlasInit();
+    communitiesInit();
 
     console.log("Visualization loaded!");
     this.loaded = true;

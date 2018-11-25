@@ -67,68 +67,113 @@ body {
   fill: darkred;
 }
 
-#timeline {
-  position: fixed;
-  top: 90%;
-  bottom: 0px;
-  left: 0px;
-  right: 300px;
-}
 svg {
-  position: relative;
-  left: 0px;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
+  position: absolute;
+  left: 100px;
+  max-width: 70%;
+  bottom: 10px;
   margin: 0 auto;
 }
 
-/* ------- ATLAS --------- */
-#atlas input {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 90%;
+#timeline-container {
+  pointer-events: none;
 }
 
-#atlas {
+.glyphicon.enabled {
+  color: white;
+}
+
+#sidebar {
   position: fixed;
+  background-color: #333;
   top: 0%;
   bottom: 0%;
   right: 0%;
-  width: 300px;
-  margin: 0 auto;
+  width: 20%;
+  margin-right: 5px;
 }
 
-.atlasresults {
-  margin: 0px;
+/* ------- ATLAS --------- */
+
+#sidebar > input {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 0px;
+  width: 100%;
+  overflow: hidden;
 }
 
-.atlasresult {
-  border-color: #8e8e8e;
-  border-width: 2px;
-  border-style: solid;
+#filtered-communities {
+  margin: 5px;
+  max-height: calc(100vh - 100px);
+  width: 100%;
+  padding-right: 5px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.community-component {
   text-align: left;
-  padding: 5px;
+  width: 100%;
+  margin-top: 5px;
+  max-height: inherit;
+  max-width: inherit;
 }
 
-.atlasresult.selected {
-  border-color: #fff;
-  border-width: 2px;
-}
-
-.atlasresult .name {
-}
-
-.atlasresult .description {
+.community-component .description {
   font-size: 0.9em;
 }
 
-.atlasresult .website {
-  visibility: hidden;
+.community-component .community-btns {
+  text-align: right;
 }
 
-.atlasresult .subreddit {
-  visibility: hidden;
+.community-component .drawer {
+  margin: 10px;
 }
-
 /* ------- ATLAS END --------- */
+
+/* ------- SETTINGS --------- */
+
+#settings {
+  float: inherit;
+  bottom: 0px;
+  right: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  margin-left: 0px;
+}
+
+#settings .row {
+  text-align: left;
+  width: 100%;
+  margin-top: 5px;
+  max-height: inherit;
+  max-width: inherit;
+}
+
+#settings .smoothing-slider {
+  float: right;
+  max-width: 200px;
+}
+/* ------- SETTINGS END --------- */

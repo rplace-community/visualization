@@ -15,6 +15,12 @@
     />
     <link
       rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+      integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
       type="text/css"
       href="assets/css/style2.css"
       media="all"
@@ -30,38 +36,51 @@
   <body>
     <div id="app">
       <div class="loading" v-if="!loaded">Loading...</div>
-      <div id="3d" v-if="loaded"></div>
 
-      <!-- ATLAS -->
-      <div id="atlas" v-if="loaded">
-        <input v-model="atlas.search" placeholder="Search the altas..." />
+      <div id="sidebar" v-if="loaded">
+        <!-- COMMUNITIES -->
+        <input
+          v-model="communities.search"
+          placeholder="Search community..."
+          class="pull-left text text-search"
+        />
         <div
-          class="atlasresults"
-          v-if="searchAtlas.length>0 && atlas.isVisible"
+          id="filtered-communities"
+          v-if="filteredCommunities.length>0 && communities.isVisible"
         >
-          <div
-            class="atlasresult"
-            v-for="result in searchAtlas"
-            :class="{'selected': result.isSelected}"
-            @click="atlasViewCommunityClicked(result)"
-          >
-            <div class="name">{{ result.name }}</div>
-            <div class="description">{{ result.description }}</div>
-            <div class="website" v-if="showExtLinks">{{ result.website }}</div>
-            <div class="subreddit" v-if="showExtLinks">
-              {{ result.subreddit }}
-            </div>
+          <community-component
+            v-for="community in filteredCommunities"
+            :key="community.id"
+            v-bind:community.sync="community"
+          ></community-component>
+        </div>
+        <!-- COMMUNITIES END -->
+        <div id="settings">
+          <div class="row justify-content-between">
+            <label class="col col-md-4">Speed:</label>
+            <input
+              type="range"
+              name="speed"
+              id="speedSlider"
+              v-model.number="speed"
+              class="col-md-8 speed-slider"
+            />
           </div>
         </div>
       </div>
-      <!-- ATLAS END -->
-
-      <div id="timeline" v-if="loaded & timeline.isVisible">
-        <svg height="500" width="1500" align="center"></svg>
-      </div>
     </div>
 
-    <script src="assets/js/src/atlas.js"></script>
+    <div id="timeline-container"></div>
+
+    <div class="lds-circle">
+      <div class="lds-circle-inner"></div>
+      <div class="w3-border">
+        <div class="w3-grey" style="height:24px;width:0%"></div>
+      </div>
+    </div>
+    <script src="assets/js/src/gaussian_blur_rgba.js"></script>
+    <script src="assets/js/src/communities.js"></script>
+    <script src="assets/js/src/map.js"></script>
     <script src="assets/js/src/timeline.js"></script>
     <script src="assets/js/src/app.js"></script>
   </body>
