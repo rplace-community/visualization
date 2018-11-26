@@ -2,7 +2,6 @@ var appState = {
   loaded: false,
   showExtLinks: true,
   communities: communitiesState,
-  timeline: timelineState, //{ isVisible: true }, //timelineState,
   selectedComm: [],
   speed: 10
 };
@@ -19,10 +18,6 @@ var vm = new Vue({
       return this.communities.filter(function(c) {
         return c.isSelected;
       });
-    },
-    timelineTime: function() {
-      console.log(this.timeline.time);
-      return timeline.time;
     }
   },
   watch: {
@@ -30,7 +25,6 @@ var vm = new Vue({
   },
   created: function() {
     // init3d()
-    timelineInit();
     communitiesInit();
 
     console.log("Visualization loaded!");
