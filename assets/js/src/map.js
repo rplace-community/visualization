@@ -2,7 +2,7 @@ if (WEBGL.isWebGLAvailable() === false) {
   document.body.appendChild(WEBGL.getWebGLErrorMessage());
 }
 
-const Map = {
+const map = {
   currentTime: null,
   timeRange: null,
   communities: [],
@@ -17,6 +17,8 @@ const Map = {
   updateCommunities: function(communities) {}
 };
 
+var pause_animation = false;
+
 let camera, controls, scene, renderer;
 let planeGeometry;
 let planeMaterial;
@@ -27,28 +29,28 @@ const filterSize = 200;
 const steps = 16;
 
 let plane_images = new Array();
+let original_plane_images;
 let back_images = new Array();
 let interpolator_images;
 
 let interpolator_height = x => x;
 let interpolator_heights = new Array();
 
-d3.json("assets/json/levelmaps/global.json").then(function(data) {
+d3.json("assets/json/levelmaps/max/global.json").then(function(data) {
   let max = 0;
-  let jsonValues = Object.values(data["null"]);
 
   for (let i = 0; i < tot_images; ++i) {
     interpolator_heights[i] = d3
       .scaleLinear()
       .domain([0, 255])
-      .range([0, parseFloat(jsonValues[i].max)]);
-    max = Math.max(max, parseFloat(jsonValues[i].max));
+      .range([0, parseFloat(data[i].max)]);
+    max = Math.max(max, parseFloat(data[i].max));
   }
 
   interpolator_height = d3
     .scaleLinear()
     .domain([0, max])
-    .range([0, 200]);
+    .range([0, 1000]);
 
   preload();
 });
@@ -70,8 +72,6 @@ function preload() {
 
       let data = context.getImageData(0, 0, filterSize, filterSize).data;
 
-      blurRGBA(data, 200, 200, 5); // APPLY GAUSSIAN SMOOTHING
-
       for (let j = 0; j < data.length; ++j) {
         data[j] = interpolator_heights[this.i](data[j]);
       }
@@ -79,6 +79,14 @@ function preload() {
       plane_images[this.i] = data;
 
       loaded_filters++;
+      console.log(loaded_filters, tot_images);
+      //************************************************************** */
+      if(loaded_filters == tot_images){
+        original_plane_images = plane_images.map(im => im.slice(0));
+        plane_images.forEach(im => blurRGBA(im, 200, 200, 1));
+      }
+      //************************************************************** */
+
       if (
         loaded_backs > tot_images &&
         loaded_filters > tot_images / 2 &&
@@ -105,7 +113,7 @@ function preload() {
           "%";
       }
     };
-    im.src = "assets/img/levelmaps/global/" + i + ".png";
+    im.src = "assets/img/levelmaps/max/global/" + i + ".png";
 
     back_images[2 * i] = new Image();
     back_images[2 * i].onload = function() {
@@ -166,7 +174,7 @@ function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x333333);
 
-  scene.fog = new THREE.FogExp2(0x555555, 0.001);
+  scene.fog = new THREE.FogExp2(0xcccccc, 0.001);
   renderer = new THREE.WebGLRenderer(); //{ antialias: true } );
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -201,25 +209,18 @@ function init() {
   controls.minZoom = 1;
   controls.maxZoom = 10;
 
-  controls.maxPolarAngle = (Math.PI * 4.0) / 10.0;
+  controls.maxPolarAngle = (Math.PI * 4.5) / 10.0;
 
   // world ***********************************************************************************************************
 
-  //planeGeometry = new THREE.PlaneGeometry( 1000, 1000, 199, 199);
-  planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 400, 400);
+  planeGeometry = new THREE.PlaneBufferGeometry( 1000, 1000, 200, 200);
+  //planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 400, 400);
 
   //let texture2 = new THREE.TextureLoader().load( "assets/img/rplace.png" );//new THREE.CanvasTexture( canvas);
   //texture2.minFilter = THREE.NearestFilter;
   //texture2.magFilter = THREE.NearestFilter;
 
-  planeMaterial = new THREE.MeshPhongMaterial({
-    //color: 0xAAAAAA,
-    //wireframe: true,
-    //transparent: false,
-    specular: 0
-    //opacity: 1,
-    //map: texture2
-  });
+  planeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true });
   //let texture = new THREE.TextureLoader().load('assets/img/rplace.png');
   //texture3.minFilter = THREE.LinearFilter;
   //texture3.maxFilter = THREE.LinearFilter;
@@ -239,14 +240,14 @@ function init() {
   scene.add(bottomCube);
 
   // lights
-  //let light1 = new THREE.DirectionalLight( 0xffffff );
-  //light1.position.set( 0.5, 1, 1 );
-  //scene.add( light1 );
-  //let light2 = new THREE.DirectionalLight( 0xAAAAFF, 3 );
-  //light2.position.set( 10, 10, 10 );
-  //scene.add( light2 );
-  let light3 = new THREE.AmbientLight(0xeeeeff, 1.5);
-  scene.add(light3);
+  var light = new THREE.DirectionalLight( 0xffffff );
+  light.position.set( 1, 1, 1 );
+  scene.add( light );
+  var light = new THREE.DirectionalLight( 0x002288 );
+  light.position.set( - 1, - 1, - 1 );
+  scene.add( light );
+  var light = new THREE.AmbientLight( 0x222222 );
+  scene.add( light );
   //
   window.addEventListener("resize", onWindowResize, false);
 
@@ -277,6 +278,10 @@ function animate() {
 
   render();
 
+  if(pause_animation){
+    return;
+  }
+  
   //if(index_plane == 0) {
   if (index_plane % steps == 0) {
     let index = index_plane / steps;
@@ -312,11 +317,11 @@ function generatePlaneHeightsBuffered() {
     //Top left is -500, 500
     //Bottom right is 500, -500
     ///!\ <=, not <
-    const twoFSP1 = 2 * filterSize + 1;
+    const twoFSP1 = filterSize + 1;
     for (let i = 0; i < filterSize; i++) {
       for (let j = 0; j < filterSize; j++) {
-        const iIm = i * 2 + 1;
-        const jIm = j * 2 + 1;
+        const iIm = i + 1;
+        const jIm = j  + 1;
         //let height = context.getImageData(i, j, 1, 1).data[0]; //red = blue = green
         positions[(iIm + jIm * twoFSP1) * 3 + 2] = interpolator_height(
           arr[(i + j * 200) * 4]
@@ -356,4 +361,16 @@ function generatePlaneHeights(index) {
 
 function render() {
   renderer.render(scene, camera);
+}
+
+
+function mapSmooth(v){
+  console.log("Smoothing = " + v);
+  if(plane_images){
+    const tmp = original_plane_images.map(im => im.slice(0));
+    tmp.forEach(im => blurRGBA(im, 200, 200, v));
+    pause_animation = true;
+    plane_images = tmp;
+    pause_animation = false;
+  }
 }
