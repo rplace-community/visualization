@@ -2,6 +2,21 @@ if (WEBGL.isWebGLAvailable() === false) {
   document.body.appendChild(WEBGL.getWebGLErrorMessage());
 }
 
+const Map = {
+  currentTime: null,
+  timeRange: null,
+  communities: [],
+
+  init: function() {},
+  seekTime: function(t) {
+    this.currentTime = t;
+  },
+  setTimeRange: function(dt) {
+    this.timeRange = dt;
+  },
+  updateCommunities: function(communities) {}
+};
+
 let camera, controls, scene, renderer;
 let planeGeometry;
 let planeMaterial;
@@ -19,7 +34,6 @@ let interpolator_height = x => x;
 let interpolator_heights = new Array();
 
 d3.json("assets/json/levelmaps/global.json").then(function(data) {
-  console.log();
   let max = 0;
   let jsonValues = Object.values(data["null"]);
 

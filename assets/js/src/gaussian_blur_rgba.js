@@ -193,4 +193,4 @@ function blurRGBA(src, width, height, radius) {
   convolveRGBA(out, src32, tmp_line, coeff, height, width, radius);
 }
 
-module.exports = blurRGBA;
+//module.exports = blurRGBA;

@@ -24,7 +24,6 @@ function communitiesSearch(text) {
   let res = communitiesState.communities.filter(value =>
     value.name.toLowerCase().includes(text.toLowerCase())
   );
-  //.slice(0, 20);
   return res;
 }
 

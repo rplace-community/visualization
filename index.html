@@ -35,8 +35,6 @@
   </head>
   <body>
     <div id="app">
-      <div class="loading" v-if="!loaded">Loading...</div>
-
       <div id="sidebar" v-if="loaded">
         <!-- COMMUNITIES -->
         <input
@@ -68,13 +66,13 @@
           </div>
         </div>
       </div>
-      <timeline-component></timeline-component>
-    </div>
-
-    <div class="lds-circle">
-      <div class="lds-circle-inner"></div>
-      <div class="w3-border">
-        <div class="w3-grey" style="height:24px;width:0%"></div>
+      <timeline-component v-if="loaded"></timeline-component>
+      <div class="lds-circle">
+        <!-- :class="{'hidden': loaded}"> -->
+        <div class="lds-circle-inner"></div>
+        <div class="w3-border">
+          <div class="w3-grey" style="height:24px;width:0%"></div>
+        </div>
       </div>
     </div>
     <script src="assets/js/src/gaussian_blur_rgba.js"></script>
