@@ -47,13 +47,11 @@ Vue.component("timeline-component", {
       .attr("style", "display: none")
       .attr("transform", "translate(" + margin.left + "," + 0 + ")");
 
-    d3.json("assets/json/levelmaps/global.json").then(function(data) {
-      const entries = Object.entries(data["null"]);
-
+    d3.json("assets/json/levelmaps/max/global.json").then(function(data) {
       const now = new Date(); // TODO put the real starting date of r/place event
-      data = entries.map(entry => {
-        entry[1].timestamp = new Date(now.getTime() + entry[0] * 1000); // (entry[0] / 60) * 60000
-        return entry[1];
+      data = data.map(entry => {
+        entry.timestamp = new Date(now.getTime() + entry.ts * 1000); // (entry[0] / 60) * 60000
+        return entry;
       });
 
       x.domain(

@@ -36,33 +36,35 @@
   <body>
     <div id="app">
       <div id="sidebar" v-if="loaded">
-        <!-- COMMUNITIES -->
-        <input
-          v-model="communities.search"
-          placeholder="Search community..."
-          class="pull-left text text-search"
-        />
-        <div
-          id="filtered-communities"
-          v-if="filteredCommunities.length>0 && communities.isVisible"
-        >
-          <community-component
-            v-for="community in filteredCommunities"
-            :key="community.id"
-            v-bind:community.sync="community"
-          ></community-component>
-        </div>
-        <!-- COMMUNITIES END -->
-        <div id="settings">
-          <div class="row justify-content-between">
-            <label class="col col-md-4">Speed:</label>
-            <input
-              type="range"
-              name="speed"
-              id="speedSlider"
-              v-model.number="speed"
-              class="col-md-8 speed-slider"
-            />
+        <div class="blur"></div>
+        <div class="sidebar-content">
+          <!-- COMMUNITIES -->
+          <input
+            v-model="communities.search"
+            placeholder="Search community..."
+            class="pull-left text-search"
+          />
+          <div
+            id="filtered-communities"
+            v-if="filteredCommunities.length>0 && communities.isVisible"
+          >
+            <community-component
+              v-for="community in filteredCommunities"
+              :key="community.id"
+              v-bind:community.sync="community"
+            ></community-component>
+          </div>
+          <!-- COMMUNITIES END -->
+          <div id="settings">
+            <div class="param justify-content-between">
+              <label>Smoothing</label>
+              <input
+                type="range"
+                name="smoothing"
+                v-model.number="smoothing"
+                class="control"
+              />
+            </div>
           </div>
         </div>
       </div>

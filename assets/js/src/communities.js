@@ -11,69 +11,72 @@ function communitiesInit() {
     .then(function(response) {
       return response.json();
     })
-    .then(function(obj) {
-      communitiesState.communities = Object.keys(obj).map(function(key) {
-        obj[key].isSelected = false;
-        obj[key].levelmaps = { blobs: [], isLoaded: false };
-        return obj[key];
+    .then(function(array) {
+      communitiesState.communities = array.map(community => {
+        community.isShown = false;
+        community.isPinned = false;
+        community.levelmaps = { blobs: [], isLoaded: false };
+        return community;
       });
     });
 }
 
 function communitiesSearch(text) {
-  let res = communitiesState.communities.filter(value =>
-    value.name.toLowerCase().includes(text.toLowerCase())
-  );
-  return res;
+  return communitiesState.communities
+    .filter(v => {
+      return v.isPinned || v.name.toLowerCase().includes(text.toLowerCase());
+    })
+    .sort((a, b) => {
+      if (a.isPinned == b.isPinned) {
+        return a.name > b.name;
+      } else {
+        return a.isPinned > b.isPinned;
+      }
+    });
 }
 
 Vue.component("community-component", {
   props: ["community"],
   data: function() {
     return {
-      isShown: false,
-      isPinned: false,
       isExpanded: false,
-      levelmaps: {
-        blobs: []
-      }
     };
   },
   methods: {
     toggleShown: function() {
-      let levelmaps = this.levelmaps;
       let community = this.community;
-      if (!this.isShown && !community.isLoaded) {
-        fetch(`assets/json/levelmaps/${community.id}.json`)
+      if (!community.isShown && !community.isLoaded) {
+        fetch(`assets/json/levelmaps/max/${community.id}.json`)
           .then(response => {
             return response.json();
           })
-          .then(obj => {
-            levelmaps.index = obj[community.id];
+          .then(index => {
+            community.levelmaps.index = index;
 
-            const entries = Object.entries(levelmaps.index);
-            entries.forEach(element => {
-              fetch(
-                `assets/img/levelmaps/${community.id}/${element[1].idx}.png`
-              )
-                .then(response => {
+            let blobs = Promise.all(
+              index.map(element => {
+                fetch(
+                  `assets/img/levelmaps/max/${community.id}/${element.idx}.png`
+                ).then(response => {
                   return response.blob();
-                })
-                .then(blob => {
-                  levelmaps.blobs.push(blob);
                 });
+              })
+            );
+            blobs.then(bs => {
+              community.levelmaps.blobs = bs;
+              community.levelmaps.isLoaded = true;
+              this.$emit("update:community");
             });
           });
-        levelmaps.isLoaded = true;
+        community.isShown = true;
+      } else {
+        community.isShown = !community.isShown;
+        this.$emit("update:community");
       }
-
-      this.isShown = !this.isShown;
-      community.levelmaps = levelmaps;
-      community.isSelected = this.isShown;
-      this.$emit("update:community", community);
     },
     togglePinned: function() {
-      this.isPinned = !this.isPinned;
+      this.community.isPinned = !this.community.isPinned;
+      this.$emit("update:community");
     },
     toggleExpanded: function() {
       this.isExpanded = !this.isExpanded;
@@ -83,8 +86,8 @@ Vue.component("community-component", {
         <div class="row justify-content-between">
             <div class="col-md-8 name">{{ community.name }}</div>
             <div class="col-md-4 community-btns">
-                <div class="glyphicon glyphicon-eye-open" :class="{'enabled': isShown}" @click="toggleShown()"></div>
-                <div class="glyphicon glyphicon-pushpin" :class="{'enabled': isPinned}" @click="togglePinned()"></div>
+                <div class="glyphicon glyphicon-eye-open" :class="{'enabled': community.isShown}" @click="toggleShown()"></div>
+                <div class="glyphicon glyphicon-pushpin" :class="{'enabled': community.isPinned}" @click="togglePinned()"></div>
                 <div class="glyphicon glyphicon-option-vertical" :class="{'enabled': isExpanded}" @click="toggleExpanded()"></div>
             </div>
         </div>
