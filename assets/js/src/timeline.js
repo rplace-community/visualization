@@ -12,6 +12,14 @@ Vue.component("timeline-component", {
       width = div.clientWidth * 0.95,
       height = 50;
 
+    const blur = d3
+      .select("#timeline-container")
+      .append("div")
+      .attr("id", "timeline-blur")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("class", "blur");
+
     const svg = d3
       .select("#timeline-container")
       .append("svg")
