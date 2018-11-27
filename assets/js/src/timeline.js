@@ -18,18 +18,18 @@ Vue.component("timeline-component", {
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom);
 
-    var x = d3.scaleTime().range([0, width]),
+    const x = d3.scaleTime().range([0, width]),
       y = d3.scaleLinear().range([height, 0]);
 
-    var xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat("%a %H:%M:%S")),
+    const xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat("%a %H:%M:%S")),
       yAxis = d3.axisLeft(y);
 
-    var brush = d3
+    const brush = d3
       .brushX()
       .extent([[0, 0], [width, height]])
       .on("brush end", brushed);
 
-    var area = d3
+    const area = d3
       .area()
       .curve(d3.curveMonotoneX)
       .x(function(d) {
@@ -40,7 +40,7 @@ Vue.component("timeline-component", {
         return y(d.counts);
       });
 
-    var context = svg
+    const context = svg
       .append("g")
       .attr("class", "context")
       .attr("id", "timeline")
@@ -85,7 +85,7 @@ Vue.component("timeline-component", {
         .call(brush.move, [now, new Date(now.getTime() + 15 * 60000)].map(x));
     });
     function brushed() {
-      //var s = d3.event.selection || x.range();
+      //const s = d3.event.selection || x.range();
       //x.domain(s.map(x.invert, x));
       console.log('brushed')
     }
