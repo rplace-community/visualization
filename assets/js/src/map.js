@@ -281,7 +281,7 @@ function animate() {
   if(pause_animation){
     return;
   }
-  
+
   //if(index_plane == 0) {
   if (index_plane % steps == 0) {
     let index = index_plane / steps;
@@ -317,14 +317,11 @@ function generatePlaneHeightsBuffered() {
     //Top left is -500, 500
     //Bottom right is 500, -500
     ///!\ <=, not <
-    const twoFSP1 = filterSize + 1;
     for (let i = 0; i < filterSize; i++) {
       for (let j = 0; j < filterSize; j++) {
-        const iIm = i + 1;
-        const jIm = j  + 1;
         //let height = context.getImageData(i, j, 1, 1).data[0]; //red = blue = green
-        positions[(iIm + jIm * twoFSP1) * 3 + 2] = interpolator_height(
-          arr[(i + j * 200) * 4]
+        positions[(i + j * (filterSize + 1)) * 3 + 2] = interpolator_height(
+          arr[(i + j * filterSize) * 4]
         );
       }
       //planeGeometry.vertices[i].z = sinus(planeGeometry.vertices[i].x, planeGeometry.vertices[i].y) *10;
