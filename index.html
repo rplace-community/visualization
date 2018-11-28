@@ -2,26 +2,103 @@
 <html lang="en">
   <head>
     <title>r/place communities</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css" media="all"/>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+      integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="assets/css/style.css"
+      media="all"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
     <script src="assets/js/lib/three.js"></script>
     <script src="assets/js/lib/WebGL.js"></script>
     <script src="assets/js/lib/MapControls.js"></script>
     <script src="assets/js/lib/SubdivisionModifier.js"></script>
     <script src="assets/js/lib/d3.min.js"></script>
-    <script src='assets/js/lib/dat.gui.min.js'></script>
+    <script src="assets/js/lib/dat.gui.min.js"></script>
+    <script src="assets/js/src/utils.js"></script>
   </head>
   <body>
-    <div id="timeline-container">
-      <script src='assets/js/src/timeline.js'></script>
-    </div>
-    <div class="lds-circle">
-      <div class="lds-circle-inner"></div>
-      <div class="w3-border">
-        <div class="w3-grey" style="height:24px;width:0%"></div>
+    <div id="app">
+      <div id="sidebar" v-if="loaded">
+        <div class="blur"></div>
+        <div class="sidebar-content">
+          <!-- COMMUNITIES -->
+          <input
+            v-model="communities.search"
+            placeholder="Search community..."
+            class="pull-left text-search"
+          />
+          <div
+            id="filtered-communities"
+            v-if="filteredCommunities.length>0 && communities.isVisible"
+          >
+            <community-component
+              v-for="community in filteredCommunities"
+              :key="community.id"
+              v-bind:community.sync="community"
+            ></community-component>
+          </div>
+          <!-- COMMUNITIES END -->
+          <div id="settings">
+            <div class="param justify-content-between">
+              <label>Smoothing</label>
+              <input
+                type="range"
+                name="smoothing"
+                min="0.00001"
+                max="2"
+                step="0.01"
+                v-model.lazy.number="smoothing"
+                class="control"
+              />
+            </div>
+            <div class="param justify-content-between">
+              <label>Average</label>
+              <input
+                type="range"
+                name="window"
+                min="1"
+                max="10"
+                step="1"
+                v-model.lazy.number="window"
+                class="control"
+              />
+              <input type="checkbox" id="checkbox" v-model="ema" />
+              <label for="checkbox">EMA</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <timeline-component v-if="loaded"></timeline-component>
+      <div class="lds-circle">
+        <!-- :class="{'hidden': loaded}"> -->
+        <div class="lds-circle-inner"></div>
+        <div class="w3-border">
+          <div class="w3-grey" style="height:24px;width:0%"></div>
+        </div>
       </div>
     </div>
+    <script src="assets/js/src/gaussian_blur.js"></script>
+    <script src="assets/js/src/communities.js"></script>
     <script src="assets/js/src/map.js"></script>
+    <script src="assets/js/src/timeline.js"></script>
+    <script src="assets/js/src/app.js"></script>
   </body>
 </html>
