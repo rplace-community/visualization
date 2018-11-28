@@ -28,146 +28,34 @@ const tot_images = 145;
 const filterSize = 200;
 const steps = 16;
 
-let plane_images = new Array();
-let original_plane_images;
-let back_images = new Array();
+let plane_images;
+let back_images;
 let interpolator_images;
 
-let interpolator_height = x => x;
-let interpolator_heights = new Array();
-
-d3.json("assets/json/levelmaps/max/global.json").then(function(data) {
-  let max = 0;
-
-  for (let i = 0; i < tot_images; ++i) {
-    interpolator_heights[i] = d3
-      .scaleLinear()
-      .domain([0, 255])
-      .range([0, parseFloat(data[i].max)]);
-    max = Math.max(max, parseFloat(data[i].max));
-  }
-
-  interpolator_height = d3
-    .scaleLinear()
-    .domain([0, max])
-    .range([0, 1000]);
-
-  preload();
-});
-
 function preload() {
-  let loaded_filters = 0;
   let loaded_backs = 0;
   let launched = false;
 
-  for (let i = 0; i < tot_images; i++) {
-    let im = new Image();
-    im.i = i;
-    im.onload = function() {
-      let canvas = document.createElement("canvas");
-      canvas.width = filterSize;
-      canvas.height = filterSize;
-      let context = canvas.getContext("2d");
-      context.drawImage(this, 0, 0);
+  const urls = Array.from(Array(tot_images * 2 - 1).keys()).map(
+    i => `assets/img/frames/${i}.png`
+  );
 
-      let data = context.getImageData(0, 0, filterSize, filterSize).data;
+  fetchImages(urls, function() {
+    loaded_backs++;
+    let loadingBar = document.getElementsByClassName("w3-grey")[0];
+    loadingBar.style.width = `${(50 * loaded_backs) / (tot_images + 1)}%`;
+  }).then(images => {
+    back_images = images;
+    launched = true;
+    let loading = document.getElementsByClassName("lds-circle")[0];
+    loading.style.display = "none";
 
-      for (let j = 0; j < data.length; ++j) {
-        data[j] = interpolator_heights[this.i](data[j]);
-      }
+    const timeline = document.getElementById("timeline");
+    timeline.style.display = null;
 
-      plane_images[this.i] = data;
-
-      loaded_filters++;
-      console.log(loaded_filters, tot_images);
-      //************************************************************** */
-      if(loaded_filters == tot_images){
-        original_plane_images = plane_images.map(im => im.slice(0));
-        plane_images.forEach(im => blurRGBA(im, 200, 200, 1));
-      }
-      //************************************************************** */
-
-      if (
-        loaded_backs > tot_images &&
-        loaded_filters > tot_images / 2 &&
-        !launched
-      ) {
-        launched = true;
-
-        let loading = document.getElementsByClassName("lds-circle")[0];
-        loading.style.display = "none";
-
-        const timeline = document.getElementById("timeline");
-        timeline.style.display = null;
-
-        init();
-        animate();
-      } else {
-        let loadingBar = document.getElementsByClassName("w3-grey")[0];
-        loadingBar.style.width =
-          100 *
-            Math.min(
-              loaded_backs / (tot_images + 1),
-              (2 * loaded_filters) / (tot_images + 1)
-            ) +
-          "%";
-      }
-    };
-    im.src = "assets/img/levelmaps/max/global/" + i + ".png";
-
-    back_images[2 * i] = new Image();
-    back_images[2 * i].onload = function() {
-      loaded_backs++;
-
-      if (
-        loaded_backs > tot_images &&
-        loaded_filters > tot_images / 2 &&
-        !launched
-      ) {
-        launched = true;
-        let loading = document.getElementsByClassName("lds-circle")[0];
-        loading.style.display = "none";
-
-        const timeline = document.getElementById("timeline");
-        timeline.style.display = null;
-
-        init();
-        animate();
-      } else {
-        let loadingBar = document.getElementsByClassName("w3-grey")[0];
-        loadingBar.style.width =
-          100 *
-            Math.min(
-              loaded_backs / (tot_images + 1),
-              (2 * loaded_filters) / (tot_images + 1)
-            ) +
-          "%";
-      }
-    };
-    back_images[2 * i].src = "assets/img/frames/" + i * 2 + ".png";
-
-    back_images[2 * i + 1] = new Image();
-    back_images[2 * i + 1].onload = function() {
-      loaded_backs++;
-
-      if (
-        loaded_backs > tot_images &&
-        loaded_filters > tot_images / 2 &&
-        !launched
-      ) {
-        launched = true;
-        let loading = document.getElementsByClassName("lds-circle")[0];
-        loading.style.display = "none";
-
-        const timeline = document.getElementById("timeline");
-        timeline.style.display = null;
-
-        init();
-        animate();
-      }
-    };
-    back_images[2 * i + 1].src = "assets/img/frames/" + (i * 2 + 1) + ".png";
-  }
+    init();
+    animate();
+  });
 }
 
 function init() {
@@ -213,14 +101,18 @@ function init() {
 
   // world ***********************************************************************************************************
 
-  planeGeometry = new THREE.PlaneBufferGeometry( 1000, 1000, 200, 200);
+  planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 200, 200);
   //planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 400, 400);
 
   //let texture2 = new THREE.TextureLoader().load( "assets/img/rplace.png" );//new THREE.CanvasTexture( canvas);
   //texture2.minFilter = THREE.NearestFilter;
   //texture2.magFilter = THREE.NearestFilter;
 
-  planeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true });
+  planeMaterial = new THREE.MeshPhongMaterial({
+    color: 0xffffff,
+    flatShading: true,
+    specular: 0x0
+  });
   //let texture = new THREE.TextureLoader().load('assets/img/rplace.png');
   //texture3.minFilter = THREE.LinearFilter;
   //texture3.maxFilter = THREE.LinearFilter;
@@ -240,14 +132,14 @@ function init() {
   scene.add(bottomCube);
 
   // lights
-  var light = new THREE.DirectionalLight( 0xffffff );
-  light.position.set( 1, 1, 1 );
-  scene.add( light );
-  var light = new THREE.DirectionalLight( 0x002288 );
-  light.position.set( - 1, - 1, - 1 );
-  scene.add( light );
-  var light = new THREE.AmbientLight( 0x222222 );
-  scene.add( light );
+  var light = new THREE.DirectionalLight(0xffffff);
+  light.position.set(1, 1, 1);
+  scene.add(light);
+  var light = new THREE.DirectionalLight(0x002288);
+  light.position.set(-1, -1, -1);
+  scene.add(light);
+  var light = new THREE.AmbientLight(0x222222);
+  scene.add(light);
   //
   window.addEventListener("resize", onWindowResize, false);
 
@@ -278,9 +170,7 @@ function animate() {
 
   render();
 
-  if(pause_animation){
-    return;
-  }
+  if (!plane_images) return;
 
   //if(index_plane == 0) {
   if (index_plane % steps == 0) {
@@ -320,9 +210,7 @@ function generatePlaneHeightsBuffered() {
     for (let i = 0; i < filterSize; i++) {
       for (let j = 0; j < filterSize; j++) {
         //let height = context.getImageData(i, j, 1, 1).data[0]; //red = blue = green
-        positions[(i + j * (filterSize + 1)) * 3 + 2] = interpolator_height(
-          arr[(i + j * filterSize) * 4]
-        );
+        positions[(i + j * (filterSize + 1)) * 3 + 2] = arr[i + j * filterSize];
       }
       //planeGeometry.vertices[i].z = sinus(planeGeometry.vertices[i].x, planeGeometry.vertices[i].y) *10;
     }
@@ -331,43 +219,35 @@ function generatePlaneHeightsBuffered() {
   }
 }
 
-function generatePlaneHeights(index) {
-  if (planeGeometry) {
-    let canvas = document.createElement("canvas");
-    canvas.width = 200;
-    canvas.height = 200;
-    let context = canvas.getContext("2d");
-    context.drawImage(plane_images[index], 0, 0);
+// function generatePlaneHeights(index) {
+//   if (planeGeometry) {
+//     let canvas = document.createElement("canvas");
+//     canvas.width = 200;
+//     canvas.height = 200;
+//     let context = canvas.getContext("2d");
+//     context.drawImage(plane_images[index], 0, 0);
 
-    //Top left is -500, 500
-    //Bottom right is 500, -500
-    ///!\ <=, not <
-    for (let i = 0; i < 200; ++i) {
-      for (let j = 0; j < 200; ++j) {
-        let height = context.getImageData(i, j, 1, 1).data[0]; //red = blue = green
-        planeGeometry.vertices[i + j * 200].z = height;
-      }
-      //planeGeometry.vertices[i].z = sinus(planeGeometry.vertices[i].x, planeGeometry.vertices[i].y) *10;
-    }
+//     //Top left is -500, 500
+//     //Bottom right is 500, -500
+//     ///!\ <=, not <
+//     for (let i = 0; i < 200; ++i) {
+//       for (let j = 0; j < 200; ++j) {
+//         let height = context.getImageData(i, j, 1, 1).data[0]; //red = blue = green
+//         planeGeometry.vertices[i + j * 200].z = height;
+//       }
+//       //planeGeometry.vertices[i].z = sinus(planeGeometry.vertices[i].x, planeGeometry.vertices[i].y) *10;
+//     }
 
-    planeGeometry.computeFaceNormals();
-    planeGeometry.computeVertexNormals();
-    planeGeometry.verticesNeedUpdate = true;
-  }
-}
+//     planeGeometry.computeFaceNormals();
+//     planeGeometry.computeVertexNormals();
+//     planeGeometry.verticesNeedUpdate = true;
+//   }
+// }
 
 function render() {
   renderer.render(scene, camera);
 }
 
-
-function mapSmooth(v){
-  console.log("Smoothing = " + v);
-  if(plane_images){
-    const tmp = original_plane_images.map(im => im.slice(0));
-    tmp.forEach(im => blurRGBA(im, 200, 200, v));
-    pause_animation = true;
-    plane_images = tmp;
-    pause_animation = false;
-  }
+function mapSetLevelmaps(arr) {
+  plane_images = arr;
 }

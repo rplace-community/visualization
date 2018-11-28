@@ -81,7 +81,7 @@ svg {
   width: 70%;
   bottom: 10px;
   margin: 0 auto;
-  pointer-events:none;
+  pointer-events: none;
 }
 
 .glyphicon.enabled {
@@ -142,7 +142,7 @@ svg {
 
 #filtered-communities {
   margin: 5px;
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 200px);
   width: 100%;
   padding-right: 5px;
   overflow-y: auto;

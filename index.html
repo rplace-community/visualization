@@ -32,6 +32,7 @@
     <script src="assets/js/lib/SubdivisionModifier.js"></script>
     <script src="assets/js/lib/d3.min.js"></script>
     <script src="assets/js/lib/dat.gui.min.js"></script>
+    <script src="assets/js/src/utils.js"></script>
   </head>
   <body>
     <div id="app">
@@ -61,9 +62,26 @@
               <input
                 type="range"
                 name="smoothing"
-                v-model.number="smoothing"
+                min="0.00001"
+                max="2"
+                step="0.01"
+                v-model.lazy.number="smoothing"
                 class="control"
               />
+            </div>
+            <div class="param justify-content-between">
+              <label>Average</label>
+              <input
+                type="range"
+                name="window"
+                min="1"
+                max="10"
+                step="1"
+                v-model.lazy.number="window"
+                class="control"
+              />
+              <input type="checkbox" id="checkbox" v-model="ema" />
+              <label for="checkbox">EMA</label>
             </div>
           </div>
         </div>
@@ -77,7 +95,7 @@
         </div>
       </div>
     </div>
-    <script src="assets/js/src/gaussian_blur_rgba.js"></script>
+    <script src="assets/js/src/gaussian_blur.js"></script>
     <script src="assets/js/src/communities.js"></script>
     <script src="assets/js/src/map.js"></script>
     <script src="assets/js/src/timeline.js"></script>

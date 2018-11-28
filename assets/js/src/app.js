@@ -3,40 +3,16 @@ var appState = {
   showExtLinks: true,
   globalCommunity: {
     levelmaps: {
+      index: {},
       blobs: [],
       isLoaded: false
     }
   },
   communities: communitiesState,
-  selectedComm: [],
-  smoothing: 50,
-
-  loadGlobalLevelmaps: () => {
-    fetch(`assets/json/levelmaps/max/global.json`)
-      .then(response => {
-        return response.json();
-      })
-      .then(index => {
-        let blobs = Promise.all(
-          index.map(element => {
-            fetch(`assets/img/levelmaps/max/global/${element.idx}.png`).then(
-              response => {
-                return response.blob();
-              }
-            );
-          })
-        );
-        blobs.then(bs => {
-          let globalCommunity = {}; 
-          globalCommunity.idx = -1;
-          globalCommunity.name="global";
-          globalCommunity.levelmaps = {};
-          globalCommunity.levelmaps.blobs = bs;
-          globalCommunity.levelmaps.isLoaded = true;
-          appState.globalCommunity = globalCommunity;
-        });
-      });
-  }
+  currentLevelmaps: [],
+  smoothing: 1,
+  window: 1,
+  ema: true
 };
 
 var vm = new Vue({
@@ -48,27 +24,76 @@ var vm = new Vue({
       return communitiesSearch(this.communities.search);
     },
     displayedCommunities: function() {
-      let res = this.communities.communities.filter(function(c) {
-        return c.isShown && c.levelmaps.isLoaded;
-      });
+      let res = this.communities.communities.filter(
+        c => c.isShown && c.levelmaps.isLoaded
+      );
       return res;
+    },
+    recomputeLevelmap: function() {
+      this.displayedCommunities;
+      this.window;
+      this.ema;
+      return performance.now();
     }
   },
   watch: {
     timelineTime: console.log("seek"),
-    displayedCommunities: function(arr) {
-      console.log("Displayed communities changed", arr);
+    recomputeLevelmap: function(unused) {
+      let arr = this.displayedCommunities;
+      if (!arr || arr.length < 1) {
+        arr = [this.globalCommunity.levelmaps.blobs];
+      } else {
+        arr = arr.map(c => c.levelmaps.blobs);
+      }
+      cmdWorker
+        .send("mergeLevelmaps", {
+          images: arr,
+          range: this.window,
+          ema: this.ema
+        })
+        .then(result => {
+          this.currentLevelmaps = result;
+          cmdWorker
+            .send("blurImages", {
+              images: result,
+              radius: this.smoothing
+            })
+            .then(result => mapSetLevelmaps(result));
+        });
     },
-    smoothing: function(v){
-      mapSmooth(v/50);
+    smoothing: function(v) {
+      cmdWorker
+        .send("blurImages", { images: this.currentLevelmaps, radius: v })
+        .then(result => mapSetLevelmaps(result));
     }
   },
   created: function() {
-    // init3d()
     communitiesInit();
-    appState.loadGlobalLevelmaps();
+
+    // enable global levelmaps when starting viz
+    fetchLevelmaps("global").then(([index, levelmaps]) => {
+      let globalCommunity = {};
+      globalCommunity.idx = -1;
+      globalCommunity.index = index;
+      globalCommunity.name = "global";
+      globalCommunity.levelmaps = { blobs: levelmaps, isLoaded: true };
+      appState.globalCommunity = globalCommunity;
+
+      appState.currentLevelmaps = globalCommunity.levelmaps.blobs;
+      cmdWorker
+        .send("blurImages", {
+          images: appState.currentLevelmaps,
+          radius: appState.smoothing
+        })
+        .then(result => {
+          mapSetLevelmaps(result);
+        });
+    });
+
+    preload();
 
     console.log("Visualization loaded!");
     this.loaded = true;
-  }
+  },
+  ready: function() {}
 });

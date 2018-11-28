@@ -15,7 +15,7 @@ function communitiesInit() {
       communitiesState.communities = array.map(community => {
         community.isShown = false;
         community.isPinned = false;
-        community.levelmaps = { blobs: [], isLoaded: false };
+        community.levelmaps = { index: {}, blobs: [], isLoaded: false };
         return community;
       });
     });
@@ -28,9 +28,9 @@ function communitiesSearch(text) {
     })
     .sort((a, b) => {
       if (a.isPinned == b.isPinned) {
-        return a.name > b.name;
+        return a.name.localeCompare(b.name);
       } else {
-        return a.isPinned > b.isPinned;
+        return b.isPinned - a.isPinned;
       }
     });
 }
@@ -39,35 +39,19 @@ Vue.component("community-component", {
   props: ["community"],
   data: function() {
     return {
-      isExpanded: false,
+      isExpanded: false
     };
   },
   methods: {
     toggleShown: function() {
-      let community = this.community;
-      if (!community.isShown && !community.isLoaded) {
-        fetch(`assets/json/levelmaps/max/${community.id}.json`)
-          .then(response => {
-            return response.json();
-          })
-          .then(index => {
-            community.levelmaps.index = index;
-
-            let blobs = Promise.all(
-              index.map(element => {
-                fetch(
-                  `assets/img/levelmaps/max/${community.id}/${element.idx}.png`
-                ).then(response => {
-                  return response.blob();
-                });
-              })
-            );
-            blobs.then(bs => {
-              community.levelmaps.blobs = bs;
-              community.levelmaps.isLoaded = true;
-              this.$emit("update:community");
-            });
-          });
+      const community = this.community;
+      if (!community.isShown && !community.levelmaps.isLoaded) {
+        fetchLevelmaps(community.id).then(([index, levelmaps]) => {
+          community.levelmaps.index = index;
+          community.levelmaps.blobs = levelmaps;
+          community.levelmaps.isLoaded = true;
+          this.$emit("update:community");
+        });
         community.isShown = true;
       } else {
         community.isShown = !community.isShown;
@@ -96,3 +80,26 @@ Vue.component("community-component", {
         </div>
     </div>`
 });
+
+function fetchLevelmaps(community) {
+  return fetch(`assets/json/levelmaps/max/${community}.json`)
+    .then(response => {
+      return response.json();
+    })
+    .then(index => {
+      const urls = index.map(
+        e => `assets/img/levelmaps/max/${community}/${e.idx}.png`
+      );
+      return fetchImagesData(urls).then(datas => {
+        const maxs = index.map(e => e.max);
+        const normalized = datas.map((img, i) => {
+          let levels = new Float32Array(img.length / 4);
+          for (const pixel of levels.keys()) {
+            levels[pixel] = (maxs[i] * img[pixel * 4]) / 255.0;
+          }
+          return levels;
+        });
+        return [index, normalized];
+      });
+    });
+}
