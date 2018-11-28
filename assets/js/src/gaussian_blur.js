@@ -26,7 +26,7 @@ function gaussCoef(sigma) {
   return new Float32Array([a0, a1, a2, a3, b1, b2, left_corner, right_corner]);
 }
 
-function convolveMono16(src, out, line, coeff, width, height) {
+function convolveFloat32(src, out, line, coeff, width, height) {
   // takes src image and writes the blurred and transposed result into out
 
   var prev_src, curr_src, curr_out, prev_out, prev_prev_out;
@@ -102,19 +102,19 @@ function convolveMono16(src, out, line, coeff, width, height) {
   }
 }
 
-function blurMono16(src, width, height, radius) {
+function blurMonoFloat32(src, width, height, radius) {
   // Quick exit on zero radius
   if (!radius) {
     return;
   }
 
-  var out = new Uint16Array(src.length),
+  var out = new Float32Array(src.length),
     tmp_line = new Float32Array(Math.max(width, height));
 
   var coeff = gaussCoef(radius);
 
-  convolveMono16(src, out, tmp_line, coeff, width, height, radius);
-  convolveMono16(out, src, tmp_line, coeff, height, width, radius);
+  convolveFloat32(src, out, tmp_line, coeff, width, height, radius);
+  convolveFloat32(out, src, tmp_line, coeff, height, width, radius);
 }
 
-module.exports = blurMono16;
+//module.exports = blurMonoFloat32;
