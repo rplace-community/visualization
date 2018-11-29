@@ -1,23 +1,27 @@
 const MAPS_COUNT = 145;
 
+/******* Communities state *******/
 var communitiesState = {
   isVisible: true,
   search: "",
   communities: []
 };
 
+/******* Communities global context functions *******/
 function communitiesInit() {
-  fetch("assets/json/communities.json")
+  return fetch("assets/json/communities.json")
     .then(function(response) {
       return response.json();
     })
     .then(function(array) {
-      communitiesState.communities = array.map(community => {
-        community.isShown = false;
-        community.isPinned = false;
-        community.levelmaps = { index: {}, blobs: [], isLoaded: false };
-        return community;
-      });
+      communitiesState.communities = array
+        .map(community => {
+          community.isShown = false;
+          community.isPinned = false;
+          community.levelmaps = { index: {}, blobs: [], isLoaded: false };
+          return community;
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
     });
 }
 
@@ -35,6 +39,7 @@ function communitiesSearch(text) {
     });
 }
 
+/******* Community component *******/
 Vue.component("community-component", {
   props: ["community"],
   data: function() {
@@ -66,18 +71,19 @@ Vue.component("community-component", {
       this.isExpanded = !this.isExpanded;
     }
   },
-  template: `<div class="community-component">
-        <div class="row justify-content-between">
-            <div class="col-md-8 name">{{ community.name }}</div>
-            <div class="col-md-4 community-btns">
-                <div class="glyphicon glyphicon-eye-open" :class="{'enabled': community.isShown}" @click="toggleShown()"></div>
-                <div class="glyphicon glyphicon-pushpin" :class="{'enabled': community.isPinned}" @click="togglePinned()"></div>
-                <div class="glyphicon glyphicon-option-vertical" :class="{'enabled': isExpanded}" @click="toggleExpanded()"></div>
-            </div>
+  template: `
+    <div class="community-component">
+      <div class="row justify-content-between">
+        <div class="col-md-8 name">{{ community.name }}</div>
+        <div class="col-md-4 community-btns">
+          <div class="glyphicon glyphicon-eye-open" :class="{'enabled': community.isShown}" @click="toggleShown()"></div>
+          <div class="glyphicon glyphicon-pushpin" :class="{'enabled': community.isPinned}" @click="togglePinned()"></div>
+          <div class="glyphicon glyphicon-option-vertical" :class="{'enabled': isExpanded}" @click="toggleExpanded()"></div>
         </div>
-        <div class="row drawer" v-if="isExpanded">
-            <div class="description">{{ community.description }}</div>
-        </div>
+      </div>
+      <div class="row drawer" v-if="isExpanded">
+        <div class="description">{{ community.description }}</div>
+      </div>
     </div>`
 });
 

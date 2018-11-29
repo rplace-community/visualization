@@ -86,9 +86,11 @@
           </div>
         </div>
       </div>
-      <timeline-component v-if="loaded"></timeline-component>
-      <div class="lds-circle">
-        <!-- :class="{'hidden': loaded}"> -->
+      <timeline-component
+        v-if="loaded"
+        :communities="displayedCommunities"
+      ></timeline-component>
+      <div class="lds-circle" v-if="!loaded">
         <div class="lds-circle-inner"></div>
         <div class="w3-border">
           <div class="w3-grey" style="height:24px;width:0%"></div>

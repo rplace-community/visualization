@@ -9,7 +9,12 @@ if ("undefined" === typeof window) {
     let resp, error;
     switch (data.command) {
       case "blurImages":
-        if (data.payload && data.payload.images && data.payload.radius) {
+        if (
+          data.payload &&
+          data.payload.images &&
+          data.payload.images.length > 0 &&
+          data.payload.radius
+        ) {
           resp = blurImages(data.payload.images, data.payload.radius);
         }
         break;
@@ -53,12 +58,8 @@ if ("undefined" === typeof window) {
     let res = [arr[0]];
     // for the rest of the items, they are computed with the previous one
     for (var i = 1; i < arr.length; i++) {
-      arr[i].forEach((px, j) => {
-        arr[i][j] = px * k;
-      });
-      const prev = res[i - 1].map(px => px * (1 - k));
       arr[i].forEach((v, j) => {
-        arr[i][j] = v + prev[j];
+        arr[i][j] = arr[i][j] * k + res[i - 1][j] * (1 - k);
       });
       res.push(arr[i]);
     }
@@ -86,7 +87,9 @@ if ("undefined" === typeof window) {
   }
 
   function blurImages(images, radius) {
-    images.forEach(im => blurMonoFloat32(im, 200, 200, radius));
+    images
+      .filter(im => im !== undefined)
+      .forEach(im => blurMonoFloat32(im, 200, 200, radius));
     return images;
   }
 

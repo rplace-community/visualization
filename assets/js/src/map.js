@@ -32,27 +32,13 @@ let plane_images;
 let back_images;
 let interpolator_images;
 
-function preload() {
-  let loaded_backs = 0;
-  let launched = false;
-
+function mapPreload(observer) {
   const urls = Array.from(Array(tot_images * 2 - 1).keys()).map(
     i => `assets/img/frames/${i}.png`
   );
 
-  fetchImages(urls, function() {
-    loaded_backs++;
-    let loadingBar = document.getElementsByClassName("w3-grey")[0];
-    loadingBar.style.width = `${(50 * loaded_backs) / (tot_images + 1)}%`;
-  }).then(images => {
+  return fetchImages(urls, observer).then(images => {
     back_images = images;
-    launched = true;
-    let loading = document.getElementsByClassName("lds-circle")[0];
-    loading.style.display = "none";
-
-    const timeline = document.getElementById("timeline");
-    timeline.style.display = null;
-
     init();
     animate();
   });
@@ -184,7 +170,7 @@ function animate() {
   }
 
   if (index_plane % (steps / 2) == 0) {
-    index = (2 * index_plane) / steps;
+    let index = (2 * index_plane) / steps;
     let textr = new THREE.CanvasTexture(back_images[index]); //THREE.ImageUtils.loadTexture( src );
     textr.minFilter = THREE.NearestFilter;
     textr.magFilter = THREE.NearestFilter;
