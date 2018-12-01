@@ -9,6 +9,7 @@ var appState = {
     }
   },
   communities: communitiesState,
+  displayedCommunities_: [],
   currentLevelmaps: [],
   smoothing: 1,
   window: 1,
@@ -19,16 +20,30 @@ var appState = {
 var vm = new Vue({
   el: "#app",
   data: appState,
-  methods: {},
+  methods: {
+    filterCommunities: function() {
+      this.communities.communities.forEach(c => (c.isVisible = false));
+      const comm = communitiesSearch(this.communities.search);
+      comm.forEach(c => {
+        c.isVisible = true;
+      });
+    },
+    dragStart: function(event) {
+      const community = this.communities.communities[event.oldIndex];
+      if (!community.levelmaps.isLoaded) {
+        fetchLevelmaps(community.id).then(([index, levelmaps]) => {
+          community.levelmaps.index = index;
+          community.levelmaps.blobs = levelmaps;
+          community.levelmaps.isLoaded = true;
+          this.$emit("update:community");
+        });
+      }
+    }
+  },
   /******** computed properties ********/
   computed: {
-    filteredCommunities: function() {
-      return communitiesSearch(this.communities.search);
-    },
     displayedCommunities: function() {
-      let res = this.communities.communities.filter(
-        c => c.isShown && c.levelmaps.isLoaded
-      );
+      let res = this.displayedCommunities_;
       if (res.length == 0) {
         res = [this.globalCommunity];
       }

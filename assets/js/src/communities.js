@@ -18,7 +18,13 @@ function communitiesInit() {
         .map(community => {
           community.isShown = false;
           community.isPinned = false;
-          community.levelmaps = { index: {}, blobs: [], isLoaded: false };
+          community.isVisible = true;
+          community.levelmaps = {
+            index: {},
+            blobs: [],
+            isLoaded: false
+          };
+          community.color = `hsl(${Math.random() * 360},100%,50%)`;
           return community;
         })
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -48,38 +54,15 @@ Vue.component("community-component", {
     };
   },
   methods: {
-    toggleShown: function() {
-      const community = this.community;
-      if (!community.isShown && !community.levelmaps.isLoaded) {
-        fetchLevelmaps(community.id).then(([index, levelmaps]) => {
-          community.levelmaps.index = index;
-          community.levelmaps.blobs = levelmaps;
-          community.levelmaps.isLoaded = true;
-          this.$emit("update:community");
-        });
-        community.isShown = true;
-      } else {
-        community.isShown = !community.isShown;
-        this.$emit("update:community");
-      }
-    },
-    togglePinned: function() {
-      this.community.isPinned = !this.community.isPinned;
-      this.$emit("update:community");
-    },
     toggleExpanded: function() {
       this.isExpanded = !this.isExpanded;
     }
   },
   template: `
-    <div class="community-component">
+    <div class="community-component" :style="{ color: community.color }">
       <div class="row justify-content-between">
-        <div class="col-md-8 name">{{ community.name }}</div>
-        <div class="col-md-4 community-btns">
-          <div class="glyphicon glyphicon-eye-open" :class="{'enabled': community.isShown}" @click="toggleShown()"></div>
-          <div class="glyphicon glyphicon-pushpin" :class="{'enabled': community.isPinned}" @click="togglePinned()"></div>
-          <div class="glyphicon glyphicon-option-vertical" :class="{'enabled': isExpanded}" @click="toggleExpanded()"></div>
-        </div>
+        <i class="handle col-md-1 fas fa-grip-vertical"></i>
+        <div class="col-md-11 name">{{ community.name }}</div>
       </div>
       <div class="row drawer" v-if="isExpanded">
         <div class="description">{{ community.description }}</div>

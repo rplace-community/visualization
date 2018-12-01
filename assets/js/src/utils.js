@@ -59,7 +59,7 @@ if ("undefined" === typeof window) {
     // for the rest of the items, they are computed with the previous one
     for (var i = 1; i < arr.length; i++) {
       arr[i].forEach((v, j) => {
-        arr[i][j] = arr[i][j] * k + res[i - 1][j] * (1 - k);
+        arr[i][j] = arr[i][j] + res[i - 1][j] * (1 - k);
       });
       res.push(arr[i]);
     }

@@ -26,6 +26,8 @@
       media="all"
     />
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.17.0/vuedraggable.min.js"></script>
     <script src="assets/js/lib/three.js"></script>
     <script src="assets/js/lib/WebGL.js"></script>
     <script src="assets/js/lib/MapControls.js"></script>
@@ -44,16 +46,40 @@
             v-model="communities.search"
             placeholder="Search community..."
             class="pull-left text-search"
+            @keydown="filterCommunities"
           />
-          <div
-            id="filtered-communities"
-            v-if="filteredCommunities.length>0 && communities.isVisible"
-          >
-            <community-component
-              v-for="community in filteredCommunities"
-              :key="community.id"
-              v-bind:community.sync="community"
-            ></community-component>
+          <div class="drag">
+            <div
+              id="filtered-communities"
+              v-if="communities.communities.length>0 && communities.isVisible"
+            >
+              <draggable
+                class="dragArea"
+                :list="displayedCommunities_"
+                :options="{draggable:'.item', group:'community'}"
+              >
+                <community-component
+                  v-for="community in displayedCommunities_"
+                  :key="community.id"
+                  v-bind:community.sync="community"
+                  class="item"
+                ></community-component>
+              </draggable>
+              <draggable
+                class="dragArea"
+                v-model="communities.communities"
+                :options="{draggable:'.item', pull:'clone', put:'false', group:'community'}"
+                @start="dragStart"
+              >
+                <community-component
+                  v-for="community in communities.communities"
+                  :key="community.id"
+                  v-bind:community.sync="community"
+                  class="item"
+                  :class="{'hidden':!community.isVisible}"
+                ></community-component>
+              </draggable>
+            </div>
           </div>
           <!-- COMMUNITIES END -->
           <div id="settings">
