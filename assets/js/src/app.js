@@ -43,7 +43,7 @@ var vm = new Vue({
   /******** computed properties ********/
   computed: {
     displayedCommunities: function() {
-      let res = this.displayedCommunities_;
+      let res = this.displayedCommunities_.filter(c => c.levelmaps.isLoaded);
       if (res.length == 0) {
         res = [this.globalCommunity];
       }

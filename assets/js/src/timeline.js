@@ -8,19 +8,21 @@ Vue.component("timeline-component", {
   },
   computed: {
     paths: function() {
-      const res = this.communities.map(function(c) {
-        let r = {};
-        if (c.levelmaps.isLoaded) {
-          r.data = c.levelmaps.index.map(d => ({
-            timestamp: new Date(now.getTime() + d.ts * 1000),
-            counts: d.counts
-          }));
-          r.color = c.color;
-        } else {
-          r = [];
-        }
-        return r;
-      });
+      const res = this.communities
+        .map(function(c) {
+          let r = {};
+          if (c.levelmaps.isLoaded) {
+            r.data = c.levelmaps.index.map(d => ({
+              timestamp: new Date(now.getTime() + d.ts * 1000),
+              counts: d.counts
+            }));
+            r.color = c.color;
+          } else {
+            r = [];
+          }
+          return r;
+        })
+        .reverse();
 
       for (const j of res[0].data.keys()) {
         let counts0 = 0;
