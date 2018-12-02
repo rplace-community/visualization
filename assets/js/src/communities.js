@@ -61,8 +61,7 @@ Vue.component("community-component", {
   template: `
     <div class="community-component" :style="{ color: community.color }">
       <div class="row justify-content-between">
-        <i class="handle col-md-1 fas fa-grip-vertical"></i>
-        <div class="col-md-11 name">{{ community.name }}</div>
+        <div class="col-md-12 name">{{ community.name }}</div>
       </div>
       <div class="row drawer" v-if="isExpanded">
         <div class="description">{{ community.description }}</div>
