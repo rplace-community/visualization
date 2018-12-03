@@ -1,8 +1,12 @@
-let now = new Date();
+const startTs = 1490979533000;
+const startDate = new Date(startTs);
 
 Vue.component("timeline-component", {
   template: `<div id="timeline-container"><svg id="timeline"></svg></div>`,
   props: ["communities", "time", "window"],
+  data: function() {
+    return { brush: { t0: startDate, t1: startDate } };
+  },
   mounted: function() {
     this.drawSVG();
   },
@@ -13,7 +17,7 @@ Vue.component("timeline-component", {
           let r = {};
           if (c.levelmaps.isLoaded) {
             r.data = c.levelmaps.index.map(d => ({
-              timestamp: new Date(now.getTime() + d.ts * 1000),
+              timestamp: new Date(startTs + d.ts * 1000),
               counts: d.counts
             }));
             r.color = c.color;
@@ -71,8 +75,9 @@ Vue.component("timeline-component", {
 
       const brush = d3
         .brushX()
-        .extent([[0, 0], [width, height]])
-        .on("brush end", vm.brushed);
+        //.extent([[now, x(new Date(now.getTime() + 30 * 60 * 1000))]])
+        .on("end", vm.brushEnded(x))
+        .on("brush", vm.brushing(x));
 
       const area = d3
         .area()
@@ -95,7 +100,7 @@ Vue.component("timeline-component", {
         0,
         d3.max(vm.paths[vm.paths.length - 1].data, d => d.counts[1])
       ];
-      console.log(`xdom=${xdom}, ydom=${ydom}`);
+
       x.domain(xdom);
       y.domain(ydom);
 
@@ -121,10 +126,58 @@ Vue.component("timeline-component", {
         .append("g")
         .attr("class", "brush")
         .call(brush)
-        .call(brush.move, [now, new Date(now.getTime() + 15 * 60000)].map(x));
+        .call(brush.move, [startDate, new Date(startTs + 30 * 60000)].map(x));
+
+      d3.selectAll(".brush .handle--e").remove();
     },
-    brushed: function() {
-      console.log("brushed!");
+    brushing: function(x) {
+      const vm = this;
+      return function() {
+        const section = 30 * 60 * 1000;
+        let t0, t1;
+        if (!d3.event.sourceEvent) return;
+
+        [t0, t1] = d3.event.selection.map(x.invert);
+        if (t1.getTime() !== vm.brush.t1.getTime()) {
+          vm.brush.t0 = t0;
+          vm.brush.t1 = t1;
+          vm.$emit("update:time", t1); // time seek
+        }
+      };
+    },
+    brushEnded: function(x) {
+      const vm = this;
+      return function() {
+        const section = 30 * 60 * 1000;
+        if (!d3.event.selection) {
+          t1 = x.invert(d3.event.sourceEvent.layerX);
+          t0 = new Date(t1.getTime() - section);
+          d3.select(this)
+            .transition()
+            .call(d3.event.target.move, [t0, t1].map(x));
+
+          if (t1.getTime() !== vm.brush.t1.getTime()) {
+            vm.$emit("update:time", t1); // time seek
+          }
+          if (t1 - t0 !== vm.brush.t1 - vm.brush.t0) {
+            vm.$emit("update:window", t1); // time seek
+          }
+        } else {
+          [t0, t1] = d3.event.selection.map(x.invert);
+
+          const diff = t1 - t0 !== vm.brush.t1 - vm.brush.t0;
+          if (diff && (t1 - t0) % section != 0) {
+            t0 = new Date(t1 - Math.ceil((t1 - t0) / section) * section);
+            d3.select(this)
+              .transition()
+              .call(d3.event.target.move, [t0, t1].map(x));
+
+            vm.$emit("update:window", [t0, t1]);
+          }
+        }
+        vm.brush.t0 = t0;
+        vm.brush.t1 = t1;
+      };
     }
   }
 });

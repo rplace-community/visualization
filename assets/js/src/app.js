@@ -8,11 +8,12 @@ var appState = {
       isLoaded: false
     }
   },
+  time: new Date(),
+  window: 0,
   communities: communitiesState,
   displayedCommunities_: [],
   currentLevelmaps: [],
   smoothing: 1,
-  window: 1,
   ema: true
 };
 
@@ -58,7 +59,12 @@ var vm = new Vue({
   },
   /******** watchers ********/
   watch: {
-    timelineTime: console.log("seek"),
+    time: function() {
+      console.log("Time seek: " + this.time);
+    },
+    window: function() {
+      console.log("Brushed window: " + this.window);
+    },
     recomputeLevelmap: function(unused) {
       let arr = this.displayedCommunities;
       if (!arr || arr.length < 1) {
