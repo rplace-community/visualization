@@ -106,8 +106,8 @@
       <timeline-component
         v-if="loaded"
         :communities="displayedCommunities"
-        :time.sync="time"
-        :window.sync="window"
+        v-on:time-seek="timeSeek"
+        v-on:window-updated="windowUpdated"
       ></timeline-component>
       <div class="lds-circle" v-if="!loaded">
         <div class="lds-circle-inner"></div>

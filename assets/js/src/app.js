@@ -9,7 +9,7 @@ var appState = {
     }
   },
   time: startDate,
-  window: [new Date(startTs - windowStep), startDate],
+  window: windowStep,
   communities: communitiesState,
   displayedCommunities_: [],
   currentLevelmaps: [],
@@ -39,6 +39,14 @@ var vm = new Vue({
           this.$emit("update:community");
         });
       }
+    },
+    timeSeek: function(time) {
+      this.time = time;
+      console.log("Time seek: " + this.time);
+    },
+    windowUpdated: function(window) {
+      this.window = window;
+      console.log("Brushed window: " + this.window);
     }
   },
   /******** computed properties ********/
@@ -59,12 +67,6 @@ var vm = new Vue({
   },
   /******** watchers ********/
   watch: {
-    time: function() {
-      //console.log("Time seek: " + this.time);
-    },
-    // window: function() {
-    //   console.log("Brushed window: " + this.window);
-    // },
     recomputeLevelmap: function(unused) {
       let arr = this.displayedCommunities;
       if (!arr || arr.length < 1) {
@@ -76,9 +78,7 @@ var vm = new Vue({
         arr = arr.map(c => c.levelmaps.blobs);
       }
       if (arr && arr.length > 0) {
-        const window = Math.floor(
-          (this.window[1] - this.window[0]) / windowStep
-        );
+        const window = Math.floor(this.window / windowStep);
         cmdWorker
           .send("mergeLevelmaps", {
             images: arr,

@@ -13,15 +13,17 @@ Vue.component("timeline-component", {
         </button> 
       </div>
     </div>`,
-  props: ["communities", "time", "window"],
+  props: ["communities"],
   data: function() {
     return {
+      time: startDate,
+      window: windowStep,
       isPlaying: true,
       timer: null,
-      speed: 4320, // rplace seconds per true second
+      speed: 4320,
       brush: {
         brush: null,
-        t0: startDate,
+        t0: new Date(startTs - windowStep),
         t1: startDate,
         wasPlaying: false
       },
@@ -67,8 +69,11 @@ Vue.component("timeline-component", {
     },
     time: function() {
       this.brush.t1 = this.time;
-      this.brush.t0 = new Date(this.time - (this.window[1] - this.window[0]));
+      this.brush.t0 = new Date(this.brush.t1.getTime() - this.window);
       this.drawBrush();
+    },
+    window: function() {
+      console.error("window updated from vuejs");
     }
   },
   methods: {
@@ -87,13 +92,14 @@ Vue.component("timeline-component", {
           }
           const newTime = vm.time.getTime() + vm.speed * interval;
           if (newTime > endTs) {
-            vm.$emit("update:time", startDate);
+            vm.$emit("time-seek", startDate);
           } else {
-            vm.$emit("update:time", new Date(newTime));
+            vm.$emit("time-seek", new Date(newTime));
           }
         }, interval);
       }
     },
+    /********** timeline initialization **********/
     initTimeline: function() {
       const vm = this;
       const container = d3.select("#timeline-container");
@@ -117,7 +123,6 @@ Vue.component("timeline-component", {
 
       const brush = d3
         .brushX()
-        //.extent([[now, x(new Date(now.getTime() + 30 * 60 * 1000))]])
         .on("end", vm.brushEnded(x))
         .on("brush", vm.brushing(x));
       this.brush.brush = brush;
@@ -144,7 +149,9 @@ Vue.component("timeline-component", {
         .call(xAxis);
 
       this.drawAreas();
+      this.drawBrush();
     },
+    /********** draw areas **********/
     drawAreas: function() {
       const vm = this;
 
@@ -152,7 +159,7 @@ Vue.component("timeline-component", {
       console.log("re-drawing");
       container.selectAll(".area").remove();
 
-      const xdom = d3.extent(vm.paths[0].data, d => d.timestamp);
+      const xdom = [startDate, endDate];
       const ydom = [
         0,
         d3.max(vm.paths[vm.paths.length - 1].data, d => d.counts[1])
@@ -173,10 +180,16 @@ Vue.component("timeline-component", {
             return c.color;
           });
       });
-      vm.drawBrush();
     },
+    /********** update the brush **********/
     drawBrush: function() {
       const vm = this;
+      console.debug(
+        "drawBrush.in",
+        vm.time.toLocaleString(),
+        vm.window,
+        vm.brush
+      );
       d3.select("#timeline-container")
         .selectAll(".brush")
         .remove();
@@ -188,7 +201,7 @@ Vue.component("timeline-component", {
           console.log("brush mouse down");
           if (vm.isPlaying) {
             vm.brush.wasPlaying = true;
-            vm.togglePlayPause();
+            //!vm.togglePlayPause();
           }
         })
         .on("mouseup", function() {
@@ -202,29 +215,50 @@ Vue.component("timeline-component", {
         .call(brush.move, [this.brush.t0, this.brush.t1].map(this.x));
 
       d3.selectAll(".brush .handle--e").remove();
+      console.debug(
+        "drawBrush.out",
+        vm.time.toLocaleString(),
+        vm.window,
+        vm.brush
+      );
     },
     brushing: function(x) {
       const vm = this;
       return function() {
-        // if (!vm.brush.wasPlaying && vm.isPlaying) {
-        //   vm.brush.wasPlaying = true;
-        //   vm.togglePlayPause();
-        // }
         let t0, t1;
         if (!d3.event.sourceEvent) return;
+
+        console.debug(
+          "brushing.in",
+          vm.time.toLocaleString(),
+          vm.window,
+          vm.brush
+        );
 
         [t0, t1] = d3.event.selection.map(x.invert);
         if (t1.getTime() !== vm.brush.t1.getTime()) {
           vm.brush.t0 = t0;
           vm.brush.t1 = t1;
-          vm.$emit("update:time", t1); // time seek
+          vm.$emit("time-seek", t1); // time seek
         }
+        console.debug(
+          "brushing.out",
+          vm.time.toLocaleString(),
+          vm.window,
+          vm.brush
+        );
       };
     },
     brushEnded: function(x) {
       const vm = this;
-      let t0, t1;
       return function() {
+        console.debug(
+          "brushEnd.in",
+          vm.time.toLocaleString(),
+          vm.window,
+          vm.brush
+        );
+        let t0, t1;
         if (!d3.event.selection) {
           if (d3.event.sourceEvent) {
             t1 = x.invert(d3.event.sourceEvent.layerX);
@@ -234,34 +268,32 @@ Vue.component("timeline-component", {
               .call(d3.event.target.move, [t0, t1].map(x));
 
             if (t1.getTime() !== vm.brush.t1.getTime()) {
-              vm.$emit("update:time", t1); // time seek
+              vm.$emit("time-seek", t1); // time seek
             }
             if (t1 - t0 !== vm.brush.t1 - vm.brush.t0) {
-              vm.$emit("update:window", [t0, t1]);
+              vm.$emit("window-updated", t1 - t0); // time seek
             }
           }
         } else {
           [t0, t1] = d3.event.selection.map(x.invert);
 
           const diff = t1 - t0 !== vm.brush.t1 - vm.brush.t0;
-          if (diff && (t1 - t0) % windowStep != 0) {
-            t0 = new Date(t1 - Math.ceil((t1 - t0) / windowStep) * windowStep);
-            d3.select(this)
-              .transition()
-              .call(d3.event.target.move, [t0, t1].map(x));
-
-            vm.$emit("update:window", [t0, t1]);
+          if (diff) {
+            console.error("before emit");
+            vm.$emit("window-updated", t1 - t0);
           }
         }
-        if (t0 && t1) {
+        if (t0 !== undefined && t1 !== undefined) {
           vm.brush.t0 = t0;
           vm.brush.t1 = t1;
+          console.error("after update brush vars");
         }
-
-        if (vm.brush.wasPlaying == vm.isPlaying) {
-          vm.togglePlayPause();
-          vm.brush.wasPlaying = vm.isPlaying;
-        }
+        console.debug(
+          "brushEnd.out",
+          vm.time.toLocaleString(),
+          vm.window,
+          vm.brush
+        );
       };
     }
   }
