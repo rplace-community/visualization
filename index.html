@@ -43,7 +43,8 @@
         <button class="showhide" v-on:click="toggleSidebar()">
           <i class="fa" v-bind:class="{ 'fa-angle-left': sidebarHidden, 'fa-angle-right': !sidebarHidden }"></i></button>
 
-        <div v-bind:class="{ sidebarHide: sidebarHidden }">
+        <transition name="fade">
+        <div v-if="!sidebarHidden" >
           <div class="blur"></div>
           <div>
             <!-- COMMUNITIES -->
@@ -115,6 +116,7 @@
             </div>
           </div>
         </div>
+        </transition>
       </div>
       <timeline-component
         v-if="loaded"

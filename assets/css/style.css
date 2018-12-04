@@ -10,18 +10,18 @@ body {
 }
 
 .showhide {
-  border-radius: 15px; 
+  border-radius: 50%; 
   padding: 5px;
   position: absolute;
   left: -35px;
   top: 50%;
   border: none;
   font-size: 16px;
-  margin: 4px 2px;
   display: inline-block;
   text-decoration: none;
   text-align: center;
   width: 30px;
+  height: 30px;
   outline: none;
 }
 
@@ -150,14 +150,22 @@ svg {
   right: 0%;
   width: 20%;
   margin-right: 5px;
+  -webkit-transition: width .5s; /* Safari */
+  transition: width .5s;
 }
+
 
 .sidebarReduce {
   width: 0;
+  -webkit-transition: width .5s; /* Safari */
+  transition: width .5s;
 }
 
-.sidebarHide {
-  display: none;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 
 /* ------- ATLAS --------- */
