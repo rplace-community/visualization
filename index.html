@@ -46,26 +46,29 @@
           <input
             v-model="communities.search"
             placeholder="Search community..."
-            class="pull-left text-search"
             @keydown="filterCommunities"
           />
           <div class="drag">
+
+            <draggable
+              class="dragArea"
+              :list="displayedCommunities_"
+              :options="{draggable:'.item', group:'community', handle:'.handle'}"
+            >
+              <community-component
+                v-for="community in displayedCommunities_"
+                :key="community.id"
+                v-bind:community.sync="community"
+                class="item"
+              ></community-component>
+            </draggable>
+
+
             <div
               id="filtered-communities"
               v-if="communities.communities.length>0 && communities.isVisible"
             >
-              <draggable
-                class="dragArea"
-                :list="displayedCommunities_"
-                :options="{draggable:'.item', group:'community', handle:'.handle'}"
-              >
-                <community-component
-                  v-for="community in displayedCommunities_"
-                  :key="community.id"
-                  v-bind:community.sync="community"
-                  class="item"
-                ></community-component>
-              </draggable>
+              
               <draggable
                 class="dragArea"
                 v-model="communities.communities"
@@ -112,10 +115,10 @@
         :time.sync="time"
         :window.sync="window"
       ></timeline-component>
-      <div class="time-display" style="position: absolute;left: 1%; top:1%;" v-if="loaded"> 
+      <div class="time-display" v-if="loaded"> 
         <label>{{ time.toLocaleString() }}</label>
       </div>
-      <button class="reset-map-position" style="position: absolute;left: 1%; top:5%;" v-if="loaded" v-on:click="centerMap()"> 
+      <button class="reset-map-position" v-if="loaded" v-on:click="centerMap()"> 
         <label>Reset view</label>
       </button>
       <div class="lds-circle" v-if="!loaded">

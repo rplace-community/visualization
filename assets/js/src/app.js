@@ -64,7 +64,7 @@ var vm = new Vue({
   /******** watchers ********/
   watch: {
     time: function() {
-      //console.log("Time seek: " + this.time);
+      //console.log("Time seek: " + (this.time.getTime() - startTs));
       seekTime(this.time.getTime() - startTs);
     },
 
@@ -113,6 +113,8 @@ var vm = new Vue({
   },
   /******** lifecycle events ********/
   created: function() {
+
+    //console.log(endTs - startTs + 2 * windowStep);
     let loaded_backs = 0;
     Promise.all([
       communitiesInit(),

@@ -2,6 +2,8 @@ if (WEBGL.isWebGLAvailable() === false) {
   document.body.appendChild(WEBGL.getWebGLErrorMessage());
 }
 
+const TOTAL_TIME = endTs - startTs + 2 * windowStep;
+
 var pause_animation = false;
 
 let camera, controls, scene, renderer;
@@ -9,8 +11,8 @@ let planeGeometry;
 let planeMesh;
 let planeMaterial;
 
-let timeBack = new Time([], endTs - startTs);
-let timeLevels = new Time([], endTs - startTs).setArrayInterpolation();
+let timeBack = new Time([], TOTAL_TIME);
+let timeLevels = new Time([], TOTAL_TIME).setArrayInterpolation();
 
 const tot_images = 145;
 const filterSize = 200;
@@ -142,7 +144,7 @@ function init() {
 
   let bottomCubeGeometry = new THREE.BoxGeometry(1000, 1000, 20);
   bottomCubeGeometry.translate(0, 0, -10.01);
-  let bottomCubeMaterial = new THREE.MeshBasicMaterial({ color: 0xeeeeee });
+  let bottomCubeMaterial = new THREE.MeshBasicMaterial({ color: 0xb4b4b4 });
   let bottomCube = new THREE.Mesh(bottomCubeGeometry, bottomCubeMaterial);
   bottomCube.rotateX(-Math.PI / 2);
   scene.add(bottomCube);

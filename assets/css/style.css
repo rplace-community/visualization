@@ -13,6 +13,18 @@ body {
   display: none;
 }
 
+.time-display {
+  position: absolute;
+  left: 1%;
+  top: 1%;
+}
+
+.reset-map-position {
+  position: absolute;
+  left: 1%;
+  top: 5%;
+}
+
 .lds-circle {
   display: inline-block;
   transform: translateZ(1px);
