@@ -14,7 +14,8 @@ var appState = {
   displayedCommunities_: [],
   currentLevelmaps: [],
   smoothing: 1,
-  ema: true
+  ema: true,
+  drawSpikes: false,
 };
 
 /******* Vue component *******/
@@ -62,6 +63,10 @@ var vm = new Vue({
     time: function() {
       //console.log("Time seek: " + this.time);
       seekTime(this.time.getTime());
+    },
+
+    drawSpikes: function() {
+      mapSetDrawingMethod(this.drawSpikes);
     },
     // window: function() {
     //   console.log("Brushed window: " + this.window);

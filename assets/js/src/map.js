@@ -6,9 +6,8 @@ var pause_animation = false;
 
 let camera, controls, scene, renderer;
 let planeGeometry;
+let planeMesh;
 let planeMaterial;
-let index_plane = 0;
-
 
 let timeBack = new Time([], endTs - startTs);
 let timeLevels = new Time([], endTs - startTs).setArrayInterpolation();
@@ -21,6 +20,22 @@ let plane_images;
 let back_images;
 let interpolator_images;
 
+let drawSpikes = false;
+
+function mapSetDrawingMethod(spikes) {
+
+  if(planeGeometry) {
+    planeGeometry.dispose();
+  }
+
+  drawSpikes = spikes;
+  if(drawSpikes) {
+    planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 400, 400);
+  } else {
+    planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 200, 200);
+  }
+  planeMesh.geometry = planeGeometry;
+}
 
 function mapSetBackgrounds(arr) {
   back_images = arr;
@@ -42,7 +57,12 @@ function seekTime(t) {
   planeMaterial.map = textr;
   planeMaterial.needsUpdate = true;
 
-  generatePlaneHeightsBuffered();
+  if (drawSpikes) {
+    generatePlaneHeightsSpikesBuffered();
+  } else {
+    generatePlaneHeightsBuffered();
+  }
+  
 }
 
 
@@ -94,14 +114,15 @@ function init() {
 
   // world ***********************************************************************************************************
 
-  planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 200, 200);
   planeMaterial = new THREE.MeshPhongMaterial({
     color: 0xffffff,
     flatShading: true,
     specular: 0x0
   });
 
-  let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+  planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+  mapSetDrawingMethod(this.drawSpikes);
+
   planeMesh.rotateX(-Math.PI / 2);
   planeMesh.matrixAutoUpdate = true;
   planeMesh.updateMatrix();
@@ -151,12 +172,35 @@ function generatePlaneHeightsBuffered() {
     let positions = planeGeometry.attributes.position.array;
     let arr = timeLevels.get();
 
+    console.log(positions.length);
+
     for (let i = 0; i < filterSize; i++) {
       for (let j = 0; j < filterSize; j++) {
         positions[(i + j * (filterSize + 1)) * 3 + 2] = arr[i + j * filterSize];
       }
     }
+    planeGeometry.attributes.position.needsUpdate = true;
+  }
+}
 
+function pow(x) {
+  return Math.pow(x, 1.5);
+}
+function generatePlaneHeightsSpikesBuffered() {
+  if(planeGeometry) {
+    let positions = planeGeometry.attributes.position.array;
+    let arr = timeLevels.get();
+
+    console.log(positions.length);
+
+    const twoFSP1 = 2 * filterSize + 1;
+    for(let i = 0; i < filterSize; i++) {
+      for(let j = 0; j < filterSize; j++) {
+        const iIm = i * 2 + 1;
+        const jIm = j * 2 + 1;
+        positions[(iIm + jIm * twoFSP1)*3 + 2] = pow(arr[i + j * filterSize]/3);
+      }
+    }
     planeGeometry.attributes.position.needsUpdate = true;
   }
 }
