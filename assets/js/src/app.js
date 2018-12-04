@@ -40,6 +40,9 @@ var vm = new Vue({
           this.$emit("update:community");
         });
       }
+    },
+    centerMap: function(event) {
+      mapResetPosition();
     }
   },
   /******** computed properties ********/

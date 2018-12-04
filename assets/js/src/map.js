@@ -32,9 +32,10 @@ function mapSetDrawingMethod(spikes) {
   if(drawSpikes) {
     planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 400, 400);
   } else {
-    planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 200, 200);
+    planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 201, 201);
   }
   planeMesh.geometry = planeGeometry;
+  drawLevelMaps();
 }
 
 function mapSetBackgrounds(arr) {
@@ -47,22 +48,32 @@ function mapSetLevelmaps(arr) {
   timeLevels.setArray(plane_images);
 }
 
+function mapResetPosition() {
+  controls.reset();
+}
+ 
 function seekTime(t) {
   timeBack.seekTime(t);
   timeLevels.seekTime(t);
+  
+  drawBackground();
+  drawLevelMaps();
+}
 
+function drawBackground() {
   let textr = new THREE.CanvasTexture(timeBack.get());
   textr.minFilter = THREE.NearestFilter;
   textr.magFilter = THREE.NearestFilter;
   planeMaterial.map = textr;
   planeMaterial.needsUpdate = true;
+}
 
+function drawLevelMaps() {
   if (drawSpikes) {
     generatePlaneHeightsSpikesBuffered();
   } else {
     generatePlaneHeightsBuffered();
   }
-  
 }
 
 
@@ -117,7 +128,8 @@ function init() {
   planeMaterial = new THREE.MeshPhongMaterial({
     color: 0xffffff,
     flatShading: true,
-    specular: 0x0
+    specular: 0x0,
+    shininess: 0,
   });
 
   planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -174,7 +186,9 @@ function generatePlaneHeightsBuffered() {
 
     for (let i = 0; i < filterSize; i++) {
       for (let j = 0; j < filterSize; j++) {
-        positions[(i + j * (filterSize + 1)) * 3 + 2] = arr[i + j * filterSize];
+        const iIm = i + 1;
+        const jIm = j + 1;
+        positions[(iIm + jIm * (filterSize + 2)) * 3 + 2] = arr[i + j * filterSize];
       }
     }
     planeGeometry.attributes.position.needsUpdate = true;
