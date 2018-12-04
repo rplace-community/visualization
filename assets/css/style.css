@@ -37,7 +37,7 @@ body {
 
 .fullscreen-position {
   position: absolute;
-  width: 60px;
+  width: 70px;
   height: 50px;
   left: 1%;
   bottom: 10px;
@@ -99,6 +99,12 @@ body {
 .w3-border {
   border: 1px solid #ccc !important;
 }
+
+.w3-orange {
+  color: #fff !important;
+  background-color: #ff5722 !important;
+}
+
 .w3-grey,
 .w3-hover-grey:hover,
 .w3-gray,
