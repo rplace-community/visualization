@@ -155,7 +155,7 @@ var vm = new Vue({
       mapPreload(() => {
         loaded_backs++;
         let loadingBar = document.getElementsByClassName("w3-grey")[0];
-        loadingBar.style.width = `${(50 * loaded_backs) / (tot_images + 1)}%`;
+        loadingBar.style.width = `${(50 * loaded_backs) / (TOT_IMAGES + 1)}%`;
       })
     ]).then(() => {
       console.log("Visualization loaded!");

@@ -3,8 +3,11 @@ if (WEBGL.isWebGLAvailable() === false) {
 }
 
 const TOTAL_TIME = endTs - startTs + 2 * windowStep;
+const FILTER_SIZE = 200;
+const PLANE_SIZE = 1000;
+const TOT_IMAGES = 145;
 
-var pause_animation = false;
+let drawSpikes = false;
 
 let camera, controls, scene, renderer;
 let planeGeometry;
@@ -14,15 +17,9 @@ let planeMaterial;
 let timeBack = new Time([], TOTAL_TIME);
 let timeLevels = new Time([], TOTAL_TIME).setArrayInterpolation();
 
-const tot_images = 145;
-const filterSize = 200;
-const steps = 16;
-
 let plane_images;
 let back_images;
 let interpolator_images;
-
-let drawSpikes = false;
 
 function mapSetDrawingMethod(spikes) {
 
@@ -32,9 +29,10 @@ function mapSetDrawingMethod(spikes) {
 
   drawSpikes = spikes;
   if(drawSpikes) {
-    planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 400, 400);
+    planeGeometry = new THREE.PlaneBufferGeometry(PLANE_SIZE, PLANE_SIZE, 2*FILTER_SIZE, 2*FILTER_SIZE);
   } else {
-    planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 201, 201);
+    //To have 202*202 points, to work with 200*200 and leave borders
+    planeGeometry = new THREE.PlaneBufferGeometry(PLANE_SIZE, PLANE_SIZE, FILTER_SIZE + 1, FILTER_SIZE + 1); 
   }
   planeMesh.geometry = planeGeometry;
   drawLevelMaps();
@@ -55,11 +53,13 @@ function mapResetPosition() {
 }
  
 function seekTime(t) {
-  timeBack.seekTime(t);
-  timeLevels.seekTime(t);
-  
-  drawBackground();
-  drawLevelMaps();
+  if(timeBack.hasData() && timeLevels.hasData()) {
+    timeBack.seekTime(t);
+    timeLevels.seekTime(t);
+    
+    drawBackground();
+    drawLevelMaps();
+  }
 }
 
 function drawBackground() {
@@ -80,7 +80,10 @@ function drawLevelMaps() {
 
 
 function mapPreload(observer) {
-  const urls = Array.from(Array(tot_images * 2 - 1).keys()).map(
+
+  
+
+  const urls = Array.from(Array(TOT_IMAGES * 2 - 1).keys()).map(
     i => `assets/img/frames/${i}.png`
   );
 
@@ -135,15 +138,15 @@ function init() {
   });
 
   planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-  mapSetDrawingMethod(this.drawSpikes);
+  mapSetDrawingMethod(drawSpikes);
 
   planeMesh.rotateX(-Math.PI / 2);
   planeMesh.matrixAutoUpdate = true;
   planeMesh.updateMatrix();
   scene.add(planeMesh);
 
-  let bottomCubeGeometry = new THREE.BoxGeometry(1000, 1000, 20);
-  bottomCubeGeometry.translate(0, 0, -10.01);
+  let bottomCubeGeometry = new THREE.BoxGeometry(PLANE_SIZE, PLANE_SIZE, 20);
+  bottomCubeGeometry.translate(0, 0, -10.01); //Not -10, to avoid z-buffer issues
   let bottomCubeMaterial = new THREE.MeshBasicMaterial({ color: 0xb4b4b4 });
   let bottomCube = new THREE.Mesh(bottomCubeGeometry, bottomCubeMaterial);
   bottomCube.rotateX(-Math.PI / 2);
@@ -173,12 +176,8 @@ function onWindowResize() {
 
 function animate() {
   requestAnimationFrame(animate);
-
   controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
-
   render();
-
-  if (!plane_images) return;
 }
 
 function generatePlaneHeightsBuffered() {
@@ -186,11 +185,11 @@ function generatePlaneHeightsBuffered() {
     let positions = planeGeometry.attributes.position.array;
     let arr = timeLevels.get();
 
-    for (let i = 0; i < filterSize; i++) {
-      for (let j = 0; j < filterSize; j++) {
+    for (let i = 0; i < FILTER_SIZE; i++) {
+      for (let j = 0; j < FILTER_SIZE; j++) {
         const iIm = i + 1;
         const jIm = j + 1;
-        positions[(iIm + jIm * (filterSize + 2)) * 3 + 2] = arr[i + j * filterSize];
+        positions[(iIm + jIm * (FILTER_SIZE + 2)) * 3 + 2] = arr[i + j * FILTER_SIZE];
       }
     }
     planeGeometry.attributes.position.needsUpdate = true;
@@ -205,12 +204,12 @@ function generatePlaneHeightsSpikesBuffered() {
     let positions = planeGeometry.attributes.position.array;
     let arr = timeLevels.get();
 
-    const twoFSP1 = 2 * filterSize + 1;
-    for(let i = 0; i < filterSize; i++) {
-      for(let j = 0; j < filterSize; j++) {
+    const twoFSP1 = 2 * FILTER_SIZE + 1;
+    for(let i = 0; i < FILTER_SIZE; i++) {
+      for(let j = 0; j < FILTER_SIZE; j++) {
         const iIm = i * 2 + 1;
         const jIm = j * 2 + 1;
-        positions[(iIm + jIm * twoFSP1)*3 + 2] = pow(arr[i + j * filterSize]/3);
+        positions[(iIm + jIm * twoFSP1)*3 + 2] = pow(arr[i + j * FILTER_SIZE]/3);
       }
     }
     planeGeometry.attributes.position.needsUpdate = true;

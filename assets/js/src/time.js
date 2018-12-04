@@ -1,12 +1,8 @@
+//Class used to work with array elements throughout time.
+//It will return (with interpolation or not) an element from
+//the internal array, after having specified the animation time we want
+//in seekTime.
 class Time {
-
-  //let _t;
-  //let _partitionIdx;
-  //let _array;
-  //let _totalTime;
-
-  //let _interpolate;
-  //let _interpolateBuffer;
 
   _setInterpolateBuffer(partition, nextPartition) {
     if (this._array.length > partition && this._array.length > nextPartition) {
@@ -83,6 +79,10 @@ class Time {
   get() {
     let interTime = this._getInterTime(this._t);
     return this._interpolateBuffer(interTime); 
+  }
+
+  hasData() {
+    return this._array.length > 0;
   }
 
 };
