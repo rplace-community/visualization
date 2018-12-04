@@ -33,11 +33,13 @@
     <script src="assets/js/lib/OrbitControls.js"></script>
     <script src="assets/js/lib/SubdivisionModifier.js"></script>
     <script src="assets/js/lib/d3.min.js"></script>
+    <script src="assets/js/lib/Fullscreen.js"></script>
     <script src="assets/js/lib/dat.gui.min.js"></script>
 
     <script src="assets/js/src/utils.js"></script>
   </head>
   <body>
+    
     <div id="app">
       <div class="sidebar" v-if="loaded" v-bind:class="{ sidebarReduce: sidebarHidden }">
         <button class="showhide" v-on:click="toggleSidebar()">
@@ -130,6 +132,10 @@
       <button class="reset-map-position" v-if="loaded" v-on:click="centerMap()"> 
         <label>Reset view</label>
       </button>
+      <button class="fullscreen-position" onclick="openFullscreen()"> 
+          <label>Full screen</label>
+      </button>
+      <img class='reddit_logo' src='assets/img/loadingscreen/back_small.png ' height="100%" width="100%" v-if="!loaded" />
       <div class="lds-circle" v-if="!loaded">
         <div class="lds-circle-inner"><img class='reddit_logo' src='assets/img/loadingscreen/rplace_logo.png ' height="42" width="42" /></div>
         <div class="w3-border">

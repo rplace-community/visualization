@@ -35,6 +35,14 @@ body {
   top: 1%;
 }
 
+.fullscreen-position {
+  position: absolute;
+  width: 60px;
+  height: 50px;
+  left: 1%;
+  bottom: 10px;
+}
+
 .reset-map-position {
   position: absolute;
   left: 1%;
