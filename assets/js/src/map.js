@@ -172,8 +172,6 @@ function generatePlaneHeightsBuffered() {
     let positions = planeGeometry.attributes.position.array;
     let arr = timeLevels.get();
 
-    console.log(positions.length);
-
     for (let i = 0; i < filterSize; i++) {
       for (let j = 0; j < filterSize; j++) {
         positions[(i + j * (filterSize + 1)) * 3 + 2] = arr[i + j * filterSize];
@@ -190,8 +188,6 @@ function generatePlaneHeightsSpikesBuffered() {
   if(planeGeometry) {
     let positions = planeGeometry.attributes.position.array;
     let arr = timeLevels.get();
-
-    console.log(positions.length);
 
     const twoFSP1 = 2 * filterSize + 1;
     for(let i = 0; i < filterSize; i++) {

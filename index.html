@@ -112,6 +112,9 @@
         :time.sync="time"
         :window.sync="window"
       ></timeline-component>
+      <div class="time-display" style="position: absolute;left: 1%; top:1%;"> 
+        <label v-if="loaded">{{ time.toLocaleString() }}</label>
+      </div>
       <div class="lds-circle" v-if="!loaded">
         <div class="lds-circle-inner"></div>
         <div class="w3-border">

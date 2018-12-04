@@ -62,7 +62,7 @@ var vm = new Vue({
   watch: {
     time: function() {
       //console.log("Time seek: " + this.time);
-      seekTime(this.time.getTime());
+      seekTime(this.time.getTime() - startTs);
     },
 
     drawSpikes: function() {

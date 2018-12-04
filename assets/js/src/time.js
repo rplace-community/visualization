@@ -43,11 +43,11 @@ class Time {
 
 
 
-  constructor(arr, totalTimeSeconds) {
+  constructor(arr, totalTime) {
     this._t = 0;
     this._partitionIdx = 0;
     this._array = arr;
-    this._totalTime = totalTimeSeconds > 0 ? totalTimeSeconds : 1;
+    this._totalTime = totalTime > 0 ? totalTime : 1;
 
     this._interpolate = (arr1, _) => (t) => arr1;
     this._setInterpolateBuffer(this._partitionIdx, this._nextPartition(this._partitionIdx));
