@@ -29,8 +29,15 @@ class Time {
     const distBetElems = this._totalTime / this._array.length;
     const timeToPartition = timeAsked / distBetElems;
     const partition = Math.floor(timeToPartition);
-    return [partition, this._nextPartition(partition), timeToPartition % 1];
+    return partition;
   };
+
+  _getInterTime(t) {
+    const timeAsked = ((t % this._totalTime) + this._totalTime) % this._totalTime;
+    const distBetElems = this._totalTime / this._array.length;
+    const timeToPartition = timeAsked / distBetElems;
+    return timeToPartition % 1;
+  }
 
 
 
@@ -42,7 +49,7 @@ class Time {
     this._array = arr;
     this._totalTime = totalTimeSeconds > 0 ? totalTimeSeconds : 1;
 
-    this._interpolate = (arr1, arr2) => arr1;
+    this._interpolate = (arr1, _) => (t) => arr1;
     this._setInterpolateBuffer(this._partitionIdx, this._nextPartition(this._partitionIdx));
 
     return this;
@@ -54,7 +61,7 @@ class Time {
   };
 
   setArrayInterpolation() {
-    this._interpolate = d3.interpolateArray(
+    this._interpolate = (arr1, arr2) => d3.interpolateArray(
       arr1,
       arr2
     );
@@ -64,17 +71,17 @@ class Time {
 
   seekTime(t) {
 
-    const [partition, nextPartition, _] = this._getPartition(t);
+    let partition = this._getPartition(t);
     if(partition != this._partitionIdx) {
-      this._setInterpolateBuffer(partition, nextPartition);
       this._partitionIdx = partition;
+      this._setInterpolateBuffer(this._partitionIdx, this._nextPartition(this._partitionIdx));
     }
 
     this._t = t;
   };
 
   get() {
-    const [_, _, interTime] = this._getPartition(this._t);
+    let interTime = this._getInterTime(this._t);
     return this._interpolateBuffer(interTime); 
   }
 

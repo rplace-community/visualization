@@ -2,6 +2,7 @@ if (WEBGL.isWebGLAvailable() === false) {
   document.body.appendChild(WEBGL.getWebGLErrorMessage());
 }
 
+/*
 const map = {
   currentTime: null,
   timeRange: null,
@@ -15,7 +16,7 @@ const map = {
     this.timeRange = dt;
   },
   updateCommunities: function(communities) {}
-};
+};*/
 
 var pause_animation = false;
 
