@@ -61,6 +61,7 @@ var vm = new Vue({
   watch: {
     time: function() {
       console.log("Time seek: " + this.time);
+      
     },
     window: function() {
       console.log("Brushed window: " + this.window);

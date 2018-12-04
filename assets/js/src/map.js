@@ -24,6 +24,10 @@ let planeGeometry;
 let planeMaterial;
 let index_plane = 0;
 
+
+let timeBack = new Time([], endTs - startTs);
+let timeLevels = new Time([], endTs - startTs).setArrayInterpolation();
+
 const tot_images = 145;
 const filterSize = 200;
 const steps = 16;
@@ -32,13 +36,37 @@ let plane_images;
 let back_images;
 let interpolator_images;
 
+
+function mapSetBackgrounds(arr) {
+  back_images = arr;
+  timeBack.setArray(back_images);
+}
+
+function mapSetLevelmaps(arr) {
+  plane_images = arr;
+  timeLevels.setArray(plane_images);
+}
+
+function seekTime(t) {
+  timeBack.seekTime(t);
+  timeLevels.seekTime(t);
+
+  let textr = new THREE.CanvasTexture(timeBack.get());
+  textr.minFilter = THREE.NearestFilter;
+  textr.magFilter = THREE.NearestFilter;
+  planeMaterial.map = textr;
+  planeMaterial.needsUpdate = true;
+}
+
+
 function mapPreload(observer) {
   const urls = Array.from(Array(tot_images * 2 - 1).keys()).map(
     i => `assets/img/frames/${i}.png`
   );
 
   return fetchImages(urls, observer).then(images => {
-    back_images = images;
+    mapSetBackgrounds(images)
+
     init();
     animate();
   });
@@ -158,17 +186,22 @@ function animate() {
 
   if (!plane_images) return;
 
-  //if(index_plane == 0) {
-  if (index_plane % steps == 0) {
-    let index = index_plane / steps;
-    if (plane_images[index] && plane_images[(index + 1) % tot_images]) {
-      interpolator_images = d3.interpolateArray(
-        plane_images[index],
-        plane_images[(index + 1) % tot_images]
-      );
-    }
-  }
+  
 
+
+
+  //if(index_plane == 0) {
+  //if (index_plane % steps == 0) {
+  //  let index = index_plane / steps;
+  //  if (plane_images[index] && plane_images[(index + 1) % tot_images]) {
+  //    interpolator_images = d3.interpolateArray(
+  //      plane_images[index],
+  //      plane_images[(index + 1) % tot_images]
+  //    );
+  //  }
+  //}
+
+  /*
   if (index_plane % (steps / 2) == 0) {
     let index = (2 * index_plane) / steps;
     let textr = new THREE.CanvasTexture(back_images[index]); //THREE.ImageUtils.loadTexture( src );
@@ -181,14 +214,17 @@ function animate() {
   if (interpolator_images) {
     generatePlaneHeightsBuffered();
   }
+  */
 
-  index_plane = (index_plane + 1) % (tot_images * steps); //}
+  //index_plane = (index_plane + 1) % (tot_images * steps); //}
+
+  generatePlaneHeightsBuffered();
 }
 
 function generatePlaneHeightsBuffered() {
   if (planeGeometry) {
     let positions = planeGeometry.attributes.position.array;
-    let arr = interpolator_images((index_plane % steps) / steps);
+    let arr = timeLevels.get(); //interpolator_images((index_plane % steps) / steps);
 
     //Top left is -500, 500
     //Bottom right is 500, -500
@@ -232,8 +268,4 @@ function generatePlaneHeightsBuffered() {
 
 function render() {
   renderer.render(scene, camera);
-}
-
-function mapSetLevelmaps(arr) {
-  plane_images = arr;
 }

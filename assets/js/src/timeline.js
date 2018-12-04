@@ -1,5 +1,7 @@
 const startTs = 1490979533000;
+const endTs = 1491238733000;
 const startDate = new Date(startTs);
+const endDate = new Date(endTs);
 
 Vue.component("timeline-component", {
   template: `<div id="timeline-container"><svg id="timeline"></svg></div>`,
