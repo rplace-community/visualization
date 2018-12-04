@@ -39,72 +39,77 @@
   </head>
   <body>
     <div id="app">
-      <div id="sidebar" v-if="loaded">
-        <div class="blur"></div>
-        <div class="sidebar-content">
-          <!-- COMMUNITIES -->
-          <input
-            v-model="communities.search"
-            placeholder="Search community..."
-            @keydown="filterCommunities"
-          />
-          <div class="drag">
+      <div class="sidebar" v-if="loaded" v-bind:class="{ sidebarReduce: sidebarHidden }">
+        <button class="showhide" v-on:click="toggleSidebar()">
+          <i class="fa" v-bind:class="{ 'fa-angle-left': sidebarHidden, 'fa-angle-right': !sidebarHidden }"></i></button>
 
-            <draggable
-              class="dragArea"
-              :list="displayedCommunities_"
-              :options="{draggable:'.item', group:'community', handle:'.handle'}"
-            >
-              <community-component
-                v-for="community in displayedCommunities_"
-                :key="community.id"
-                v-bind:community.sync="community"
-                class="item"
-              ></community-component>
-            </draggable>
+        <div v-bind:class="{ sidebarHide: sidebarHidden }">
+          <div class="blur"></div>
+          <div>
+            <!-- COMMUNITIES -->
+            <input
+              v-model="communities.search"
+              placeholder="Search community..."
+              @keydown="filterCommunities"
+            />
+            <div class="drag">
 
-
-            <div
-              id="filtered-communities"
-              v-if="communities.communities.length>0 && communities.isVisible"
-            >
-              
               <draggable
                 class="dragArea"
-                v-model="communities.communities"
-                :options="{draggable:'.item', pull:'clone', put:'false', group:'community', handle:'.handle'}"
-                @start="dragStart"
+                :list="displayedCommunities_"
+                :options="{draggable:'.item', group:'community', handle:'.handle'}"
               >
                 <community-component
-                  v-for="community in communities.communities"
+                  v-for="community in displayedCommunities_"
                   :key="community.id"
                   v-bind:community.sync="community"
                   class="item"
-                  :class="{'hidden':!community.isVisible}"
                 ></community-component>
               </draggable>
-            </div>
-          </div>
-          <!-- COMMUNITIES END -->
-          <div id="settings">
-            <div class="param justify-content-between">
-              <label>Smoothing</label>
-              <input
-                type="range"
-                name="smoothing"
-                min="0.00001"
-                max="2"
-                step="0.01"
-                v-model.lazy.number="smoothing"
-                class="control"
-              />
-            </div>
-            <div class="param justify-content-between">
-              <input type="checkbox" id="checkbox" v-model="ema" />
-              <label for="checkbox">EMA</label>
 
-              <input type="checkbox" id="checkboxSpikes" v-model="drawSpikes" />
-              <label for="checkboxSpikes">Spiky</label>
+
+              <div
+                id="filtered-communities"
+                v-if="communities.communities.length>0 && communities.isVisible"
+              >
+                
+                <draggable
+                  class="dragArea"
+                  v-model="communities.communities"
+                  :options="{draggable:'.item', pull:'clone', put:'false', group:'community', handle:'.handle'}"
+                  @start="dragStart"
+                >
+                  <community-component
+                    v-for="community in communities.communities"
+                    :key="community.id"
+                    v-bind:community.sync="community"
+                    class="item"
+                    :class="{'hidden':!community.isVisible}"
+                  ></community-component>
+                </draggable>
+              </div>
+            </div>
+            <!-- COMMUNITIES END -->
+            <div id="settings">
+              <div class="param justify-content-between">
+                <label>Smoothing</label>
+                <input
+                  type="range"
+                  name="smoothing"
+                  min="0.00001"
+                  max="2"
+                  step="0.01"
+                  v-model.lazy.number="smoothing"
+                  class="control"
+                />
+              </div>
+              <div class="param justify-content-between">
+                <input type="checkbox" id="checkbox" v-model="ema" />
+                <label for="checkbox">EMA</label>
+
+                <input type="checkbox" id="checkboxSpikes" v-model="drawSpikes" />
+                <label for="checkboxSpikes">Spiky</label>
+              </div>
             </div>
           </div>
         </div>

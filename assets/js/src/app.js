@@ -16,6 +16,7 @@ var appState = {
   smoothing: 1,
   ema: true,
   drawSpikes: false,
+  sidebarHidden: true
 };
 
 /******* Vue component *******/
@@ -43,6 +44,10 @@ var vm = new Vue({
     },
     centerMap: function(event) {
       mapResetPosition();
+    },
+
+    toggleSidebar: function(event) {
+      this.sidebarHidden = !this.sidebarHidden;
     }
   },
   /******** computed properties ********/
@@ -63,6 +68,13 @@ var vm = new Vue({
   },
   /******** watchers ********/
   watch: {
+
+    sidebarHidden: function() {
+      if(this.sidebarHidden) {
+
+      }
+    },
+
     time: function() {
       //console.log("Time seek: " + (this.time.getTime() - startTs));
       seekTime(this.time.getTime() - startTs);

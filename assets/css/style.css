@@ -9,6 +9,22 @@ body {
   overflow: hidden;
 }
 
+.showhide {
+  border-radius: 15px; 
+  padding: 5px;
+  position: absolute;
+  left: -35px;
+  top: 50%;
+  border: none;
+  font-size: 16px;
+  margin: 4px 2px;
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  width: 30px;
+  outline: none;
+}
+
 .hidden {
   display: none;
 }
@@ -119,13 +135,21 @@ svg {
   z-index: -1;
 }
 
-#sidebar {
+.sidebar {
   position: fixed;
   top: 0%;
   bottom: 0%;
   right: 0%;
   width: 20%;
   margin-right: 5px;
+}
+
+.sidebarReduce {
+  width: 0;
+}
+
+.sidebarHide {
+  display: none;
 }
 
 /* ------- ATLAS --------- */
