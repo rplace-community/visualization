@@ -75,7 +75,7 @@ Vue.component("timeline-component", {
   methods: {
     togglePlayPause: function() {
       const vm = this;
-      const interval = 42.0;
+      const interval = 30.0;
       if (vm.timer) {
         clearInterval(vm.timer);
       }
