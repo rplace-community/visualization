@@ -79,6 +79,14 @@ body {
   height: 100%;
 }
 
+#mouse_img {
+  position: absolute;
+  left: 10%;
+  top: 10%;
+  width: 5%;
+  height: auto;
+}
+
 @keyframes lds-circle {
   0%,
   100% {

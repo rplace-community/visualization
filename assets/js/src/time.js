@@ -21,6 +21,10 @@ class Time {
   //Returns the partition number,
   //and the [0,1[ value to say how close to the next one we are.
   _getPartition(t) {
+    if(this._array.length == 0) {
+      return 0;
+    }
+
     const timeAsked = ((t % this._totalTime) + this._totalTime) % this._totalTime;
     const distBetElems = this._totalTime / this._array.length;
     const timeToPartition = timeAsked / distBetElems;
@@ -29,6 +33,10 @@ class Time {
   };
 
   _getInterTime(t) {
+    if(this._array.length == 0) {
+      return 0;
+    }
+
     const timeAsked = ((t % this._totalTime) + this._totalTime) % this._totalTime;
     const distBetElems = this._totalTime / this._array.length;
     const timeToPartition = timeAsked / distBetElems;

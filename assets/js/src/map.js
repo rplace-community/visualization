@@ -46,6 +46,7 @@ function mapSetBackgrounds(arr) {
 function mapSetLevelmaps(arr) {
   plane_images = arr;
   timeLevels.setArray(plane_images);
+  drawLevelMaps();
 }
 
 function mapResetPosition() {
@@ -53,28 +54,30 @@ function mapResetPosition() {
 }
  
 function seekTime(t) {
-  if(timeBack.hasData() && timeLevels.hasData()) {
-    timeBack.seekTime(t);
-    timeLevels.seekTime(t);
-    
-    drawBackground();
-    drawLevelMaps();
-  }
+  timeBack.seekTime(t);
+  timeLevels.seekTime(t);
+  
+  drawBackground();
+  drawLevelMaps();
 }
 
 function drawBackground() {
-  let textr = new THREE.CanvasTexture(timeBack.get());
-  textr.minFilter = THREE.NearestFilter;
-  textr.magFilter = THREE.NearestFilter;
-  planeMaterial.map = textr;
-  planeMaterial.needsUpdate = true;
+  if (timeBack.hasData()) {
+    let textr = new THREE.CanvasTexture(timeBack.get());
+    textr.minFilter = THREE.NearestFilter;
+    textr.magFilter = THREE.NearestFilter;
+    planeMaterial.map = textr;
+    planeMaterial.needsUpdate = true;
+  }
 }
 
 function drawLevelMaps() {
-  if (drawSpikes) {
-    generatePlaneHeightsSpikesBuffered();
-  } else {
-    generatePlaneHeightsBuffered();
+  if(timeLevels.hasData()) {
+    if (drawSpikes) {
+      generatePlaneHeightsSpikesBuffered();
+    } else {
+      generatePlaneHeightsBuffered();
+    }
   }
 }
 
