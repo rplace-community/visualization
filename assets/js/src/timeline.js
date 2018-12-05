@@ -2,6 +2,7 @@ const startTs = 1490979533000;
 const endTs = 1491238733000;
 const startDate = new Date(startTs);
 const endDate = new Date(endTs);
+
 const windowStep = 30 * 60 * 1000;
 const addedAfterEnd = 3600 * 1000;
 

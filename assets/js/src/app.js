@@ -14,7 +14,9 @@ var appState = {
   displayedCommunities_: [],
   currentLevelmaps: [],
   smoothing: 1,
-  ema: true
+  ema: true,
+  drawSpikes: false,
+  sidebarHidden: true
 };
 
 /******* Vue component *******/
@@ -45,6 +47,13 @@ var vm = new Vue({
     },
     windowUpdated: function(window) {
       this.window = window;
+    },
+    centerMap: function(event) {
+      mapResetPosition();
+    },
+
+    toggleSidebar: function(event) {
+      this.sidebarHidden = !this.sidebarHidden;
     }
   },
   /******** computed properties ********/
@@ -65,6 +74,16 @@ var vm = new Vue({
   },
   /******** watchers ********/
   watch: {
+
+    sidebarHidden: function() {
+      if(this.sidebarHidden) {
+
+      }
+    },
+
+    drawSpikes: function() {
+      mapSetDrawingMethod(this.drawSpikes);
+    },
     recomputeLevelmap: function(unused) {
       let arr = this.displayedCommunities;
       if (!arr || arr.length < 1) {
@@ -102,6 +121,8 @@ var vm = new Vue({
   },
   /******** lifecycle events ********/
   created: function() {
+
+    //console.log(endTs - startTs + 2 * windowStep);
     let loaded_backs = 0;
     Promise.all([
       communitiesInit(),
@@ -129,8 +150,8 @@ var vm = new Vue({
       }),
       mapPreload(() => {
         loaded_backs++;
-        let loadingBar = document.getElementsByClassName("w3-grey")[0];
-        loadingBar.style.width = `${(50 * loaded_backs) / (tot_images + 1)}%`;
+        let loadingBar = document.getElementsByClassName("w3-orange")[0];
+        loadingBar.style.width = `${(50 * loaded_backs) / (TOT_IMAGES + 1)}%`;
       })
     ]).then(() => {
       console.log("Visualization loaded!");

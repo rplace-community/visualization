@@ -9,8 +9,44 @@ body {
   overflow: hidden;
 }
 
+.showhide {
+  border-radius: 50%; 
+  padding: 5px;
+  position: absolute;
+  left: -35px;
+  top: 50%;
+  border: none;
+  font-size: 16px;
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  outline: none;
+}
+
 .hidden {
   display: none;
+}
+
+.time-display {
+  position: absolute;
+  left: 1%;
+  top: 1%;
+}
+
+.fullscreen-position {
+  position: absolute;
+  width: 70px;
+  height: 50px;
+  left: 1%;
+  bottom: 10px;
+}
+
+.reset-map-position {
+  position: absolute;
+  left: 1%;
+  top: 5%;
 }
 
 .lds-circle {
@@ -28,24 +64,32 @@ body {
 
 .lds-circle-inner {
   display: inline-block;
-  width: 51px;
-  height: 51px;
+  width: 100px;
+  height: 100px;
   margin: 20px;
   border-radius: 5%;
-  background: #fff;
-  animation: lds-circle 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  animation: lds-circle 20s infinite;
 }
+
+.reddit_logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: 100%;
+}
+
 @keyframes lds-circle {
   0%,
   100% {
-    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
+    animation-timing-function: linear;
   }
   0% {
     transform: rotateY(0deg);
   }
   50% {
     transform: rotateY(1800deg);
-    animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1);
+    animation-timing-function: linear;
   }
   100% {
     transform: rotateY(3600deg);
@@ -55,6 +99,12 @@ body {
 .w3-border {
   border: 1px solid #ccc !important;
 }
+
+.w3-orange {
+  color: #fff !important;
+  background-color: #ff5722 !important;
+}
+
 .w3-grey,
 .w3-hover-grey:hover,
 .w3-gray,
@@ -107,13 +157,29 @@ svg {
   z-index: -1;
 }
 
-#sidebar {
+.sidebar {
   position: fixed;
   top: 0%;
   bottom: 0%;
   right: 0%;
   width: 20%;
   margin-right: 5px;
+  -webkit-transition: width .5s; /* Safari */
+  transition: width .5s;
+}
+
+
+.sidebarReduce {
+  width: 0;
+  -webkit-transition: width .5s; /* Safari */
+  transition: width .5s;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 
 /* ------- ATLAS --------- */
@@ -130,16 +196,26 @@ svg {
   background-color: blue;
 }
 
-#sidebar input {
+.search-sidebar {
   margin: 5px 0px;
   width: 100%;
   overflow: hidden;
 }
 
+#selected-communities {
+  margin: 5px;
+  max-height: calc(100vh - 200px);
+  padding-right: 5px;
+  max-width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+
 #filtered-communities {
   margin: 5px;
   max-height: calc(100vh - 200px);
-  width: 100%;
+  max-width: 100%;
   padding-right: 5px;
   overflow-y: auto;
   overflow-x: hidden;

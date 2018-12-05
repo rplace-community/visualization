@@ -30,78 +30,95 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.17.0/vuedraggable.min.js"></script>
     <script src="assets/js/lib/three.js"></script>
     <script src="assets/js/lib/WebGL.js"></script>
-    <script src="assets/js/lib/MapControls.js"></script>
+    <script src="assets/js/lib/OrbitControls.js"></script>
     <script src="assets/js/lib/SubdivisionModifier.js"></script>
     <script src="assets/js/lib/d3.min.js"></script>
+    <script src="assets/js/lib/Fullscreen.js"></script>
     <script src="assets/js/lib/dat.gui.min.js"></script>
 
     <script src="assets/js/src/utils.js"></script>
   </head>
   <body>
+    
     <div id="app">
-      <div id="sidebar" v-if="loaded">
-        <div class="blur"></div>
-        <div class="sidebar-content">
-          <!-- COMMUNITIES -->
-          <input
-            v-model="communities.search"
-            placeholder="Search community..."
-            class="pull-left text-search"
-            @keydown="filterCommunities"
-          />
-          <div class="drag">
-            <div
-              id="filtered-communities"
-              v-if="communities.communities.length>0 && communities.isVisible"
-            >
-              <draggable
-                class="dragArea"
-                :list="displayedCommunities_"
-                :options="{draggable:'.item', group:'community', handle:'.handle'}"
+      <div class="sidebar" v-if="loaded" v-bind:class="{ sidebarReduce: sidebarHidden }">
+        <button class="showhide" v-on:click="toggleSidebar()">
+          <i class="fa" v-bind:class="{ 'fa-angle-left': sidebarHidden, 'fa-angle-right': !sidebarHidden }"></i></button>
+
+        <transition name="fade">
+        <div v-if="!sidebarHidden" >
+          <div class="blur"></div>
+          <div>
+            <!-- COMMUNITIES -->
+            <input
+              class="search-sidebar"
+              v-model="communities.search"
+              placeholder="Search community..."
+              @keydown="filterCommunities"
+            />
+            <div class="drag">
+              <div id="selected-communities">
+                <draggable
+                  class="dragArea"
+                  :list="displayedCommunities_"
+                  :options="{draggable:'.item', group:'community', handle:'.handle'}"
+                >
+                  <community-component
+                    v-for="community in displayedCommunities_"
+                    :key="community.id"
+                    v-bind:community.sync="community"
+                    class="item"
+                  ></community-component>
+                </draggable>
+              </div>
+
+
+              <div
+                id="filtered-communities"
+                v-if="communities.communities.length>0 && communities.isVisible"
               >
-                <community-component
-                  v-for="community in displayedCommunities_"
-                  :key="community.id"
-                  v-bind:community.sync="community"
-                  class="item"
-                ></community-component>
-              </draggable>
-              <draggable
-                class="dragArea"
-                v-model="communities.communities"
-                :options="{draggable:'.item', pull:'clone', put:'false', group:'community', handle:'.handle'}"
-                @start="dragStart"
-              >
-                <community-component
-                  v-for="community in communities.communities"
-                  :key="community.id"
-                  v-bind:community.sync="community"
-                  class="item"
-                  :class="{'hidden':!community.isVisible}"
-                ></community-component>
-              </draggable>
+                
+                <draggable
+                  class="dragArea"
+                  v-model="communities.communities"
+                  :options="{draggable:'.item', pull:'clone', put:'false', group:'community', handle:'.handle'}"
+                  @start="dragStart"
+                >
+                  <community-component
+                    v-for="community in communities.communities"
+                    :key="community.id"
+                    v-bind:community.sync="community"
+                    class="item"
+                    :class="{'hidden':!community.isVisible}"
+                  ></community-component>
+                </draggable>
+              </div>
             </div>
-          </div>
-          <!-- COMMUNITIES END -->
-          <div id="settings">
-            <div class="param justify-content-between">
-              <label>Smoothing</label>
-              <input
-                type="range"
-                name="smoothing"
-                min="0.00001"
-                max="2"
-                step="0.01"
-                v-model.lazy.number="smoothing"
-                class="control"
-              />
-            </div>
-            <div class="param justify-content-between">
-              <input type="checkbox" id="checkbox" v-model="ema" />
-              <label for="checkbox">EMA</label>
+            <!-- COMMUNITIES END -->
+            <div id="settings">
+              <div class="param justify-content-between">
+                <label>Smoothing</label>
+                <input
+                  type="range"
+                  name="smoothing"
+                  min="0.00001"
+                  max="2"
+                  step="0.01"
+                  v-model.lazy.number="smoothing"
+                  class="control"
+                />
+              </div>
+              <div class="param justify-content-between">
+                <input type="checkbox" id="checkbox" v-model="ema" />
+                <label for="checkbox">EMA</label>
+
+                <input type="checkbox" id="checkboxSpikes" v-model="drawSpikes" />
+                <label for="checkboxSpikes">Spiky</label>
+              </div>
             </div>
           </div>
         </div>
+        </transition>
       </div>
       <timeline-component
         v-if="loaded"
@@ -109,16 +126,27 @@
         v-on:time-seek="timeSeek"
         v-on:window-updated="windowUpdated"
       ></timeline-component>
+      <div class="time-display" v-if="loaded"> 
+        <label>{{ time.toLocaleString() }}</label>
+      </div>
+      <button class="reset-map-position" v-if="loaded" v-on:click="centerMap()"> 
+        <label>Reset view</label>
+      </button>
+      <button class="fullscreen-position" onclick="openFullscreen()"> 
+          <label>Full screen</label>
+      </button>
+      <img class='reddit_logo' src='assets/img/loadingscreen/back_small.png ' height="100%" width="100%" v-if="!loaded" />
       <div class="lds-circle" v-if="!loaded">
-        <div class="lds-circle-inner"></div>
+        <div class="lds-circle-inner"><img class='reddit_logo' src='assets/img/loadingscreen/rplace_logo.png ' height="42" width="42" /></div>
         <div class="w3-border">
-          <div class="w3-grey" style="height:24px;width:0%"></div>
+          <div class="w3-orange" style="height:24px;width:0%"></div>
         </div>
       </div>
     </div>
     <script src="assets/js/src/gaussian_blur.js"></script>
     <script src="assets/js/src/timeline.js"></script>
     <script src="assets/js/src/communities.js"></script>
+    <script src="assets/js/src/time.js"></script>
     <script src="assets/js/src/map.js"></script>
     <script src="assets/js/src/app.js"></script>
   </body>
