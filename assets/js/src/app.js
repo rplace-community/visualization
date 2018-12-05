@@ -42,11 +42,9 @@ var vm = new Vue({
     },
     timeSeek: function(time) {
       this.time = time;
-      console.log("Time seek: " + this.time);
     },
     windowUpdated: function(window) {
       this.window = window;
-      console.log("Brushed window: " + this.window);
     }
   },
   /******** computed properties ********/
