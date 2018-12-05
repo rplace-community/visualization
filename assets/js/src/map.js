@@ -84,9 +84,7 @@ function drawLevelMaps() {
 
 function mapPreload(observer) {
 
-  
-
-  const urls = Array.from(Array(TOT_IMAGES * 2 - 1).keys()).map(
+  const urls = Array.from(Array(TOT_IMAGES * 2).keys()).map(
     i => `assets/img/frames/${i}.png`
   );
 

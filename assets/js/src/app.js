@@ -44,7 +44,7 @@ var vm = new Vue({
     },
     timeSeek: function(time) {
       this.time = time;
-      seekTime(time);
+      seekTime(time.getTime() - startTs);
     },
     windowUpdated: function(window) {
       this.window = window;
@@ -120,7 +120,7 @@ var vm = new Vue({
   },
   /******** lifecycle events ********/
   created: function() {
-    //console.log(endTs - startTs + 2 * windowStep);
+    console.log(endTs - startTs + 2 * windowStep);
     let loaded_backs = 0;
     Promise.all([
       communitiesInit(),
