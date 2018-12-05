@@ -123,8 +123,8 @@
       <timeline-component
         v-if="loaded"
         :communities="displayedCommunities"
-        :time.sync="time"
-        :window.sync="window"
+        v-on:time-seek="timeSeek"
+        v-on:window-updated="windowUpdated"
       ></timeline-component>
       <div class="time-display" v-if="loaded"> 
         <label>{{ time.toLocaleString() }}</label>
