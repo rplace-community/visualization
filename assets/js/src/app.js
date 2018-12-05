@@ -44,6 +44,7 @@ var vm = new Vue({
     },
     timeSeek: function(time) {
       this.time = time;
+      seekTime(time);
     },
     windowUpdated: function(window) {
       this.window = window;
@@ -74,10 +75,8 @@ var vm = new Vue({
   },
   /******** watchers ********/
   watch: {
-
     sidebarHidden: function() {
-      if(this.sidebarHidden) {
-
+      if (this.sidebarHidden) {
       }
     },
 
@@ -121,7 +120,6 @@ var vm = new Vue({
   },
   /******** lifecycle events ********/
   created: function() {
-
     //console.log(endTs - startTs + 2 * windowStep);
     let loaded_backs = 0;
     Promise.all([

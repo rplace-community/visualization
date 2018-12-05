@@ -11,7 +11,7 @@ let d3ctx = {
   y: null,
   brush: null,
   oldWindow: null,
-  wasPlaying: true,
+  wasPlaying: false,
   area: null,
   timer: null
 };
@@ -30,7 +30,7 @@ Vue.component("timeline-component", {
     return {
       time: startDate,
       window: windowStep,
-      isPlaying: true,
+      isPlaying: false,
       speed: 4320
     };
   },
@@ -141,8 +141,8 @@ Vue.component("timeline-component", {
           console.log("brush mouse down");
           if (vm.isPlaying) {
             console.log("pause playing");
-            d3ctx.wasPlaying = true;
             vm.togglePlayPause();
+            d3ctx.wasPlaying = true;
           }
         })
         .call(brush)
@@ -152,6 +152,8 @@ Vue.component("timeline-component", {
         );
 
       d3.selectAll(".brush .handle--e").remove();
+
+      this.togglePlayPause();
     },
     /********** draw areas **********/
     drawAreas: function() {
@@ -236,11 +238,12 @@ Vue.component("timeline-component", {
     },
     togglePlayPause: function() {
       const vm = this;
-      const interval = 50.0;
+      const interval = 30.0;
       if (vm.timer) {
         clearInterval(vm.timer);
       }
       vm.isPlaying = !vm.isPlaying;
+      d3ctx.wasPlaying = vm.isPlaying;
       if (vm.isPlaying) {
         vm.timer = setInterval(function() {
           if (!vm.time || !vm.speed) {
