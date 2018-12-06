@@ -12,8 +12,8 @@ function changeTrivia() {
   if (triviaComp.length > 0) {
 
     loadingScreenState.actualLine = (loadingScreenState.actualLine + 1) % loadingScreenState.lines.length;
-    triviaComp[0].innerHTML = loadingScreenState.lines[loadingScreenState.actualLine];
 
+    triviaComp[0].textContent = loadingScreenState.lines[loadingScreenState.actualLine];
     triviaComp[0].className = "lds-trivia w3-animate-opacity";
 
     setTimeout(() => {

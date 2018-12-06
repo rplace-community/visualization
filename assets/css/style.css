@@ -29,24 +29,31 @@ body {
   display: none;
 }
 
-.time-display {
+.top-left-pannel {
   position: absolute;
-  left: 1%;
-  top: 1%;
+  left: 5px;
+  top: 5px;
 }
 
 .fullscreen-position {
-  position: absolute;
-  width: 70px;
-  height: 50px;
-  left: 1%;
-  bottom: 10px;
+  width: auto;
+  height: 40px;
+  color: #333;
+  vertical-align: middle;
+}
+.fullscreen-position i {
+  display:block;
 }
 
 .reset-map-position {
-  position: absolute;
-  left: 1%;
-  top: 5%;
+  width: auto;
+  height: 40px;
+  color: #333;
+  vertical-align: middle;
+}
+.reset-map-position label {
+  display:block;
+  margin: 0;
 }
 
 .lds-circle {
@@ -61,24 +68,34 @@ body {
   left:-100%;
   color: #fff;
   font-size: 20px;
-
-  transition: width .5s;
 }
 
 .w3-animate-transparent {
-  animation:transp 0.8s
+  animation:transp 1s forwards;
+  -webkit-animation: transp 1s forwards;
 }
 
 @keyframes transp {
-  from {opacity:1} to{opacity:0}
+  from {opacity:1} to {opacity:0};
+}
+
+@-webkit-keyframes transp {
+    0% { opacity: 1 };
+    100% { opacity: 0 };
 }
 
 .w3-animate-opacity {
-  animation:opac 0.8s
+  animation:opac 0.8s forwards;
+  -webkit-animation: opac 0.8s forwards;
 }
 
 @keyframes opac {
-  from {opacity:0} to{opacity:1}
+  from {opacity:0} to {opacity:1};
+}
+
+@-webkit-keyframes opac {
+    0% { opacity: 0 };
+    100% { opacity: 1 };
 }
 
 

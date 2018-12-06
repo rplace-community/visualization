@@ -26,3 +26,12 @@ function closeFullscreen() {
     document.msExitFullscreen();
   }
 }
+
+function toggleFullScreen() {
+  if (!document.fullscreenElement && !document.mozFullScreenElement &&
+    !document.webkitFullscreenElement && !document.msFullscreenElement) {
+      openFullscreen();
+  } else {
+      closeFullscreen();
+  }
+}

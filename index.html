@@ -126,22 +126,29 @@
         v-on:time-seek="timeSeek"
         v-on:window-updated="windowUpdated"
       ></timeline-component>
-      <div class="time-display" v-if="loaded">
-        <label>{{ time.toLocaleString() }}</label>
+
+      <div class="top-left-pannel">
+        <div v-if="loaded">
+          <label style="color:#fff;">{{ time.toLocaleString() }}</label>
+        </div>
+
+        <button class="fullscreen-position" onclick="toggleFullScreen()">
+            <i class="fas fa-expand"></i>
+        </button>
+
+        <button class="reset-map-position" v-if="loaded" v-on:click="centerMap()">
+          <label>Reset view</label>
+        </button>
       </div>
-      <button class="reset-map-position" v-if="loaded" v-on:click="centerMap()">
-        <label>Reset view</label>
-      </button>
-      <button class="fullscreen-position" onclick="openFullscreen()">
-          <label>Full screen</label>
-      </button>
+
+
       <img class='back_img' src='assets/img/loadingscreen/back_small.png ' height="100%" width="100%" v-if="!loaded" />
       <div class="lds-circle" v-if="!loaded">
         <div class="lds-circle-inner"><img class='reddit_logo' src='assets/img/loadingscreen/rplace_logo.png ' height="42" width="42" /></div>
         <div class="w3-border">
           <div class="w3-orange" style="height:24px;width:0%"></div>
         </div>
-        <div class="lds-trivia" v-if="!loaded"></div>
+        <div class="lds-trivia"></div>
       </div>
     </div>
     <script src="assets/js/src/gaussian_blur.js"></script>
