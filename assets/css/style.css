@@ -10,7 +10,7 @@ body {
 }
 
 .showhide {
-  border-radius: 50%; 
+  border-radius: 50%;
   padding: 5px;
   position: absolute;
   left: -35px;
@@ -54,9 +54,37 @@ body {
   transform: translateZ(1px);
 }
 
+.lds-trivia {
+  position:absolute;
+  width: 300%;
+  top: 110%;
+  left:-100%;
+  color: #fff;
+  font-size: 20px;
+
+  transition: width .5s;
+}
+
+.w3-animate-transparent {
+  animation:transp 0.8s
+}
+
+@keyframes transp {
+  from {opacity:1} to{opacity:0}
+}
+
+.w3-animate-opacity {
+  animation:opac 0.8s
+}
+
+@keyframes opac {
+  from {opacity:0} to{opacity:1}
+}
+
+
 .lds-circle {
   position: fixed;
-  top: 50%;
+  top: 40%;
   left: 50%;
   margin-top: -45px;
   margin-left: -45px;

@@ -1,0 +1,5 @@
+The r/place event lasted 72 hours, between the 31 March and the 3 April 2017.
+There was during the event 1'166'924 unique users who placed 16'559'898 pixels in total.
+A user was able to place a pixel every 5 to 20 minutes. 
+656 is the biggest number of pixels a user did place during the whole event. Sounds like a bot ;)
+The whole canvas size was 1000x1000 pixels, and 16 colors were allowed.
