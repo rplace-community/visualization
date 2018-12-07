@@ -67,12 +67,15 @@ Vue.component("community-component", {
     },
     communityClicked: function() {
       mapCommunityHighlight(this.community.mask);
+    },
+    communityOut: function() {
+      mapCommunityHighlight();
     }
   },
   template: `
     <div class="community-component" :style="{ color: community.color }">
       <div class="row justify-content-between">
-        <div class="col-md-12 name" @mouseover="communityClicked"><div class="handle fas fa-grip-vertical"></div> {{ community.name }}</div>
+        <div class="col-md-12 name" @mouseover="communityClicked" @mouseleave="communityOut"><div class="handle fas fa-grip-vertical"></div> {{ community.name }}</div>
       </div>
       <div class="row drawer" v-if="isExpanded">
         <div class="description">{{ community.description }}</div>
