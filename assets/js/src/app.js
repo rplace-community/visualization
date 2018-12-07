@@ -120,8 +120,9 @@ var vm = new Vue({
   },
   /******** lifecycle events ********/
   created: function() {
-    console.log(endTs - startTs + 2 * windowStep);
+    //console.log(endTs - startTs + 2 * windowStep);
     let loaded_backs = 0;
+
     Promise.all([
       communitiesInit(),
       // enable global levelmaps when starting viz

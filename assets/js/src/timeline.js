@@ -22,9 +22,10 @@ Vue.component("timeline-component", {
       <div id="time-controls">
         <button id="play" @click="togglePlayPause()">
           <i class="fas" :class="{ 'fa-play': !isPlaying, 'fa-pause': isPlaying }"></i>
-        </button> 
+        </button>
       </div>
     </div>`,
+
   props: ["communities"],
   data: function() {
     return {
