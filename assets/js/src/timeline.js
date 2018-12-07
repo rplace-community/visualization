@@ -4,7 +4,7 @@ const startDate = new Date(startTs);
 const endDate = new Date(endTs);
 
 const windowStep = 30 * 60 * 1000;
-const addedAfterEnd = 3600 * 1000;
+const addedAfterEnd = 2 * windowStep;
 
 let d3ctx = {
   x: null,
@@ -28,7 +28,7 @@ Vue.component("timeline-component", {
   props: ["communities"],
   data: function() {
     return {
-      time: startDate,
+      time: new Date(startTs + windowStep),
       window: windowStep,
       isPlaying: false,
       speed: 4320
