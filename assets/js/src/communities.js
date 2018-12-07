@@ -25,10 +25,18 @@ function communitiesInit() {
             isLoaded: false
           };
           community.color = `hsl(${Math.random() * 360},100%,50%)`;
+          community.mask = null;
+          fetchImages([
+            `assets/img/levelmaps/max/${community.id}/mask.png`
+          ]).then(im => {
+            community.mask = im[0];
+          });
           return community;
         })
         .sort((a, b) => a.name.localeCompare(b.name));
-    });
+      return communitiesState.communities;
+    })
+    .then(function(communities) {});
 }
 
 function communitiesSearch(text) {
@@ -56,12 +64,15 @@ Vue.component("community-component", {
   methods: {
     toggleExpanded: function() {
       this.isExpanded = !this.isExpanded;
+    },
+    communityClicked: function() {
+      mapCommunityHighlight(this.community.mask);
     }
   },
   template: `
     <div class="community-component" :style="{ color: community.color }">
       <div class="row justify-content-between">
-        <div class="col-md-12 name"><div class="handle fas fa-grip-vertical"></div> {{ community.name }}</div>
+        <div class="col-md-12 name" @mouseover="communityClicked"><div class="handle fas fa-grip-vertical"></div> {{ community.name }}</div>
       </div>
       <div class="row drawer" v-if="isExpanded">
         <div class="description">{{ community.description }}</div>
