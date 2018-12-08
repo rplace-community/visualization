@@ -3,6 +3,8 @@ const endTs = 1491238733000;
 const startDate = new Date(startTs);
 const endDate = new Date(endTs);
 
+const ticksInterval = 40.0;
+
 const windowStep = 30 * 60 * 1000;
 const addedAfterEnd = 2 * windowStep;
 
@@ -239,7 +241,6 @@ Vue.component("timeline-component", {
     },
     togglePlayPause: function() {
       const vm = this;
-      const interval = 40.0;
       if (vm.timer) {
         clearInterval(vm.timer);
       }
@@ -251,13 +252,13 @@ Vue.component("timeline-component", {
             console.error("this.time is undefined!!!");
             return;
           }
-          const newTime = vm.time.getTime() + vm.speed * (1000 / interval);
+          const newTime = vm.time.getTime() + vm.speed * (1000 / ticksInterval);
           if (newTime > endTs) {
             vm.time = startDate;
           } else {
             vm.time = new Date(newTime);
           }
-        }, interval);
+        }, ticksInterval);
       }
     }
   }
