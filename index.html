@@ -38,7 +38,7 @@
 
     <script src="assets/js/src/utils.js"></script>
   </head>
-  <body class="back_img">
+  <body>
 
     <div id="app">
       <div class="sidebar" v-if="loaded" v-bind:class="{ sidebarReduce: sidebarHidden }">
@@ -144,37 +144,40 @@
         </button>
       </div>
 
-      <div class="tuto" v-if="!loaded">
-        <div class="tuto-pan">
-          <i class="fas fa-info-circle"></i>
-          <label>Move</label>
-          <img class='ctrl-key' src='assets/img/loadingscreen/ctrl.png' height="60%" />
-          <img class='mouse-cursor' src='assets/img/loadingscreen/cursor.png' height="60%" />
-        </div>
-
-        <div class="tuto-rotate">
+      <div v-if="!loaded">
+        <img width="100%" height="100%" id="bg" src="assets/img/loadingscreen/back_small.png" />
+        <div class="tuto">
+          <div class="tuto-pan">
             <i class="fas fa-info-circle"></i>
-            <label>Rotate</label>
+            <label>Move</label>
+            <img class='ctrl-key' src='assets/img/loadingscreen/ctrl.png' height="60%" />
             <img class='mouse-cursor' src='assets/img/loadingscreen/cursor.png' height="60%" />
+          </div>
+
+          <div class="tuto-rotate">
+              <i class="fas fa-info-circle"></i>
+              <label>Rotate</label>
+              <img class='mouse-cursor' src='assets/img/loadingscreen/cursor.png' height="60%" />
+          </div>
+
+          <div class="tuto-zoom">
+              <i class="fas fa-info-circle"></i>
+              <label>Zoom</label>
+              <div class="tuto-touchpad">
+                <div class="tuto-separation"></div>
+                <i class="fas fa-chevron-down chevron-ur"></i>
+                <i class="fas fa-chevron-down chevron-bl"></i>
+              </div>
+          </div>
         </div>
 
-        <div class="tuto-zoom">
-            <i class="fas fa-info-circle"></i>
-            <label>Zoom</label>
-            <div class="tuto-touchpad">
-              <div class="tuto-separation"></div>
-              <i class="fas fa-chevron-down chevron-ur"></i>
-              <i class="fas fa-chevron-down chevron-bl"></i>
-            </div>
+        <div class="lds-circle">
+          <div class="lds-circle-inner"><img class='reddit_logo' src='assets/img/loadingscreen/rplace_logo.png ' height="42" width="42" /></div>
+          <div class="w3-border">
+            <div class="w3-orange" style="height:24px;width:0%"></div>
+          </div>
+          <div class="lds-trivia"></div>
         </div>
-      </div>
-
-      <div class="lds-circle" v-if="!loaded">
-        <div class="lds-circle-inner"><img class='reddit_logo' src='assets/img/loadingscreen/rplace_logo.png ' height="42" width="42" /></div>
-        <div class="w3-border">
-          <div class="w3-orange" style="height:24px;width:0%"></div>
-        </div>
-        <div class="lds-trivia"></div>
       </div>
     </div>
 

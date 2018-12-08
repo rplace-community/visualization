@@ -61,12 +61,14 @@ body {
 
 /* ------- LOADING SCREEN --------- */
 
-.back_img {
-  background: url("../img/loadingscreen/back_small.png") no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  /* Preserve aspet ratio */
+  min-width: 100%;
+  min-height: 100%;
 }
 
 .lds-trivia {
@@ -238,7 +240,7 @@ body {
 @keyframes chevron-bl-move {
   0%   { left: 30%; bottom: 35%; opacity: 1; }
   80%  { left: 10%; bottom: 25%; opacity: 0; }
-  100% { left: 10%; bottom: 15%; opacity: 0; }
+  100% { left: 30%; bottom: 35%; opacity: 0; }
 }
 
 .tuto-zoom .chevron-ur {
@@ -259,7 +261,7 @@ body {
 @keyframes chevron-ur-move {
   0%   { right: 30%; top: 35%; opacity: 1; }
   80%  { right: 10%; top: 25%; opacity: 0; }
-  100% { right: 10%; top: 15%; opacity: 0; }
+  100% { right: 30%; top: 35%; opacity: 0; }
 }
 
 
