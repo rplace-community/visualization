@@ -16,7 +16,8 @@ var appState = {
   smoothing: 1,
   ema: true,
   drawSpikes: false,
-  sidebarHidden: true
+  sidebarHidden: true,
+  autoRotate: false
 };
 
 /******* Vue component *******/
@@ -75,14 +76,14 @@ var vm = new Vue({
   },
   /******** watchers ********/
   watch: {
-    sidebarHidden: function() {
-      if (this.sidebarHidden) {
-      }
-    },
-
     drawSpikes: function() {
       mapSetDrawingMethod(this.drawSpikes);
     },
+
+    autoRotate: function() {
+      mapSetAutorotate(this.autoRotate);
+    },
+
     recomputeLevelmap: function(unused) {
       let arr = this.displayedCommunities;
       if (!arr || arr.length < 1) {

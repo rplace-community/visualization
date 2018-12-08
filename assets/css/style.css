@@ -39,7 +39,7 @@ body {
 }
 
 .fullscreen-position {
-  width: auto;
+  width: 40px;
   height: 40px;
   color: #333;
   vertical-align: middle;
@@ -61,6 +61,14 @@ body {
 
 /* ------- LOADING SCREEN --------- */
 
+.back_img {
+  background: url("../img/loadingscreen/back_small.png") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
 .lds-trivia {
   position:absolute;
   width: 300%;
@@ -69,6 +77,193 @@ body {
   color: #fff;
   font-size: 20px;
 }
+
+.tuto-pan {
+  position:absolute;
+  width: 20%;
+  height: 20%;
+
+  top: 10%;
+  left: 10%;
+  min-width: 265px;
+  min-height: 125px;
+  background-color: rgba(255,255,255,0.2);
+  border-width:3px;
+  border-style:dotted;
+  border-color:black;
+}
+.tuto-pan i {
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+  position: absolute;
+  left: -20px;
+  bottom: -20px;
+}
+.tuto-pan label {
+  position: block;
+  color: black;
+  font-size: 25px;
+}
+.tuto-pan .ctrl-key {
+  position: absolute;
+  left: 5%;
+  top: 30%;
+}
+.tuto-pan .mouse-cursor {
+  position: absolute;
+  right: 5%;
+  top: 30%;
+  animation-name: move-cursor-right-left, move-cursor-up-down;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+@keyframes move-cursor-right-left {
+  0%   {right: 5%}
+  20%  {right: 20%;}
+  40%  {right: 35%;}
+  60%  {right: 20%;}
+  80% {right: 5%;}
+}
+@keyframes move-cursor-up-down {
+  0%   {top: 30%}
+  20%  {top: 20%;}
+  40%  {top: 30%;}
+  60%  {top: 40%;}
+  80%  {top: 30%;}
+}
+
+
+.tuto-rotate {
+  position:absolute;
+  width: 8%;
+  height: 20%;
+
+  top: 20%;
+  right: 15%;
+  min-width: 100px;
+  min-height: 125px;
+  background-color: rgba(255,255,255,0.2);
+  border-width:3px;
+  border-style:dotted;
+  border-color:black;
+}
+.tuto-rotate i {
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+}
+.tuto-rotate label {
+  position: block;
+  color: black;
+  font-size: 25px;
+}
+.tuto-rotate .mouse-cursor {
+  position: block;
+  animation-name: mouse-orbit;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+@keyframes mouse-orbit {
+  0%   { transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+  80% { transform: rotate(0deg) translateX(20px) rotate(0deg); }
+  100% { transform: rotate(0deg) translateX(20px) rotate(0deg); }
+}
+
+
+
+
+.tuto-zoom {
+  position:absolute;
+  width: 9%;
+  height: 20%;
+  bottom: 10%;
+  left: 20%;
+  min-width: 120px;
+  min-height: 160px;
+  background-color: rgba(255,255,255,0.2);
+  border-width:3px;
+  border-style:dotted;
+  border-color:black;
+}
+.tuto-zoom .fa-info-circle {
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+  position: absolute;
+  left: -20px;
+  top: -20px;
+}
+.tuto-touchpad {
+  box-shadow: 1px 1px #333;
+  margin-left: 5%;
+  width: 90%;
+  height: 65%;
+  border-radius: 3px;
+  background-color: rgba(150,150,150,0.6);
+}
+.tuto-separation {
+  background-color: rgba(50,50,50,0.4);
+  position: relative;
+  width: 2px;
+  height: 25%;
+  left: calc(50% - 1px);
+  top: 75%;
+}
+.tuto-zoom label {
+  position: block;
+  color: black;
+  font-size: 25px;
+}
+.tuto-zoom .chevron-bl {
+  transform: rotate(55deg);
+  width: 30px;
+  height: 30px;
+  font-size: 25px;
+  position: absolute;
+
+  left: 30%;
+  bottom: 35%;
+
+  animation-name: chevron-bl-move;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+@keyframes chevron-bl-move {
+  0%   { left: 30%; bottom: 35%; opacity: 1; }
+  80%  { left: 10%; bottom: 25%; opacity: 0; }
+  100% { left: 10%; bottom: 15%; opacity: 0; }
+}
+
+.tuto-zoom .chevron-ur {
+  transform: rotate(-125deg);
+  width: 30px;
+  height: 30px;
+  font-size: 25px;
+  position: absolute;
+
+  right: 30%;
+  top: 35%;
+
+  animation-name: chevron-ur-move;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+@keyframes chevron-ur-move {
+  0%   { right: 30%; top: 35%; opacity: 1; }
+  80%  { right: 10%; top: 25%; opacity: 0; }
+  100% { right: 10%; top: 15%; opacity: 0; }
+}
+
+
+
 
 .w3-animate-transparent {
   animation:transp 1s forwards;

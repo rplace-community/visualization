@@ -58,6 +58,21 @@ function mapSetLevelmaps(arr) {
   drawLevelMaps();
 }
 
+function mapSetAutorotate(autorotate) {
+  mapResetPosition();
+  if (autorotate) {
+    controls.enabled = false;
+    controls.autoRotate = true;
+    camera.zoom = 1.5;
+    camera.updateProjectionMatrix();
+  } else {
+    controls.enabled = true;
+    controls.autoRotate = false;
+    camera.zoom = 1;
+    camera.updateProjectionMatrix();
+  }
+}
+
 function mapResetPosition() {
   controls.reset();
 }
@@ -121,20 +136,25 @@ function init() {
     -1000,
     1500
   );
-  camera.position.set(250, 120, 100);
+  //camera.position.set(250, 120, 100);
+  camera.position.set(12.5, 6, 5);
 
   // controls
 
   controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-
   controls.screenSpacePanning = false;
+  // an animation loop is required when either damping or auto-rotation are enabled
+  controls.enableDamping = true;
+
   controls.minDistance = 1;
 
   controls.minZoom = 1;
   controls.maxZoom = 10;
 
   controls.maxPolarAngle = (Math.PI * 4.5) / 10.0;
+  controls.autoRotateSpeed = 0.6;
+  mapSetAutorotate(false);
+
 
   // world ***********************************************************************************************************
 
@@ -183,6 +203,7 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
+
 
 function animate() {
   requestAnimationFrame(animate);
