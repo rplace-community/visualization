@@ -24,7 +24,7 @@ function communitiesInit() {
             blobs: [],
             isLoaded: false
           };
-          community.color = `hsl(${Math.random() * 360},100%,50%)`;
+          community.color = null;
           community.mask = null;
           fetchImages([
             `assets/img/levelmaps/max/${community.id}/mask.png`
@@ -73,9 +73,12 @@ Vue.component("community-component", {
     }
   },
   template: `
-    <div class="community-component" :style="{ color: community.color }">
+    <div class="community-component">
       <div class="row justify-content-between">
-        <div class="col-md-12 name" @mouseover="communityClicked" @mouseleave="communityOut"><div class="handle fas fa-grip-vertical"></div> {{ community.name }}</div>
+        <div class="col-md-12 name" @mouseover="communityClicked" @mouseleave="communityOut">
+          <div class="handle fas fa-grip-vertical" :style="{ color: community.color }"></div>
+          {{ community.name }}
+        </div>
       </div>
       <div class="row drawer" v-if="isExpanded">
         <div class="description">{{ community.description }}</div>

@@ -39,88 +39,103 @@
     <script src="assets/js/src/utils.js"></script>
   </head>
   <body>
-
     <div id="app">
-      <div class="sidebar" v-if="loaded" v-bind:class="{ sidebarReduce: sidebarHidden }">
+      <div
+        class="sidebar"
+        v-if="loaded"
+        v-bind:class="{ sidebarReduce: sidebarHidden }"
+      >
         <button class="showhide" v-on:click="toggleSidebar()">
-          <i class="fa" v-bind:class="{ 'fa-angle-left': sidebarHidden, 'fa-angle-right': !sidebarHidden }"></i></button>
+          <i
+            class="fa"
+            v-bind:class="{ 'fa-angle-left': sidebarHidden, 'fa-angle-right': !sidebarHidden }"
+          ></i>
+        </button>
 
         <transition name="fade">
-        <div v-if="!sidebarHidden" >
-          <div class="blur"></div>
-          <div>
-            <!-- COMMUNITIES -->
-            <input
-              class="search-sidebar"
-              v-model="communities.search"
-              placeholder="Search community..."
-              @keydown="filterCommunities"
-            />
-            <div class="drag">
-              <div id="selected-communities">
-                <draggable
-                  class="dragArea"
-                  :list="displayedCommunities_"
-                  :options="{draggable:'.item', group:'community', handle:'.handle'}"
+          <div v-if="!sidebarHidden">
+            <div class="blur"></div>
+            <div>
+              <!-- COMMUNITIES -->
+              <input
+                class="search-sidebar"
+                v-model="communities.search"
+                placeholder="Search community..."
+                @keydown="filterCommunities"
+              />
+              <div class="drag">
+                <div id="selected-communities">
+                  <draggable
+                    class="dragArea"
+                    :list="displayedCommunities_"
+                    :options="{draggable:'.item', group:'community', handle:'.handle'}"
+                    @remove="hideCommunity"
+                    @add="showCommunity"
+                  >
+                    <community-component
+                      v-for="community in displayedCommunities_"
+                      :key="community.id"
+                      v-bind:community.sync="community"
+                      class="item"
+                    ></community-component>
+                  </draggable>
+                </div>
+
+                <div
+                  id="filtered-communities"
+                  v-if="communities.communities.length>0 && communities.isVisible"
                 >
-                  <community-component
-                    v-for="community in displayedCommunities_"
-                    :key="community.id"
-                    v-bind:community.sync="community"
-                    class="item"
-                  ></community-component>
-                </draggable>
+                  <draggable
+                    class="dragArea"
+                    v-model="communities.communities"
+                    :options="{draggable:'.item', put:'true', sort:'false', group:'community', handle:'.handle'}"
+                    @start="dragStart"
+                  >
+                    <community-component
+                      v-for="community in communities.communities"
+                      :key="community.id"
+                      v-bind:community.sync="community"
+                      class="item"
+                      :class="{'hidden':!community.isVisible}"
+                    ></community-component>
+                  </draggable>
+                </div>
               </div>
+              <!-- COMMUNITIES END -->
+              <div id="settings">
+                <div class="param justify-content-between">
+                  <label>Smoothing</label>
+                  <input
+                    type="range"
+                    name="smoothing"
+                    min="0.00001"
+                    max="2"
+                    step="0.01"
+                    v-model.lazy.number="smoothing"
+                    class="control"
+                  />
+                </div>
+                <div class="param justify-content-between">
+                  <input type="checkbox" id="checkbox" v-model="ema" />
+                  <label for="checkbox">EMA</label>
 
+                  <input
+                    type="checkbox"
+                    id="checkboxSpikes"
+                    v-model="drawSpikes"
+                  />
+                  <label for="checkboxSpikes">Spiky</label>
 
-              <div
-                id="filtered-communities"
-                v-if="communities.communities.length>0 && communities.isVisible"
-              >
-
-                <draggable
-                  class="dragArea"
-                  v-model="communities.communities"
-                  :options="{draggable:'.item', pull:'clone', put:'false', group:'community', handle:'.handle'}"
-                  @start="dragStart"
-                >
-                  <community-component
-                    v-for="community in communities.communities"
-                    :key="community.id"
-                    v-bind:community.sync="community"
-                    class="item"
-                    :class="{'hidden':!community.isVisible}"
-                  ></community-component>
-                </draggable>
-              </div>
-            </div>
-            <!-- COMMUNITIES END -->
-            <div id="settings">
-              <div class="param justify-content-between">
-                <label>Smoothing</label>
-                <input
-                  type="range"
-                  name="smoothing"
-                  min="0.00001"
-                  max="2"
-                  step="0.01"
-                  v-model.lazy.number="smoothing"
-                  class="control"
-                />
-              </div>
-              <div class="param justify-content-between">
-                <input type="checkbox" id="checkbox" v-model="ema" />
-                <label for="checkbox">EMA</label>
-
-                <input type="checkbox" id="checkboxSpikes" v-model="drawSpikes" />
-                <label for="checkboxSpikes">Spiky</label>
-
-                <input type="checkbox" id="checkboxAutorotate" v-model="autoRotate" />
-                <label for="checkboxAutorotate">Auto-rotate</label>
+                  <input
+                    type="checkbox"
+                    id="checkboxAutorotate"
+                    v-model="autoRotate"
+                  />
+                  <label for="checkboxAutorotate">Auto-rotate</label>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </transition>
       </div>
       <timeline-component
@@ -136,43 +151,68 @@
         </div>
 
         <button class="fullscreen-position" onclick="toggleFullScreen()">
-            <i class="fas fa-expand"></i>
+          <i class="fas fa-expand"></i>
         </button>
 
-        <button class="reset-map-position" v-if="loaded" v-on:click="centerMap()">
+        <button
+          class="reset-map-position"
+          v-if="loaded"
+          v-on:click="centerMap()"
+        >
           <label>Reset view</label>
         </button>
       </div>
 
       <div v-if="!loaded">
-        <img width="100%" height="100%" id="bg" src="assets/img/loadingscreen/back_small.png" />
+        <img
+          width="100%"
+          height="100%"
+          id="bg"
+          src="assets/img/loadingscreen/back_small.png"
+        />
         <div class="tuto">
           <div class="tuto-pan">
-            <i class="fas fa-info-circle"></i>
-            <label>Move</label>
-            <img class='ctrl-key' src='assets/img/loadingscreen/ctrl.png' height="60%" />
-            <img class='mouse-cursor' src='assets/img/loadingscreen/cursor.png' height="60%" />
+            <i class="fas fa-info-circle"></i> <label>Move</label>
+            <img
+              class="ctrl-key"
+              src="assets/img/loadingscreen/ctrl.png"
+              height="60%"
+            />
+            <img
+              class="mouse-cursor"
+              src="assets/img/loadingscreen/cursor.png"
+              height="60%"
+            />
           </div>
 
           <div class="tuto-rotate">
-              <i class="fas fa-info-circle"></i>
-              <label>Rotate</label>
-              <img class='mouse-cursor' src='assets/img/loadingscreen/cursor.png' height="60%" />
+            <i class="fas fa-info-circle"></i> <label>Rotate</label>
+            <img
+              class="mouse-cursor"
+              src="assets/img/loadingscreen/cursor.png"
+              height="60%"
+            />
           </div>
 
           <div class="tuto-zoom">
-              <i class="fas fa-info-circle"></i>
-              <label>Zoom</label>
-              <div class="tuto-touchpad">
-                <div class="tuto-separation"></div>
-                <i class="fas fa-chevron-down chevron-ur"></i>
-                <i class="fas fa-chevron-down chevron-bl"></i>
-              </div>
+            <i class="fas fa-info-circle"></i> <label>Zoom</label>
+            <div class="tuto-touchpad">
+              <div class="tuto-separation"></div>
+              <i class="fas fa-chevron-down chevron-ur"></i>
+              <i class="fas fa-chevron-down chevron-bl"></i>
+            </div>
           </div>
         </div>
 
         <div class="lds-circle">
-          <div class="lds-circle-inner"><img class='reddit_logo' src='assets/img/loadingscreen/rplace_logo.png ' height="42" width="42" /></div>
+          <div class="lds-circle-inner">
+            <img
+              class="reddit_logo"
+              src="assets/img/loadingscreen/rplace_logo.png "
+              height="42"
+              width="42"
+            />
+          </div>
           <div class="w3-border">
             <div class="w3-orange" style="height:24px;width:0%"></div>
           </div>

@@ -1,3 +1,5 @@
+const MAX_DISP_COMMUNITIES = 6;
+
 var appState = {
   loaded: false,
   showExtLinks: true,
@@ -17,7 +19,12 @@ var appState = {
   ema: true,
   drawSpikes: false,
   sidebarHidden: true,
-  autoRotate: false
+  autoRotate: false,
+  freeColors: new Set(
+    [...Array(MAX_DISP_COMMUNITIES).keys()].map(
+      d3.scaleOrdinal(d3.schemeCategory10)
+    )
+  )
 };
 
 /******* Vue component *******/
@@ -42,6 +49,21 @@ var vm = new Vue({
           this.$emit("update:community");
         });
       }
+    },
+    showCommunity: function(event) {
+      const community = event.item._underlying_vm_;
+      if (this.displayedCommunities_.length <= MAX_DISP_COMMUNITIES) {
+        const c = this.freeColors.values().next().value;
+        community.color = c;
+        this.freeColors.delete(c);
+      } else {
+        this.communities.communities.splice(event.oldIndex, 0, community);
+        this.displayedCommunities_.splice(event.newIndex, 1);
+      }
+    },
+    hideCommunity: function(evt) {
+      this.freeColors.add(evt.item._underlying_vm_.color);
+      evt.item._underlying_vm_.color = null;
     },
     timeSeek: function(time) {
       this.time = time;
