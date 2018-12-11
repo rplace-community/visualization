@@ -3,7 +3,7 @@
 body {
   color: darkorange;
   background-color: #333;
-  font-family: Monospace;
+  font-family: 'Source Sans Pro', sans-serif;
   font-size: 13px;
   text-align: center;
   font-weight: bold;
@@ -377,6 +377,7 @@ i.fas {
 }
 
 #time-controls {
+  color: black;
   pointer-events: all;
   position: sticky;
   left: 0px;
