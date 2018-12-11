@@ -17,6 +17,7 @@ var appState = {
   currentLevelmaps: [],
   smoothing: 1,
   ema: true,
+  ismean: false,
   drawSpikes: false,
   sidebarHidden: true,
   autoRotate: false,
@@ -41,8 +42,9 @@ var vm = new Vue({
     },
     dragStart: function(event) {
       const community = this.communities.communities[event.oldIndex];
+       const mode = this.ismean ? "mean" : "max";
       if (!community.levelmaps.isLoaded) {
-        fetchLevelmaps(community.id).then(([index, levelmaps]) => {
+        fetchLevelmaps(community.id, mode).then(([index, levelmaps]) => {
           community.levelmaps.index = index;
           community.levelmaps.blobs = levelmaps;
           community.levelmaps.isLoaded = true;
@@ -135,6 +137,7 @@ var vm = new Vue({
           });
       }
     },
+
     smoothing: function(v) {
       cmdWorker
         .send("blurImages", { images: this.currentLevelmaps, radius: v })
@@ -145,11 +148,12 @@ var vm = new Vue({
   created: function() {
     //console.log(endTs - startTs + 2 * windowStep);
     let loaded_backs = 0;
+    const mode = this.ismean ? "mean" : "max";
 
     Promise.all([
-      communitiesInit(),
+      communitiesInit(mode),
       // enable global levelmaps when starting viz
-      fetchLevelmaps("global").then(([index, levelmaps]) => {
+      fetchLevelmaps("global", mode).then(([index, levelmaps]) => {
         let globalCommunity = {};
         globalCommunity.idx = -1;
         globalCommunity.name = "global";

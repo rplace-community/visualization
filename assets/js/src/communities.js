@@ -7,55 +7,9 @@ var communitiesState = {
   communities: []
 };
 
-/******* Communities global context functions *******/
-function communitiesInit() {
-  return fetch("assets/json/communities.json")
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(array) {
-      communitiesState.communities = array
-        .map(community => {
-          community.isShown = false;
-          community.isPinned = false;
-          community.isVisible = true;
-          community.levelmaps = {
-            index: {},
-            blobs: [],
-            isLoaded: false
-          };
-          community.color = null;
-          community.mask = null;
-          fetchImages([
-            `assets/img/levelmaps/max/${community.id}/mask.png`
-          ]).then(im => {
-            community.mask = im[0];
-          });
-          return community;
-        })
-        .sort((a, b) => a.name.localeCompare(b.name));
-      return communitiesState.communities;
-    })
-    .then(function(communities) {});
-}
-
-function communitiesSearch(text) {
-  return communitiesState.communities
-    .filter(v => {
-      return v.isPinned || v.name.toLowerCase().includes(text.toLowerCase());
-    })
-    .sort((a, b) => {
-      if (a.isPinned == b.isPinned) {
-        return a.name.localeCompare(b.name);
-      } else {
-        return b.isPinned - a.isPinned;
-      }
-    });
-}
-
 /******* Community component *******/
 Vue.component("community-component", {
-  props: ["community"],
+  props: ["community", "ismean"],
   data: function() {
     return {
       isExpanded: false
@@ -86,14 +40,60 @@ Vue.component("community-component", {
     </div>`
 });
 
-function fetchLevelmaps(community) {
-  return fetch(`assets/json/levelmaps/max/${community}.json`)
+/******* Communities global context functions *******/
+function communitiesInit(mode) {
+  return fetch(`assets/json/${mode}/communities.json`)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(array) {
+      communitiesState.communities = array
+        .map(community => {
+          community.isShown = false;
+          community.isPinned = false;
+          community.isVisible = true;
+          community.levelmaps = {
+            index: {},
+            blobs: [],
+            isLoaded: false
+          };
+          community.color = null;
+          community.mask = null;
+          fetchImages([
+            `assets/img/levelmaps/${mode}/${community.id}/mask.png`
+          ]).then(im => {
+            community.mask = im[0];
+          });
+          return community;
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+      return communitiesState.communities;
+    })
+    .then(function(communities) {});
+}
+
+function communitiesSearch(text) {
+  return communitiesState.communities
+    .filter(v => {
+      return v.isPinned || v.name.toLowerCase().includes(text.toLowerCase());
+    })
+    .sort((a, b) => {
+      if (a.isPinned == b.isPinned) {
+        return a.name.localeCompare(b.name);
+      } else {
+        return b.isPinned - a.isPinned;
+      }
+    });
+}
+
+function fetchLevelmaps(community, mode) {
+  return fetch(`assets/json/levelmaps/${mode}/${community}.json`)
     .then(response => {
       return response.json();
     })
     .then(index => {
       const urls = index.map(
-        e => `assets/img/levelmaps/max/${community}/${e.idx}.png`
+        e => `assets/img/levelmaps/${mode}/${community}/${e.idx}.png`
       );
       return fetchImagesData(urls).then(datas => {
         const maxs = index.map(e => e.max);
