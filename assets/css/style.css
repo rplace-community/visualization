@@ -377,6 +377,7 @@ i.fas {
 }
 
 #time-controls {
+  color: black;
   pointer-events: all;
   position: sticky;
   left: 0px;

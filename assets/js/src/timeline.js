@@ -4,7 +4,7 @@ const startDate = new Date(startTs);
 const endDate = new Date(endTs);
 
 const ticksInterval = 40.0;
-
+const defaultSpeed = 4320;
 const windowStep = 30 * 60 * 1000;
 const addedAfterEnd = 2 * windowStep;
 
@@ -22,6 +22,9 @@ Vue.component("timeline-component", {
   template: `
     <div id="timeline-container">
       <div id="time-controls">
+      <button id="speed" @click="speedUp()">
+        1x
+      </button>
         <button id="play" @click="togglePlayPause()">
           <i class="fas" :class="{ 'fa-play': !isPlaying, 'fa-pause': isPlaying }"></i>
         </button>
@@ -34,7 +37,8 @@ Vue.component("timeline-component", {
       time: new Date(startTs + windowStep),
       window: windowStep,
       isPlaying: false,
-      speed: 4320
+      speed: defaultSpeed,
+      speeding: 1
     };
   },
   mounted: function() {
@@ -260,6 +264,19 @@ Vue.component("timeline-component", {
           }
         }, ticksInterval);
       }
+    },
+    speedUp: function() {
+      this.speeding = (this.speeding + 1) % 5;
+      let x = undefined;
+      switch (this.speeding) {
+      case 1: x = 1; break;
+      case 2: x = 1.25; break;
+      case 3: x = 1.5 ; break;
+      case 4: x = 1.75; break;
+      default:x = 2;
+      }
+      this.speed = defaultSpeed * x;
+      d3.select("#speed").text(`${x}x`);
     }
   }
 });
