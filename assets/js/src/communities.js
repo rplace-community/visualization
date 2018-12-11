@@ -41,8 +41,8 @@ Vue.component("community-component", {
 });
 
 /******* Communities global context functions *******/
-function communitiesInit(mode) {
-  return fetch(`assets/json/${mode}/communities.json`)
+function communitiesInit() {
+  return fetch(`assets/json/communities.json`)
     .then(function(response) {
       return response.json();
     })
@@ -60,7 +60,7 @@ function communitiesInit(mode) {
           community.color = null;
           community.mask = null;
           fetchImages([
-            `assets/img/levelmaps/${mode}/${community.id}/mask.png`
+            `assets/img/masks/${community.id}.png`
           ]).then(im => {
             community.mask = im[0];
           });

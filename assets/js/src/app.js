@@ -151,7 +151,7 @@ var vm = new Vue({
     const mode = this.ismean ? "mean" : "max";
 
     Promise.all([
-      communitiesInit(mode),
+      communitiesInit(),
       // enable global levelmaps when starting viz
       fetchLevelmaps("global", mode).then(([index, levelmaps]) => {
         let globalCommunity = {};
