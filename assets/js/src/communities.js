@@ -29,9 +29,10 @@ Vue.component("community-component", {
   template: `
     <div class="community-component">
       <div class="row justify-content-between">
-        <div class="col-md-12 name" @mouseover="communityClicked" @mouseleave="communityOut">
-          <div class="handle fas fa-grip-vertical" :style="{ color: community.color }"></div>
+        <div class="col-md-12 name" @mouseover="communityClicked" @mouseleave="communityOut" :style="{ color: community.color }">
+          <div class="handle fas fa-grip-vertical"></div>
           {{ community.name }}
+          <div class="fas fa-trash" :class="{ 'hidden':!community.withTrashBtn }" @click="$emit('hide', community)"></div>
         </div>
       </div>
       <div class="row drawer" v-if="isExpanded">
@@ -50,7 +51,7 @@ function communitiesInit() {
       communitiesState.communities = array
         .map(community => {
           community.isShown = false;
-          community.isPinned = false;
+          community.withTrashBtn = false;
           community.isVisible = true;
           community.levelmaps = {
             index: {},
@@ -59,9 +60,7 @@ function communitiesInit() {
           };
           community.color = null;
           community.mask = null;
-          fetchImages([
-            `assets/img/masks/${community.id}.png`
-          ]).then(im => {
+          fetchImages([`assets/img/masks/${community.id}.png`]).then(im => {
             community.mask = im[0];
           });
           return community;

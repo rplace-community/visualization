@@ -1,14 +1,24 @@
 /* ------- PAGE --------- */
 
 body {
-  color: darkorange;
+  color: rgb(212, 117, 0);
   background-color: #333;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   font-size: 13px;
   text-align: center;
   font-weight: bold;
   margin: 0px;
   overflow: hidden;
+}
+
+textarea,
+input.text,
+input[type="text"],
+input[type="button"],
+input[type="submit"],
+.input-checkbox {
+  -webkit-appearance: none;
+  border-radius: 0;
 }
 
 /* ------- COLORS --------- */
@@ -45,7 +55,7 @@ body {
   vertical-align: middle;
 }
 .fullscreen-position i {
-  display:block;
+  display: block;
 }
 
 .reset-map-position {
@@ -55,7 +65,7 @@ body {
   vertical-align: middle;
 }
 .reset-map-position label {
-  display:block;
+  display: block;
   margin: 0;
 }
 
@@ -72,16 +82,16 @@ body {
 }
 
 .lds-trivia {
-  position:absolute;
+  position: absolute;
   width: 300%;
   top: 110%;
-  left:-100%;
+  left: -100%;
   color: #fff;
   font-size: 20px;
 }
 
 .tuto-pan {
-  position:absolute;
+  position: absolute;
   width: 20%;
   height: 20%;
 
@@ -89,10 +99,10 @@ body {
   left: 10%;
   min-width: 265px;
   min-height: 125px;
-  background-color: rgba(255,255,255,0.2);
-  border-width:3px;
-  border-style:dotted;
-  border-color:black;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-width: 3px;
+  border-style: dotted;
+  border-color: black;
 }
 .tuto-pan i {
   width: 30px;
@@ -122,23 +132,42 @@ body {
   animation-timing-function: ease-in-out;
 }
 @keyframes move-cursor-right-left {
-  0%   {right: 5%}
-  20%  {right: 20%;}
-  40%  {right: 35%;}
-  60%  {right: 20%;}
-  80% {right: 5%;}
+  0% {
+    right: 5%;
+  }
+  20% {
+    right: 20%;
+  }
+  40% {
+    right: 35%;
+  }
+  60% {
+    right: 20%;
+  }
+  80% {
+    right: 5%;
+  }
 }
 @keyframes move-cursor-up-down {
-  0%   {top: 30%}
-  20%  {top: 20%;}
-  40%  {top: 30%;}
-  60%  {top: 40%;}
-  80%  {top: 30%;}
+  0% {
+    top: 30%;
+  }
+  20% {
+    top: 20%;
+  }
+  40% {
+    top: 30%;
+  }
+  60% {
+    top: 40%;
+  }
+  80% {
+    top: 30%;
+  }
 }
 
-
 .tuto-rotate {
-  position:absolute;
+  position: absolute;
   width: 8%;
   height: 20%;
 
@@ -146,10 +175,10 @@ body {
   right: 15%;
   min-width: 100px;
   min-height: 125px;
-  background-color: rgba(255,255,255,0.2);
-  border-width:3px;
-  border-style:dotted;
-  border-color:black;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-width: 3px;
+  border-style: dotted;
+  border-color: black;
 }
 .tuto-rotate i {
   width: 30px;
@@ -172,26 +201,29 @@ body {
   animation-timing-function: linear;
 }
 @keyframes mouse-orbit {
-  0%   { transform: rotate(360deg) translateX(20px) rotate(-360deg); }
-  80% { transform: rotate(0deg) translateX(20px) rotate(0deg); }
-  100% { transform: rotate(0deg) translateX(20px) rotate(0deg); }
+  0% {
+    transform: rotate(360deg) translateX(20px) rotate(-360deg);
+  }
+  80% {
+    transform: rotate(0deg) translateX(20px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg) translateX(20px) rotate(0deg);
+  }
 }
 
-
-
-
 .tuto-zoom {
-  position:absolute;
+  position: absolute;
   width: 9%;
   height: 20%;
   bottom: 10%;
   left: 20%;
   min-width: 120px;
   min-height: 160px;
-  background-color: rgba(255,255,255,0.2);
-  border-width:3px;
-  border-style:dotted;
-  border-color:black;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-width: 3px;
+  border-style: dotted;
+  border-color: black;
 }
 .tuto-zoom .fa-info-circle {
   width: 30px;
@@ -207,10 +239,10 @@ body {
   width: 90%;
   height: 65%;
   border-radius: 3px;
-  background-color: rgba(150,150,150,0.6);
+  background-color: rgba(150, 150, 150, 0.6);
 }
 .tuto-separation {
-  background-color: rgba(50,50,50,0.4);
+  background-color: rgba(50, 50, 50, 0.4);
   position: relative;
   width: 2px;
   height: 25%;
@@ -238,9 +270,21 @@ body {
   animation-timing-function: linear;
 }
 @keyframes chevron-bl-move {
-  0%   { left: 30%; bottom: 35%; opacity: 1; }
-  80%  { left: 10%; bottom: 25%; opacity: 0; }
-  100% { left: 30%; bottom: 35%; opacity: 0; }
+  0% {
+    left: 30%;
+    bottom: 35%;
+    opacity: 1;
+  }
+  80% {
+    left: 10%;
+    bottom: 25%;
+    opacity: 0;
+  }
+  100% {
+    left: 30%;
+    bottom: 35%;
+    opacity: 0;
+  }
 }
 
 .tuto-zoom .chevron-ur {
@@ -259,40 +303,67 @@ body {
   animation-timing-function: linear;
 }
 @keyframes chevron-ur-move {
-  0%   { right: 30%; top: 35%; opacity: 1; }
-  80%  { right: 10%; top: 25%; opacity: 0; }
-  100% { right: 30%; top: 35%; opacity: 0; }
+  0% {
+    right: 30%;
+    top: 35%;
+    opacity: 1;
+  }
+  80% {
+    right: 10%;
+    top: 25%;
+    opacity: 0;
+  }
+  100% {
+    right: 30%;
+    top: 35%;
+    opacity: 0;
+  }
 }
 
-
-
-
 .w3-animate-transparent {
-  animation:transp 1s forwards;
+  animation: transp 1s forwards;
   -webkit-animation: transp 1s forwards;
 }
 
 @keyframes transp {
-  from {opacity:1} to {opacity:0};
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @-webkit-keyframes transp {
-    0% { opacity: 1 };
-    100% { opacity: 0 };
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .w3-animate-opacity {
-  animation:opac 0.8s forwards;
+  animation: opac 0.8s forwards;
   -webkit-animation: opac 0.8s forwards;
 }
 
 @keyframes opac {
-  from {opacity:0} to {opacity:1};
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @-webkit-keyframes opac {
-    0% { opacity: 0 };
-    100% { opacity: 1 };
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes lds-circle {
@@ -342,7 +413,6 @@ body {
   height: 100%;
 }
 
-
 #mouse_img {
   position: absolute;
   left: 10%;
@@ -351,26 +421,25 @@ body {
   height: auto;
 }
 
-
 /* ------- TIMELINE --------- */
 
 svg {
   position: absolute;
   left: 100px;
-  max-width: 70%;
+  max-width: 80%;
   bottom: 10px;
   margin: 0 auto;
 }
 
 i.fas {
   color: #333;
-  display:block;
+  display: block;
 }
 
 #timeline-container {
   position: absolute;
-  left: 100px;
-  width: 70%;
+  left: 20px;
+  width: 80%;
   bottom: 10px;
   margin: 0 auto;
   pointer-events: none;
@@ -379,10 +448,11 @@ i.fas {
 #time-controls {
   color: black;
   pointer-events: all;
-  position: sticky;
+  position: absolute;
   left: 0px;
   width: 100px;
-  height: 50px;
+  height: 30px;
+  top: -80px;
 }
 
 #time-controls > button {
@@ -405,7 +475,7 @@ i.fas {
   outline: none;
 }
 .showhide i {
-  display:block;
+  display: block;
 }
 
 .sidebar {
@@ -414,26 +484,41 @@ i.fas {
   bottom: 0%;
   right: 0%;
   width: 20%;
-  margin-right: 5px;
-  -webkit-transition: width .5s; /* Safari */
-  transition: width .5s;
+  min-width: 200px;
+  -webkit-transition: width 0.5s; /* Safari */
+  transition: width 0.5s;
 }
 
 .sidebarReduce {
   width: 0;
-  -webkit-transition: width .5s; /* Safari */
-  transition: width .5s;
+  min-width: 0;
+  -webkit-transition: width 0.5s; /* Safari */
+  transition: width 0.5s;
 }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
 
+.sidebar-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  max-height: 100%;
+}
+
 .blur {
-  width: 100%;
+  left: -10px;
+  width: 105%;
   height: 100%;
   position: absolute;
   background-size: cover;
@@ -448,41 +533,32 @@ i.fas {
 }
 
 /* ------- ATLAS --------- */
-
-.dragArea {
-  margin: 5px 0px;
-  min-height: 20px;
-  border-color: #ccc;
-  border-style: solid;
-  border-width: 2px;
-}
-
-.list-dragging {
-  background-color: blue;
-}
-
 .search-sidebar {
+  flex: none;
   color: #333;
   margin: 5px 0px;
   width: 100%;
-  overflow: hidden;
+}
+
+.dragArea {
+  min-height: 10px;
 }
 
 #selected-communities {
-  margin: 5px;
-  max-height: calc(100vh - 200px);
+  flex: none;
   padding-right: 5px;
   max-width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  border-color: #ccc;
+  border-style: solid;
+  border-width: 0px 0px 2px 0px;
 }
 
-
 #filtered-communities {
-  margin: 5px;
-  max-height: calc(100vh - 200px);
-  max-width: 100%;
+  flex: 1;
   padding-right: 5px;
+  max-width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -507,16 +583,46 @@ i.fas {
   background: #555;
 }
 
+.dropzone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 100px;
+  -ms-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border-width: 3px;
+  border-style: dotted;
+  border-color: black;
+  border-radius: 5px;
+  background: white;
+  color: gray;
+  opacity: 0.7;
+}
+
 .community-component {
   text-align: left;
   width: 100%;
-  min-height: 20px;
+  min-height: 30px;
   margin-top: 5px;
   max-height: inherit;
   max-width: inherit;
 }
 
 .community-component.hidden {
+  margin-top: 0px;
+  height: 0;
+  display: none;
+}
+
+.community-component .handle {
+  font-size: 1.2em;
+}
+
+.fa-trash {
+  float: right;
+}
+.fa-trash.hidden {
   margin-top: 0px;
   height: 0;
   display: none;
@@ -538,11 +644,10 @@ i.fas {
 /* ------- SETTINGS --------- */
 
 #settings {
-  float: right;
-  position: sticky;
+  flex: none;
+  align-self: flex-end;
   width: 100%;
-  bottom: 0px;
-  right: 0px;
+  margin-bottom: 10px;
 }
 
 #settings .param {
@@ -551,6 +656,10 @@ i.fas {
   align-items: center;
   justify-content: flex-start;
   margin-top: 15px;
+}
+#settings input {
+  margin-bottom: 10px;
+  margin-right: 5px;
 }
 
 #settings label {

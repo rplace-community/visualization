@@ -81,7 +81,6 @@ Vue.component("timeline-component", {
       this.$emit("time-seek", this.time);
     },
     window: function() {
-      console.log("window updated from vuejs");
       this.$emit("window-updated", this.window);
     }
   },
@@ -91,8 +90,9 @@ Vue.component("timeline-component", {
       const vm = this;
       const container = d3.select("#timeline-container");
 
+      const winWidth = window.innerWidth;
       const margin = { top: 10, right: 10, bottom: 10, left: 10 },
-        width = Math.max(0, 800) - margin.left - margin.right,
+        width = winWidth * 0.6 - margin.left - margin.right,
         height = 100;
 
       const svg = container
@@ -107,8 +107,12 @@ Vue.component("timeline-component", {
 
       x.domain([startDate, new Date(endTs + addedAfterEnd)]);
 
-      const xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat("%H:%M"));
-      const yAxis = d3.axisLeft(y);
+      const xAxis = d3
+        .axisBottom(x)
+        .ticks(6)
+        .tickFormat(d3.timeFormat("%e %b %H:%M"));
+
+      const yAxis = d3.axisLeft(y).ticks(3);
 
       const brush = d3
         .brushX()
@@ -134,6 +138,11 @@ Vue.component("timeline-component", {
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
+
+      context
+        .append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxis);
 
       vm.drawAreas();
 
@@ -269,11 +278,20 @@ Vue.component("timeline-component", {
       this.speeding = (this.speeding + 1) % 5;
       let x = undefined;
       switch (this.speeding) {
-      case 1: x = 1; break;
-      case 2: x = 1.25; break;
-      case 3: x = 1.5 ; break;
-      case 4: x = 1.75; break;
-      default:x = 2;
+        case 1:
+          x = 1;
+          break;
+        case 2:
+          x = 1.25;
+          break;
+        case 3:
+          x = 1.5;
+          break;
+        case 4:
+          x = 1.75;
+          break;
+        default:
+          x = 2;
       }
       this.speed = defaultSpeed * x;
       d3.select("#speed").text(`${x}x`);
