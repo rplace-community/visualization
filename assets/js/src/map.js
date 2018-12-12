@@ -148,13 +148,17 @@ function init() {
 
   controls.minDistance = 1;
 
-  controls.minZoom = 1;
+  controls.minZoom = 0.8;
   controls.maxZoom = 10;
 
   controls.maxPolarAngle = (Math.PI * 4.5) / 10.0;
   controls.autoRotateSpeed = 0.6;
-  mapSetAutorotate(false);
 
+  controls.panSpeed = 0.5;
+  controls.rotateSpeed = 0.5;
+  controls.zoomSpeed = 0.8;
+
+  mapSetAutorotate(false);
 
   // world ***********************************************************************************************************
 
@@ -203,7 +207,6 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
 
 function animate() {
   requestAnimationFrame(animate);
