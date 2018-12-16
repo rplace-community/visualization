@@ -441,7 +441,7 @@ i.fas {
   left: 20px;
   width: 80%;
   bottom: 10px;
-  margin: 0 auto;
+  padding-left: 20px;
   pointer-events: none;
 }
 

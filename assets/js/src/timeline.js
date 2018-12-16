@@ -11,6 +11,7 @@ const addedAfterEnd = 2 * windowStep;
 let d3ctx = {
   x: null,
   y: null,
+  yAxis: null,
   brush: null,
   oldWindow: null,
   wasPlaying: false,
@@ -91,7 +92,7 @@ Vue.component("timeline-component", {
       const container = d3.select("#timeline-container");
 
       const winWidth = window.innerWidth;
-      const margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      const margin = { top: 10, right: 10, bottom: 10, left: 30 },
         width = winWidth * 0.6 - margin.left - margin.right,
         height = 100;
 
@@ -106,6 +107,7 @@ Vue.component("timeline-component", {
       d3ctx.y = y;
 
       x.domain([startDate, new Date(endTs + addedAfterEnd)]);
+      y.domain([0, 200000]);
 
       const xAxis = d3
         .axisBottom(x)
@@ -113,6 +115,7 @@ Vue.component("timeline-component", {
         .tickFormat(d3.timeFormat("%e %b %H:%M"));
 
       const yAxis = d3.axisLeft(y).ticks(3);
+      d3ctx.yAxis = yAxis;
 
       const brush = d3
         .brushX()
@@ -142,6 +145,7 @@ Vue.component("timeline-component", {
       context
         .append("g")
         .attr("class", "axis axis--y")
+        .attr("transform", "translate(" + (margin.left - 10) + "," + 0 + ")")
         .call(yAxis);
 
       vm.drawAreas();
@@ -183,6 +187,12 @@ Vue.component("timeline-component", {
       ];
 
       d3ctx.y.domain(ydom);
+
+      var t = d3.transition().duration(500);
+
+      d3.select(".axis--y")
+        .transition(t)
+        .call(d3ctx.yAxis);
 
       const context = d3.select("g.context");
       vm.paths.forEach(c => {
