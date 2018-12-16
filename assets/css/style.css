@@ -552,7 +552,7 @@ i.fas {
   overflow-x: hidden;
   border-color: #ccc;
   border-style: solid;
-  border-width: 0px 0px 2px 0px;
+  border-width: 0px 0px 1px 0px;
 }
 
 #filtered-communities {
@@ -601,27 +601,47 @@ i.fas {
 }
 
 .community-component {
-  text-align: left;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  min-height: 30px;
-  margin-top: 5px;
+  padding: 7px 0px 6px 0px;
   max-height: inherit;
   max-width: inherit;
+  border-width: 0px 0px 1px 0px;
+  border-style: solid;
+  border-color: #555;
 }
 
+.community-component > div {
+  display: flex;
+  flex-direction: row;
+}
 .community-component.hidden {
   margin-top: 0px;
   height: 0;
   display: none;
 }
 
-.community-component .handle {
-  font-size: 1.2em;
+.community-header {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
 }
 
-.fa-trash {
-  float: right;
+.community-name {
+  flex: 1;
+  text-align: start;
+  cursor: context-menu;
 }
+
+.community-component .handle {
+  font-size: 1.2em;
+  padding-right: 5px;
+  text-align: left;
+  color: #555;
+  cursor: move;
+}
+
 .fa-trash.hidden {
   margin-top: 0px;
   height: 0;
@@ -632,12 +652,8 @@ i.fas {
   font-size: 0.9em;
 }
 
-.community-component .handle {
-  text-align: left;
-}
-
 .community-component .drawer {
-  margin: 10px;
+  margin: 5px;
 }
 /* ------- ATLAS END --------- */
 
@@ -656,16 +672,47 @@ i.fas {
   align-items: center;
   justify-content: flex-start;
   margin-top: 15px;
+  margin-bottom: 15px;
 }
 #settings input {
-  margin-bottom: 10px;
-  margin-right: 5px;
+  margin: 0px 5px 0px 0px;
 }
 
 #settings label {
   float: left;
   text-align: left;
   width: 50%;
+  margin: 0px;
 }
 
 /* ------- SETTINGS END --------- */
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: #555;
+  outline: none;
+  opacity: 0.6;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ddd;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ddd;
+  cursor: pointer;
+}
