@@ -22,6 +22,7 @@ let d3ctx = {
 Vue.component("timeline-component", {
   template: `
     <div id="timeline-container">
+      <div class="timeline blur"></div>
       <div id="time-controls">
       <button id="speed" @click="speedUp()">
         1x
@@ -93,11 +94,15 @@ Vue.component("timeline-component", {
 
       const winWidth = window.innerWidth;
       const margin = { top: 10, right: 10, bottom: 10, left: 30 },
-        width = winWidth * 0.6 - margin.left - margin.right,
+        width = winWidth * 0.65 - margin.left - margin.right,
         height = 100;
 
       const svg = container
         .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+
+      d3.select(".timeline.blur")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
