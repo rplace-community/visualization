@@ -476,11 +476,11 @@ g.axis {
   font-family: "Source Sans Pro", sans-serif;
 }
 .axis--x {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .axis--y {
-  font-size: 12px;
+  font-size: 13px;
 }
 /* ------- SIDEBAR --------- */
 
@@ -711,6 +711,7 @@ g.axis {
   align-self: flex-end;
   width: 100%;
   margin-bottom: 10px;
+  font-size: 0.8em;
 }
 
 #settings-button {

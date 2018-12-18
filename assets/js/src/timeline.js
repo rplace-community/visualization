@@ -3,10 +3,31 @@ const endTs = 1491238733000;
 const startDate = new Date(startTs);
 const endDate = new Date(endTs);
 
+const datesTicks = [
+  startDate,
+  new Date(2017, 3, 1, 0, 0, 0, 0),
+  // new Date(2017, 3, 1, 6, 0, 0, 0),
+  new Date(2017, 3, 1, 12, 0, 0, 0),
+  // new Date(2017, 3, 1, 18, 0, 0, 0),
+  new Date(2017, 3, 2, 0, 0, 0, 0),
+  // new Date(2017, 3, 2, 6, 0, 0, 0),
+  new Date(2017, 3, 2, 12, 0, 0, 0),
+  // new Date(2017, 3, 2, 18, 0, 0, 0),
+  new Date(2017, 3, 3, 0, 0, 0, 0),
+  //new Date(2017, 3, 3, 6, 0, 0, 0),
+  new Date(2017, 3, 3, 12, 0, 0, 0),
+  endDate
+];
+const formatTime = d3.timeFormat("%H:%M");
+const formatDate = d3.timeFormat("%e %b");
+
 const ticksInterval = 40.0;
 const defaultSpeed = 4380;
 const windowStep = 30 * 60 * 1000;
 const addedAfterEnd = 0; //2 * windowStep;
+const defaultWindow = 3 * windowStep;
+
+const marginLeftCorr = 20;
 
 let d3ctx = {
   x: null,
@@ -21,7 +42,7 @@ let d3ctx = {
 
 Vue.component("timeline-component", {
   template: `
-    <div id="timeline-container" :style="{ 'width' : (fullWidth ? '100%' : '82%') }">
+    <div id="timeline-container" :style="{ 'width' : (fullWidth ? '105%' : '82%') }">
       <div class="timeline blur"></div>
       <div id="time-controls">
         <button id="speed" @click="speedUp()">
@@ -36,7 +57,7 @@ Vue.component("timeline-component", {
   props: ["communities", "time", "fullWidth"],
   data: function() {
     return {
-      window: windowStep,
+      window: defaultWindow,
       isPlaying: false,
       speed: defaultSpeed,
       speeding: 3
@@ -99,7 +120,13 @@ Vue.component("timeline-component", {
 
       let winWidth = window.innerWidth;
       winWidth *= this.fullWidth ? 0.8 : 0.65;
-      const margin = { top: 10, right: 10, bottom: 10, left: 30 },
+
+      const margin = {
+          top: 10,
+          right: 10,
+          bottom: 10,
+          left: 10 + marginLeftCorr
+        },
         width = winWidth - margin.left - margin.right,
         height = 100;
 
@@ -123,8 +150,8 @@ Vue.component("timeline-component", {
 
       const xAxis = d3
         .axisBottom(x)
-        .ticks(6)
-        .tickFormat(d3.timeFormat("%e %b %H:%M"));
+        .tickValues(datesTicks)
+        .tickFormat(d => (d.getHours() == 0 ? formatDate(d) : formatTime(d)));
 
       const yAxis = d3.axisLeft(y).ticks(3);
       d3ctx.yAxis = yAxis;
@@ -262,8 +289,8 @@ Vue.component("timeline-component", {
         let t0, t1;
         if (!d3.event.selection) {
           if (d3.event.sourceEvent) {
-            t1 = x.invert(d3.event.sourceEvent.layerX);
-            t0 = new Date(t1.getTime() - windowStep);
+            t1 = x.invert(d3.event.sourceEvent.layerX - marginLeftCorr);
+            t0 = new Date(t1.getTime() - defaultWindow);
             d3.select(this).call(d3.event.target.move, [t0, t1].map(x));
             if (t1.getTime() !== vm.time.getTime() && !vm.isPlaying) {
               vm.$emit("update:time-seek", t1);
