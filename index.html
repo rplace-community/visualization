@@ -148,11 +148,13 @@
         :options="{put:'true', group:'community'}"
         class="dropzone"
         @add="showCommunity"
-        >Drop community here to show it</draggable
       >
+        Drop community here to show it
+      </draggable>
       <timeline-component
         v-if="loaded"
         :communities="displayedCommunities"
+        v-bind:time.sync="time"
         v-on:time-seek="timeSeek"
         v-on:window-updated="windowUpdated"
       ></timeline-component>

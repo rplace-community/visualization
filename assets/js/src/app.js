@@ -84,7 +84,6 @@ var vm = new Vue({
     },
     timeSeek: function(time) {
       this.time = time;
-      seekTime(time.getTime() - startTs);
     },
     windowUpdated: function(window) {
       this.window = window;
@@ -134,7 +133,7 @@ var vm = new Vue({
         arr = arr.map(c => c.levelmaps.blobs);
       }
       if (arr && arr.length > 0) {
-        const window = Math.floor(this.window / windowStep);
+        const window = Math.max(1, Math.floor(this.window / windowStep));
         cmdWorker
           .send("mergeLevelmaps", {
             images: arr,
@@ -201,3 +200,7 @@ var vm = new Vue({
   },
   ready: function() {}
 });
+
+function appSetTime(t) {
+  vm.time = t;
+}

@@ -7,6 +7,14 @@ const FILTER_SIZE = 200;
 const PLANE_SIZE = 1000;
 const TOT_IMAGES = 145;
 
+let i = 0;
+const interval = 30;
+const clock = new THREE.Clock();
+let cumDt = 0;
+let playing = false;
+let currentTime = 0;
+let speed = defaultSpeed;
+
 let drawSpikes = false;
 
 let camera, controls, scene, renderer;
@@ -75,14 +83,6 @@ function mapSetAutorotate(autorotate) {
 
 function mapResetPosition() {
   controls.reset();
-}
-
-function seekTime(t) {
-  timeBack.seekTime(t);
-  timeLevels.seekTime(t);
-
-  drawBackground();
-  drawLevelMaps();
 }
 
 function drawBackground() {
@@ -208,9 +208,34 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+function _seekTime(t) {
+  currentTime = t;
+
+  timeBack.seekTime(t);
+  timeLevels.seekTime(t);
+
+  drawBackground();
+  drawLevelMaps();
+}
+
+const updateAppTime = throttle(function(t) {
+  if (t + startTs > endTs) {
+    currentTime = 0;
+    t = 0;
+  }
+  appSetTime(new Date(t + startTs));
+}, 60);
+
 function animate() {
   requestAnimationFrame(animate);
   controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+
+  cumDt += clock.getDelta() * 1000;
+  if (playing && cumDt > interval) {
+    _seekTime(currentTime + speed * (1000 / cumDt));
+    cumDt = 0;
+    updateAppTime(currentTime);
+  }
   render();
 }
 
@@ -272,4 +297,17 @@ function mapCommunityHighlight(communityMask) {
     planeMaterial.emissiveIntensity = 0;
   }
   planeMaterial.needsUpdate = true;
+}
+
+function mapSeekTime(t) {
+  _seekTime(t.getTime() - startTs);
+}
+
+function mapSetSpeed(s) {
+  speed = s;
+}
+
+function mapPlay(play) {
+  playing = play;
+  cumDt = 0;
 }
