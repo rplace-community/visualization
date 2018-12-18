@@ -18,7 +18,7 @@ var appState = {
   communities: communitiesState,
   displayedCommunities_: [],
   currentLevelmaps: [],
-  smoothing: 1,
+  smoothing: 0.75,
   ema: true,
   ismean: false,
   drawSpikes: false,
@@ -90,6 +90,10 @@ var vm = new Vue({
     },
     centerMap: function(event) {
       mapResetPosition();
+    },
+
+    pauseMap: function(pause) {
+      mapTemporaryPause(pause);
     },
 
     toggleSidebar: function(event) {

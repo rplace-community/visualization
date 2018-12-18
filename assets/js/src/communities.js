@@ -27,16 +27,14 @@ Vue.component("community-component", {
     }
   },
   template: `
-    <div class="community-component">
+    <div class="community-component" @click="toggleExpanded">
+      <div class="handle fas fa-grip-vertical"></div>
       <div>
-        <div class="handle fas fa-grip-vertical"></div>
-        <div class="community-header" @click="toggleExpanded" @mouseover="communityClicked" @mouseleave="communityOut" :style="{ color: community.color }">
+        <div class="community-header" @mouseover="communityClicked" @mouseleave="communityOut" :style="{ color: community.color }">
           <div class="community-name">{{ community.name }}</div>
           <div class="fas fa-trash" :class="{ 'hidden':!community.withTrashBtn }" @click="$emit('hide', community)"></div>
         </div>
-      </div>
-      <div class="drawer" v-if="isExpanded">
-        <div class="description" :style="{ color: community.color }">{{ community.description }}</div>
+        <div class="description" :class="{ 'truncate': !isExpanded }" :style="{ color: community.color}">{{ community.description }}</div>
       </div>
     </div>`
 });
