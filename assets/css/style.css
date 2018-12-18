@@ -562,7 +562,6 @@ g.axis {
 
 .dragArea {
   min-height: 10px;
-  flex: none;
   padding-right: 5px;
   padding-bottom: 5px;
   max-width: 100%;
@@ -573,9 +572,14 @@ g.axis {
   border-width: 0px 0px 2px 0px;
 }
 
+#selected-communities {
+  padding-bottom: 5px;
+}
+
 #filtered-communities {
   flex: 1;
   padding-bottom: 5px;
+  min-height: 200px;
 }
 
 /* width */
@@ -668,6 +672,10 @@ g.axis {
   color: #999;
 }
 
+.community-header .fa-trash :not(#selected-communities) {
+  display: none;
+}
+
 .community-header.fa-trash.hidden {
   margin-top: 0px;
   height: 0;
@@ -686,9 +694,10 @@ g.axis {
   text-overflow: ellipsis;
 }
 
-.community-component .drawer {
-  /* margin: 5px; */
+.dropzone .community-component .description {
+  display: none;
 }
+
 /* ------- ATLAS END --------- */
 
 /* ------- SETTINGS --------- */
