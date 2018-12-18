@@ -6,11 +6,12 @@ const endDate = new Date(endTs);
 const ticksInterval = 40.0;
 const defaultSpeed = 4380;
 const windowStep = 30 * 60 * 1000;
-const addedAfterEnd = 2 * windowStep;
+const addedAfterEnd = 0; //2 * windowStep;
 
 let d3ctx = {
   x: null,
   y: null,
+  yAxis: null,
   brush: null,
   oldWindow: null,
   wasPlaying: false,
@@ -21,24 +22,24 @@ let d3ctx = {
 Vue.component("timeline-component", {
   template: `
     <div id="timeline-container">
+      <div class="timeline blur"></div>
       <div id="time-controls">
-      <button id="speed" @click="speedUp()">
-        1x
-      </button>
+        <button id="speed" @click="speedUp()">
+          1x
+        </button>
         <button id="play" @click="togglePlayPause()">
           <i class="fas" :class="{ 'fa-play': !isPlaying, 'fa-pause': isPlaying }"></i>
         </button>
       </div>
     </div>`,
 
-  props: ["communities"],
+  props: ["communities", "time"],
   data: function() {
     return {
-      time: new Date(startTs + windowStep),
       window: windowStep,
       isPlaying: false,
       speed: defaultSpeed,
-      speeding: 1
+      speeding: 3
     };
   },
   mounted: function() {
@@ -78,10 +79,12 @@ Vue.component("timeline-component", {
     },
     time: function() {
       this.drawBrush();
-      this.$emit("time-seek", this.time);
+      if (!this.isPlaying) {
+        this.$emit("update:time-seek", this.time);
+        mapSeekTime(this.time);
+      }
     },
     window: function() {
-      console.log("window updated from vuejs");
       this.$emit("window-updated", this.window);
     }
   },
@@ -91,8 +94,9 @@ Vue.component("timeline-component", {
       const vm = this;
       const container = d3.select("#timeline-container");
 
-      const margin = { top: 10, right: 10, bottom: 10, left: 10 },
-        width = Math.max(0, 800) - margin.left - margin.right,
+      const winWidth = window.innerWidth;
+      const margin = { top: 10, right: 10, bottom: 10, left: 30 },
+        width = winWidth * 0.65 - margin.left - margin.right,
         height = 100;
 
       const svg = container
@@ -100,18 +104,30 @@ Vue.component("timeline-component", {
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
+      d3.select(".timeline.blur")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+
       const x = d3.scaleTime().range([margin.left, width - margin.right]);
+
       const y = d3.scaleLinear().range([height - margin.top, margin.bottom]);
       d3ctx.x = x;
       d3ctx.y = y;
 
       x.domain([startDate, new Date(endTs + addedAfterEnd)]);
+      y.domain([0, 200000]);
 
-      const xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat("%H:%M"));
-      const yAxis = d3.axisLeft(y);
+      const xAxis = d3
+        .axisBottom(x)
+        .ticks(6)
+        .tickFormat(d3.timeFormat("%e %b %H:%M"));
+
+      const yAxis = d3.axisLeft(y).ticks(3);
+      d3ctx.yAxis = yAxis;
 
       const brush = d3
         .brushX()
+        .extent([[-width - margin.left, 0], [width - margin.right, height]])
         .on("end", vm.brushEnded(x))
         .on("brush", vm.brushing(x));
       d3ctx.brush = brush;
@@ -129,11 +145,26 @@ Vue.component("timeline-component", {
         .attr("class", "context")
         .attr("transform", "translate(" + margin.left + "," + 0 + ")");
 
+      const clipPath = context
+        .append("defs")
+        .append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", width - margin.left - margin.right)
+        .attr("transform", "translate(" + margin.left + "," + 0 + ")")
+        .attr("height", height);
+
       context
         .append("g")
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
+
+      context
+        .append("g")
+        .attr("class", "axis axis--y")
+        .attr("transform", "translate(" + (margin.left - 10) + "," + 0 + ")")
+        .call(yAxis);
 
       vm.drawAreas();
 
@@ -144,10 +175,9 @@ Vue.component("timeline-component", {
       d3.select("g.context")
         .append("g")
         .attr("class", "brush")
-        .on("mousedown", function() {
-          console.log("brush mouse down");
+        .attr("clip-path", "url(#clip)")
+        .on("mousedown touchstart", function() {
           if (vm.isPlaying) {
-            console.log("pause playing");
             vm.togglePlayPause();
             d3ctx.wasPlaying = true;
           }
@@ -174,6 +204,12 @@ Vue.component("timeline-component", {
       ];
 
       d3ctx.y.domain(ydom);
+
+      var t = d3.transition().duration(500);
+
+      d3.select(".axis--y")
+        .transition(t)
+        .call(d3ctx.yAxis);
 
       const context = d3.select("g.context");
       vm.paths.forEach(c => {
@@ -204,8 +240,9 @@ Vue.component("timeline-component", {
 
         [t0, t1] = d3.event.selection.map(x.invert);
         const newWindow = t1 - t0;
-        if (newWindow === d3ctx.oldWindow) {
-          vm.time = t1;
+        if (newWindow === d3ctx.oldWindow && !vm.isPlaying) {
+          vm.$emit("update:time-seek", t1);
+          mapSeekTime(t1);
         }
       };
     },
@@ -217,11 +254,10 @@ Vue.component("timeline-component", {
           if (d3.event.sourceEvent) {
             t1 = x.invert(d3.event.sourceEvent.layerX);
             t0 = new Date(t1.getTime() - windowStep);
-            d3.select(this)
-              .transition()
-              .call(d3.event.target.move, [t0, t1].map(x));
-            if (t1.getTime() !== vm.time.getTime()) {
-              vm.time = t1;
+            d3.select(this).call(d3.event.target.move, [t0, t1].map(x));
+            if (t1.getTime() !== vm.time.getTime() && !vm.isPlaying) {
+              vm.$emit("update:time-seek", t1);
+              mapSeekTime(t1);
             }
             const window = t1.getTime() - t0.getTime();
             if (window !== d3ctx.oldWindow) {
@@ -236,6 +272,11 @@ Vue.component("timeline-component", {
             vm.window = window;
             d3ctx.oldWindow = window;
           }
+
+          if (t1.getTime() !== vm.time.getTime()) {
+            vm.$emit("update:time-seek", t1);
+            mapSeekTime(t1);
+          }
         }
 
         if (d3ctx.wasPlaying && !vm.isPlaying) {
@@ -244,38 +285,30 @@ Vue.component("timeline-component", {
       };
     },
     togglePlayPause: function() {
-      const vm = this;
-      if (vm.timer) {
-        clearInterval(vm.timer);
-      }
-      vm.isPlaying = !vm.isPlaying;
-      d3ctx.wasPlaying = vm.isPlaying;
-      if (vm.isPlaying) {
-        vm.timer = setInterval(function() {
-          if (!vm.time || !vm.speed) {
-            console.error("this.time is undefined!!!");
-            return;
-          }
-          const newTime = vm.time.getTime() + vm.speed * (1000 / ticksInterval);
-          if (newTime > endTs) {
-            vm.time = startDate;
-          } else {
-            vm.time = new Date(newTime);
-          }
-        }, ticksInterval);
-      }
+      this.isPlaying = !this.isPlaying;
+      d3ctx.wasPlaying = this.isPlaying;
+      mapPlay(this.isPlaying);
     },
     speedUp: function() {
       this.speeding = (this.speeding + 1) % 5;
       let x = undefined;
       switch (this.speeding) {
-      case 1: x = 1; break;
-      case 2: x = 1.25; break;
-      case 3: x = 1.5 ; break;
-      case 4: x = 1.75; break;
-      default:x = 2;
+        case 1:
+          x = 0.25;
+          break;
+        case 2:
+          x = 0.5;
+          break;
+        case 3:
+          x = 1;
+          break;
+        case 4:
+          x = 2;
+          break;
+        default:
+          x = 4;
       }
-      this.speed = defaultSpeed * x;
+      mapSetSpeed(defaultSpeed * x);
       d3.select("#speed").text(`${x}x`);
     }
   }

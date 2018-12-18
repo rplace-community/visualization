@@ -1,15 +1,49 @@
 const MAPS_COUNT = 145;
 
 /******* Communities state *******/
-var communitiesState = {
+let communitiesState = {
   isVisible: true,
   search: "",
   communities: []
 };
 
+/******* Community component *******/
+Vue.component("community-component", {
+  props: ["community", "ismean"],
+  data: function() {
+    return {
+      isExpanded: false
+    };
+  },
+  methods: {
+    toggleExpanded: function() {
+      this.isExpanded = !this.isExpanded;
+    },
+    communityClicked: function() {
+      mapCommunityHighlight(this.community.mask);
+    },
+    communityOut: function() {
+      mapCommunityHighlight();
+    }
+  },
+  template: `
+    <div class="community-component">
+      <div>
+        <div class="handle fas fa-grip-vertical"></div>
+        <div class="community-header" @click="toggleExpanded" @mouseover="communityClicked" @mouseleave="communityOut" :style="{ color: community.color }">
+          <div class="community-name">{{ community.name }}</div>
+          <div class="fas fa-trash" :class="{ 'hidden':!community.withTrashBtn }" @click="$emit('hide', community)"></div>
+        </div>
+      </div>
+      <div class="drawer" v-if="isExpanded">
+        <div class="description" :style="{ color: community.color }">{{ community.description }}</div>
+      </div>
+    </div>`
+});
+
 /******* Communities global context functions *******/
 function communitiesInit() {
-  return fetch("assets/json/communities.json")
+  return fetch(`assets/json/communities.json`)
     .then(function(response) {
       return response.json();
     })
@@ -17,7 +51,7 @@ function communitiesInit() {
       communitiesState.communities = array
         .map(community => {
           community.isShown = false;
-          community.isPinned = false;
+          community.withTrashBtn = false;
           community.isVisible = true;
           community.levelmaps = {
             index: {},
@@ -26,9 +60,7 @@ function communitiesInit() {
           };
           community.color = null;
           community.mask = null;
-          fetchImages([
-            `assets/img/levelmaps/max/${community.id}/mask.png`
-          ]).then(im => {
+          fetchImages([`assets/img/masks/${community.id}.png`]).then(im => {
             community.mask = im[0];
           });
           return community;
@@ -53,47 +85,14 @@ function communitiesSearch(text) {
     });
 }
 
-/******* Community component *******/
-Vue.component("community-component", {
-  props: ["community"],
-  data: function() {
-    return {
-      isExpanded: false
-    };
-  },
-  methods: {
-    toggleExpanded: function() {
-      this.isExpanded = !this.isExpanded;
-    },
-    communityClicked: function() {
-      mapCommunityHighlight(this.community.mask);
-    },
-    communityOut: function() {
-      mapCommunityHighlight();
-    }
-  },
-  template: `
-    <div class="community-component">
-      <div class="row justify-content-between">
-        <div class="col-md-12 name" @mouseover="communityClicked" @mouseleave="communityOut">
-          <div class="handle fas fa-grip-vertical" :style="{ color: community.color }"></div>
-          {{ community.name }}
-        </div>
-      </div>
-      <div class="row drawer" v-if="isExpanded">
-        <div class="description">{{ community.description }}</div>
-      </div>
-    </div>`
-});
-
-function fetchLevelmaps(community) {
-  return fetch(`assets/json/levelmaps/max/${community}.json`)
+function fetchLevelmaps(community, mode) {
+  return fetch(`assets/json/levelmaps/${mode}/${community}.json`)
     .then(response => {
       return response.json();
     })
     .then(index => {
       const urls = index.map(
-        e => `assets/img/levelmaps/max/${community}/${e.idx}.png`
+        e => `assets/img/levelmaps/${mode}/${community}/${e.idx}.png`
       );
       return fetchImagesData(urls).then(datas => {
         const maxs = index.map(e => e.max);

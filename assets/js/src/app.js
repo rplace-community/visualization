@@ -1,4 +1,7 @@
-const MAX_DISP_COMMUNITIES = 6;
+const MAX_DISP_COMMUNITIES = 10;
+const colors = [...Array(MAX_DISP_COMMUNITIES).keys()].map(
+  d3.scaleOrdinal(d3.schemeCategory10)
+);
 
 var appState = {
   loaded: false,
@@ -17,14 +20,11 @@ var appState = {
   currentLevelmaps: [],
   smoothing: 1,
   ema: true,
+  ismean: false,
   drawSpikes: false,
   sidebarHidden: true,
   autoRotate: false,
-  freeColors: new Set(
-    [...Array(MAX_DISP_COMMUNITIES).keys()].map(
-      d3.scaleOrdinal(d3.schemeCategory10)
-    )
-  )
+  isDragging: false
 };
 
 /******* Vue component *******/
@@ -40,9 +40,11 @@ var vm = new Vue({
       });
     },
     dragStart: function(event) {
-      const community = this.communities.communities[event.oldIndex];
+      this.isDragging = true;
+      const community = event.item._underlying_vm_;
+      const mode = this.ismean ? "mean" : "max";
       if (!community.levelmaps.isLoaded) {
-        fetchLevelmaps(community.id).then(([index, levelmaps]) => {
+        fetchLevelmaps(community.id, mode).then(([index, levelmaps]) => {
           community.levelmaps.index = index;
           community.levelmaps.blobs = levelmaps;
           community.levelmaps.isLoaded = true;
@@ -50,24 +52,38 @@ var vm = new Vue({
         });
       }
     },
+    dragEnd: function() {
+      this.isDragging = false;
+    },
     showCommunity: function(event) {
       const community = event.item._underlying_vm_;
       if (this.displayedCommunities_.length <= MAX_DISP_COMMUNITIES) {
-        const c = this.freeColors.values().next().value;
-        community.color = c;
-        this.freeColors.delete(c);
+        const usedColors = new Set(
+          this.displayedCommunities_.map(c => c.color)
+        );
+        const availableColors = colors.filter(c => !usedColors.has(c));
+        community.color = availableColors.values().next().value;
+        community.withTrashBtn = true;
       } else {
+        // cancel move
         this.communities.communities.splice(event.oldIndex, 0, community);
         this.displayedCommunities_.splice(event.newIndex, 1);
       }
     },
-    hideCommunity: function(evt) {
-      this.freeColors.add(evt.item._underlying_vm_.color);
-      evt.item._underlying_vm_.color = null;
+    unshowCommunity: function(evt) {
+      this.hideCommunity(evt.item._underlying_vm_);
+    },
+    hideCommunity: function(community) {
+      community.color = null;
+      community.withTrashBtn = false;
+      const i = this.displayedCommunities_.indexOf(community);
+      if (i != -1) {
+        this.displayedCommunities_.splice(i, 1);
+        this.communities.communities.splice(0, 0, community);
+      }
     },
     timeSeek: function(time) {
       this.time = time;
-      seekTime(time.getTime() - startTs);
     },
     windowUpdated: function(window) {
       this.window = window;
@@ -117,7 +133,7 @@ var vm = new Vue({
         arr = arr.map(c => c.levelmaps.blobs);
       }
       if (arr && arr.length > 0) {
-        const window = Math.floor(this.window / windowStep);
+        const window = Math.max(1, Math.floor(this.window / windowStep));
         cmdWorker
           .send("mergeLevelmaps", {
             images: arr,
@@ -135,6 +151,7 @@ var vm = new Vue({
           });
       }
     },
+
     smoothing: function(v) {
       cmdWorker
         .send("blurImages", { images: this.currentLevelmaps, radius: v })
@@ -145,11 +162,12 @@ var vm = new Vue({
   created: function() {
     //console.log(endTs - startTs + 2 * windowStep);
     let loaded_backs = 0;
+    const mode = this.ismean ? "mean" : "max";
 
     Promise.all([
       communitiesInit(),
       // enable global levelmaps when starting viz
-      fetchLevelmaps("global").then(([index, levelmaps]) => {
+      fetchLevelmaps("global", mode).then(([index, levelmaps]) => {
         let globalCommunity = {};
         globalCommunity.idx = -1;
         globalCommunity.name = "global";
@@ -182,3 +200,7 @@ var vm = new Vue({
   },
   ready: function() {}
 });
+
+function appSetTime(t) {
+  vm.time = t;
+}
