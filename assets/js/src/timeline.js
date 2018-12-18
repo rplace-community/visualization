@@ -127,6 +127,7 @@ Vue.component("timeline-component", {
 
       const brush = d3
         .brushX()
+        .extent([[-width - margin.left, 0], [width - margin.right, height]])
         .on("end", vm.brushEnded(x))
         .on("brush", vm.brushing(x));
       d3ctx.brush = brush;

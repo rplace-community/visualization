@@ -209,6 +209,10 @@ function onWindowResize() {
 }
 
 function _seekTime(t) {
+  if (t + startTs > endTs || t < 0) {
+    currentTime = 0;
+    t = 0;
+  }
   currentTime = t;
 
   timeBack.seekTime(t);
@@ -219,7 +223,7 @@ function _seekTime(t) {
 }
 
 const updateAppTime = throttle(function(t) {
-  if (t + startTs > endTs) {
+  if (t + startTs > endTs || t < 0) {
     currentTime = 0;
     t = 0;
   }
