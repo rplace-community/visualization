@@ -191,6 +191,13 @@ Vue.component("timeline-component", {
       d3.selectAll(".brush .handle--e").remove();
 
       this.togglePlayPause();
+
+      d3.select(window).on("resize", resize);
+
+      function resize() {
+        d3.select("svg").remove();
+        vm.initTimeline();
+      }
     },
     /********** draw areas **********/
     drawAreas: function() {
