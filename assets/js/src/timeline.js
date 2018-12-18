@@ -4,7 +4,7 @@ const startDate = new Date(startTs);
 const endDate = new Date(endTs);
 
 const ticksInterval = 40.0;
-const defaultSpeed = 4320;
+const defaultSpeed = 4380;
 const windowStep = 30 * 60 * 1000;
 const addedAfterEnd = 2 * windowStep;
 
