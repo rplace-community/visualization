@@ -1,7 +1,7 @@
 const MAPS_COUNT = 145;
 
 /******* Communities state *******/
-var communitiesState = {
+let communitiesState = {
   isVisible: true,
   search: "",
   communities: []
