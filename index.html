@@ -166,6 +166,7 @@
       <timeline-component
         v-if="loaded"
         :communities="displayedCommunities"
+        :full-width="sidebarHidden"
         v-bind:time.sync="time"
         v-on:time-seek="timeSeek"
         v-on:window-updated="windowUpdated"

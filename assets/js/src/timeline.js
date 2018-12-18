@@ -21,7 +21,7 @@ let d3ctx = {
 
 Vue.component("timeline-component", {
   template: `
-    <div id="timeline-container">
+    <div id="timeline-container" :style="{ 'width' : (fullWidth ? '100%' : '82%') }">
       <div class="timeline blur"></div>
       <div id="time-controls">
         <button id="speed" @click="speedUp()">
@@ -33,7 +33,7 @@ Vue.component("timeline-component", {
       </div>
     </div>`,
 
-  props: ["communities", "time"],
+  props: ["communities", "time", "fullWidth"],
   data: function() {
     return {
       window: windowStep,
@@ -86,6 +86,9 @@ Vue.component("timeline-component", {
     },
     window: function() {
       this.$emit("window-updated", this.window);
+    },
+    fullWidth: function() {
+      this.resize();
     }
   },
   methods: {
@@ -94,9 +97,10 @@ Vue.component("timeline-component", {
       const vm = this;
       const container = d3.select("#timeline-container");
 
-      const winWidth = window.innerWidth;
+      let winWidth = window.innerWidth;
+      winWidth *= this.fullWidth ? 0.8 : 0.65;
       const margin = { top: 10, right: 10, bottom: 10, left: 30 },
-        width = winWidth * 0.65 - margin.left - margin.right,
+        width = winWidth - margin.left - margin.right,
         height = 100;
 
       const svg = container
@@ -157,13 +161,13 @@ Vue.component("timeline-component", {
       context
         .append("g")
         .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + height + ")")
+        .attr("transform", "translate(-1," + (height - margin.bottom) + ")")
         .call(xAxis);
 
       context
         .append("g")
         .attr("class", "axis axis--y")
-        .attr("transform", "translate(" + (margin.left - 10) + "," + 0 + ")")
+        .attr("transform", "translate(" + (margin.left - 1) + "," + 0 + ")")
         .call(yAxis);
 
       vm.drawAreas();
@@ -192,12 +196,11 @@ Vue.component("timeline-component", {
 
       this.togglePlayPause();
 
-      d3.select(window).on("resize", resize);
-
-      function resize() {
-        d3.select("svg").remove();
-        vm.initTimeline();
-      }
+      d3.select(window).on("resize", vm.resize);
+    },
+    resize: function() {
+      d3.select("svg").remove();
+      this.initTimeline();
     },
     /********** draw areas **********/
     drawAreas: function() {

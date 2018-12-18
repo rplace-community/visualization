@@ -442,7 +442,7 @@ i.fas {
 #timeline-container {
   position: absolute;
   left: 20px;
-  width: 80%;
+  width: 100%;
   bottom: 10px;
   padding-left: 20px;
   pointer-events: none;
