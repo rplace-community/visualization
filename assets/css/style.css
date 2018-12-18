@@ -1,10 +1,10 @@
 /* ------- PAGE --------- */
 
 body {
-  color: rgb(212, 117, 0);
+  color: rgb(230, 230, 230);
   background-color: #333;
   font-family: "Source Sans Pro", sans-serif;
-  font-size: 13px;
+  font-size: 17px;
   text-align: center;
   font-weight: bold;
   margin: 0px;
@@ -469,6 +469,16 @@ i.fas {
   border-radius: 30px 30px 0px 0px;
 }
 
+g.axis {
+  font-family: "Source Sans Pro", sans-serif;
+}
+.axis--x {
+  font-size: 13px;
+}
+
+.axis--y {
+  font-size: 12px;
+}
 /* ------- SIDEBAR --------- */
 
 .showhide {
@@ -482,6 +492,7 @@ i.fas {
   width: 30px;
   height: 30px;
   outline: none;
+  z-index: 999;
 }
 .showhide i {
   display: block;
@@ -551,25 +562,20 @@ i.fas {
 
 .dragArea {
   min-height: 10px;
-}
-
-#selected-communities {
   flex: none;
   padding-right: 5px;
+  padding-bottom: 5px;
   max-width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  border-color: #ccc;
-  border-style: solid;
-  border-width: 0px 0px 1px 0px;
+  border-color: #aaa;
+  border-style: dotted;
+  border-width: 0px 0px 2px 0px;
 }
 
 #filtered-communities {
   flex: 1;
-  padding-right: 5px;
-  max-width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  padding-bottom: 5px;
 }
 
 /* width */
@@ -611,9 +617,9 @@ i.fas {
 
 .community-component {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
-  padding: 7px 0px 6px 0px;
+  padding: 5px 0px 10px 0px;
   max-height: inherit;
   max-width: inherit;
   border-width: 0px 0px 1px 0px;
@@ -622,8 +628,10 @@ i.fas {
 }
 
 .community-component > div {
+  flex: 1;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  min-width: 25px;
 }
 .community-component.hidden {
   margin-top: 0px;
@@ -644,25 +652,42 @@ i.fas {
 }
 
 .community-component .handle {
-  font-size: 1.2em;
-  padding-right: 5px;
+  flex: 0;
+  align-self: center;
+  font-size: 1.5em;
+  padding-right: 10px;
   text-align: left;
-  color: #555;
-  cursor: move;
+  color: #999;
+  cursor: pointer;
 }
 
-.fa-trash.hidden {
+.community-header .fa-trash {
+  margin-top: 5px;
+  height: 0;
+  align-self: stretch;
+  color: #999;
+}
+
+.community-header.fa-trash.hidden {
   margin-top: 0px;
   height: 0;
   display: none;
 }
 
 .community-component .description {
-  font-size: 0.9em;
+  font-size: 0.8em;
+  text-align: left;
+}
+
+.community-component .description.truncate {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .community-component .drawer {
-  margin: 5px;
+  /* margin: 5px; */
 }
 /* ------- ATLAS END --------- */
 
