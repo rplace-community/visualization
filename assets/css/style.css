@@ -21,6 +21,9 @@ input[type="submit"],
   border-radius: 0;
 }
 
+button {
+  background-color: #f1f1f1;
+}
 /* ------- COLORS --------- */
 
 .w3-border {
@@ -670,6 +673,7 @@ g.axis {
   height: 0;
   align-self: stretch;
   color: #999;
+  font-size: 0.9em;
 }
 
 .community-header .fa-trash :not(#selected-communities) {
@@ -707,6 +711,23 @@ g.axis {
   align-self: flex-end;
   width: 100%;
   margin-bottom: 10px;
+}
+
+#settings-button {
+  border-radius: 50%;
+  position: absolute;
+  left: -35px;
+  bottom: 10px;
+  border: none;
+  font-size: 16px;
+  width: 30px;
+  height: 30px;
+  outline: none;
+  z-index: 999;
+}
+
+#settings-button > i {
+  display: block;
 }
 
 #settings .param {

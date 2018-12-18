@@ -24,7 +24,8 @@ var appState = {
   drawSpikes: false,
   sidebarHidden: true,
   autoRotate: false,
-  isDragging: false
+  isDragging: false,
+  isSettingsShown: false
 };
 
 /******* Vue component *******/
