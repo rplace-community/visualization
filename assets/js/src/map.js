@@ -10,12 +10,14 @@ const TOT_IMAGES = 145;
 let i = 0;
 const interval = 30;
 const clock = new THREE.Clock();
-let cumDt = 0;
+let cumulDt = 0;
 let playing = false;
 let currentTime = 0;
 let speed = defaultSpeed;
 
 let drawSpikes = false;
+
+let temporaryPause = false;
 
 let camera, controls, scene, renderer;
 let planeGeometry;
@@ -83,6 +85,10 @@ function mapSetAutorotate(autorotate) {
 
 function mapResetPosition() {
   controls.reset();
+}
+
+function mapTemporaryPause(pause) {
+  temporaryPause = pause;
 }
 
 function drawBackground() {
@@ -211,35 +217,30 @@ function onWindowResize() {
 function _seekTime(t) {
   if (t + startTs > endTs || t < 0) {
     currentTime = 0;
-    t = 0;
+  } else {
+    currentTime = t;
   }
-  currentTime = t;
 
-  timeBack.seekTime(t);
-  timeLevels.seekTime(t);
+  timeBack.seekTime(currentTime);
+  timeLevels.seekTime(currentTime);
 
   drawBackground();
   drawLevelMaps();
 }
 
-const updateAppTime = throttle(function(t) {
-  if (t + startTs > endTs || t < 0) {
-    currentTime = 0;
-    t = 0;
-  }
-  appSetTime(new Date(t + startTs));
-}, 60);
+const updateAppTime = throttle(() => appSetTime(new Date(currentTime + startTs)), 60);
 
 function animate() {
   requestAnimationFrame(animate);
   controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 
-  cumDt += clock.getDelta() * 1000;
-  if (playing && cumDt > interval) {
-    _seekTime(currentTime + speed * (1000 / cumDt));
-    cumDt = 0;
-    updateAppTime(currentTime);
+  cumulDt += clock.getDelta() * 1000;
+  if (playing && !temporaryPause && cumulDt > interval) {
+    _seekTime(currentTime + speed * (1000 / cumulDt));
+    cumulDt = 0;
+    updateAppTime();
   }
+
   render();
 }
 
@@ -292,7 +293,7 @@ function mapCommunityHighlight(communityMask) {
     textr.minFilter = THREE.NearestFilter;
     textr.magFilter = THREE.NearestFilter;
     planeMaterial.emissiveMap = textr;
-    planeMaterial.emissiveIntensity = 0.5;
+    planeMaterial.emissiveIntensity = 0.95;
   } else {
     if (planeMaterial.emissiveMap) {
       planeMaterial.emissiveMap.dispose();
@@ -313,5 +314,5 @@ function mapSetSpeed(s) {
 
 function mapPlay(play) {
   playing = play;
-  cumDt = 0;
+  cumulDt = 0;
 }
