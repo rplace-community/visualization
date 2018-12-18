@@ -676,7 +676,7 @@ g.axis {
   display: none;
 }
 
-.community-header.fa-trash.hidden {
+.community-header .fa-trash.hidden {
   margin-top: 0px;
   height: 0;
   display: none;

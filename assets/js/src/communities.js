@@ -29,8 +29,8 @@ Vue.component("community-component", {
   template: `
     <div class="community-component" @click="toggleExpanded">
       <div class="handle fas fa-grip-vertical"></div>
-      <div>
-        <div class="community-header" @mouseover="communityClicked" @mouseleave="communityOut" :style="{ color: community.color }">
+      <div @mouseover="communityClicked" @mouseleave="communityOut">
+        <div class="community-header" :style="{ color: community.color }">
           <div class="community-name">{{ community.name }}</div>
           <div class="fas fa-trash" :class="{ 'hidden':!community.withTrashBtn }" @click="$emit('hide', community)"></div>
         </div>
