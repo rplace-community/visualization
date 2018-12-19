@@ -3,6 +3,10 @@ const colors = [...Array(MAX_DISP_COMMUNITIES).keys()].map(
   d3.scaleOrdinal(d3.schemeCategory10)
 );
 
+const MAX_EDIT_THRESHOLD = 200;
+
+const MAX_HEIGHT_MAP = 500;
+
 let TutorialStates = {"Loading": 0, "Start":1, "ShowTimeline":2, "ZoomAndTimeWindow":3, "ChooseCommunities": 4, "GoodLuck": 5, "End": 6}
 Object.freeze(TutorialStates)
 
@@ -137,6 +141,7 @@ var vm = new Vue({
 
     recomputeLevelmap: function(unused) {
       let arr = this.displayedCommunities;
+      
       if (!arr || arr.length < 1) {
         const global = this.globalCommunity.levelmaps.blobs;
         if (global && global.length > 0) {
@@ -153,11 +158,19 @@ var vm = new Vue({
             range: window,
             ema: this.ema
           })
-          .then(result => {
+          .then(([result, max]) => {
             this.currentLevelmaps = result;
+
+            this.currentLevelmaps.forEach(levelmap => {
+              levelmap.forEach((value, i) => {
+                levelmap[i] = Math.min(MAX_EDIT_THRESHOLD, value) / Math.min(MAX_EDIT_THRESHOLD, max) * MAX_HEIGHT_MAP;
+              });
+            });
+
+
             cmdWorker
               .send("blurImages", {
-                images: result,
+                images: this.currentLevelmaps,
                 radius: this.smoothing
               })
               .then(result => mapSetLevelmaps(result));
