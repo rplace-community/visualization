@@ -110,6 +110,8 @@
                   v-for="community in communities.communities"
                   :key="community.id"
                   v-bind:community.sync="community"
+                  :edits-count-max="editsCountMax"
+                  :time="time"
                   class="item"
                   :class="{'hidden':!community.isVisible}"
                 ></community-component>

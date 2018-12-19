@@ -25,7 +25,8 @@ var appState = {
   sidebarHidden: true,
   autoRotate: false,
   isDragging: false,
-  isSettingsShown: false
+  isSettingsShown: false,
+  editsCountMax: 1
 };
 
 /******* Vue component *******/
@@ -36,9 +37,12 @@ var vm = new Vue({
     filterCommunities: function() {
       this.communities.communities.forEach(c => (c.isVisible = false));
       const comm = communitiesSearch(this.communities.search);
+      let max = 1;
       comm.forEach(c => {
         c.isVisible = true;
+        max = Math.max(max, c.counts_max);
       });
+      this.editsCountMax = max;
     },
     dragStart: function(event) {
       this.isDragging = true;
@@ -170,7 +174,9 @@ var vm = new Vue({
     const mode = this.ismean ? "mean" : "max";
 
     Promise.all([
-      communitiesInit(),
+      communitiesInit().then(editsCountMax => {
+        this.editsCountMax = editsCountMax;
+      }),
       // enable global levelmaps when starting viz
       fetchLevelmaps("global", mode).then(([index, levelmaps]) => {
         let globalCommunity = {};
@@ -184,7 +190,7 @@ var vm = new Vue({
         appState.globalCommunity = globalCommunity;
 
         appState.currentLevelmaps = globalCommunity.levelmaps.blobs;
-        cmdWorker
+        return cmdWorker
           .send("blurImages", {
             images: appState.currentLevelmaps,
             radius: appState.smoothing

@@ -9,11 +9,20 @@ let communitiesState = {
 
 /******* Community component *******/
 Vue.component("community-component", {
-  props: ["community", "ismean"],
+  props: ["community", "ismean", "time", "editsCountMax"],
   data: function() {
     return {
       isExpanded: false
     };
+  },
+  computed: {
+    editsRatio: function() {
+      if (this.time) {
+        const i = Math.floor((this.time.getTime() - startTs) / windowStep);
+        const ratio = this.community.counts[i] / this.editsCountMax;
+        return Math.round(ratio * 100) + "%";
+      }
+    }
   },
   methods: {
     toggleExpanded: function() {
@@ -28,13 +37,18 @@ Vue.component("community-component", {
   },
   template: `
     <div class="community-component" @click="toggleExpanded">
-      <div class="handle fas fa-grip-vertical"></div>
-      <div @mouseover="communityClicked" @mouseleave="communityOut">
-        <div class="community-header" :style="{ color: community.color }">
-          <div class="community-name">{{ community.name }}</div>
-          <div class="fas fa-trash" :class="{ 'hidden':!community.withTrashBtn }" @click="$emit('hide', community)"></div>
+      <div class="edits-bar" style="height: 8px;">
+        <div class="progress-bar" role="progressbar" v-if="time" :style="{width: editsRatio, height: '8px'}"></div>
+      </div>
+      <div class="community">
+        <div class="handle fas fa-grip-vertical"></div>
+        <div @mouseover="communityClicked" @mouseleave="communityOut">
+          <div class="community-header" :style="{ color: community.color }">
+            <div class="community-name"  :class="{ 'truncate': !isExpanded }">{{ community.name }}</div>
+            <div class="fas fa-trash" :class="{ 'hidden':!community.withTrashBtn }" @click="$emit('hide', community)"></div>
+          </div>
+          <div class="description" :class="{ 'truncate': !isExpanded }" :style="{ color: community.color}">{{ community.description }}</div>
         </div>
-        <div class="description" :class="{ 'truncate': !isExpanded }" :style="{ color: community.color}">{{ community.description }}</div>
       </div>
     </div>`
 });
@@ -66,7 +80,13 @@ function communitiesInit() {
         .sort((a, b) => a.name.localeCompare(b.name));
       return communitiesState.communities;
     })
-    .then(function(communities) {});
+    .then(function(communities) {
+      let max = 1;
+      communities.forEach(c => {
+        max = Math.max(max, c.counts_max);
+      });
+      return max;
+    });
 }
 
 function communitiesSearch(text) {
