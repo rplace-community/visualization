@@ -3,10 +3,31 @@ const endTs = 1491238733000;
 const startDate = new Date(startTs);
 const endDate = new Date(endTs);
 
+const datesTicks = [
+  startDate,
+  new Date(2017, 3, 1, 0, 0, 0, 0),
+  // new Date(2017, 3, 1, 6, 0, 0, 0),
+  new Date(2017, 3, 1, 12, 0, 0, 0),
+  // new Date(2017, 3, 1, 18, 0, 0, 0),
+  new Date(2017, 3, 2, 0, 0, 0, 0),
+  // new Date(2017, 3, 2, 6, 0, 0, 0),
+  new Date(2017, 3, 2, 12, 0, 0, 0),
+  // new Date(2017, 3, 2, 18, 0, 0, 0),
+  new Date(2017, 3, 3, 0, 0, 0, 0),
+  //new Date(2017, 3, 3, 6, 0, 0, 0),
+  new Date(2017, 3, 3, 12, 0, 0, 0),
+  endDate
+];
+const formatTime = d3.timeFormat("%H:%M");
+const formatDate = d3.timeFormat("%e %b");
+
 const ticksInterval = 40.0;
 const defaultSpeed = 4380;
 const windowStep = 30 * 60 * 1000;
-const addedAfterEnd = 0;
+const addedAfterEnd = 0; //2 * windowStep;
+const defaultWindow = 3 * windowStep;
+
+const marginLeftCorr = 20;
 
 let d3ctx = {
   x: null,
@@ -21,7 +42,7 @@ let d3ctx = {
 
 Vue.component("timeline-component", {
   template: `
-    <div id="timeline-container">
+    <div id="timeline-container" :style="{ 'width' : (fullWidth ? '105%' : '82%') }">
       <div class="timeline blur"></div>
       <div id="time-controls">
         <button id="speed" @click="speedUp()" data-toggle="tooltip" title="Change the visualization speed">
@@ -33,10 +54,10 @@ Vue.component("timeline-component", {
       </div>
     </div>`,
 
-  props: ["communities", "time"],
+  props: ["communities", "time", "fullWidth"],
   data: function() {
     return {
-      window: windowStep,
+      window: defaultWindow,
       isPlaying: false,
       speed: defaultSpeed,
       speeding: 3
@@ -86,6 +107,9 @@ Vue.component("timeline-component", {
     },
     window: function() {
       this.$emit("window-updated", this.window);
+    },
+    fullWidth: function() {
+      this.resize();
     }
   },
   methods: {
@@ -94,9 +118,16 @@ Vue.component("timeline-component", {
       const vm = this;
       const container = d3.select("#timeline-container");
 
-      const winWidth = window.innerWidth;
-      const margin = { top: 10, right: 10, bottom: 10, left: 30 },
-        width = winWidth * 0.65 - margin.left - margin.right,
+      let winWidth = window.innerWidth;
+      winWidth *= this.fullWidth ? 0.8 : 0.65;
+
+      const margin = {
+          top: 10,
+          right: 10,
+          bottom: 10,
+          left: 10 + marginLeftCorr
+        },
+        width = winWidth - margin.left - margin.right,
         height = 100;
 
       const svg = container
@@ -119,8 +150,8 @@ Vue.component("timeline-component", {
 
       const xAxis = d3
         .axisBottom(x)
-        .ticks(6)
-        .tickFormat(d3.timeFormat("%e %b %H:%M"));
+        .tickValues(datesTicks)
+        .tickFormat(d => (d.getHours() == 0 ? formatDate(d) : formatTime(d)));
 
       const yAxis = d3.axisLeft(y).ticks(3);
       d3ctx.yAxis = yAxis;
@@ -157,13 +188,13 @@ Vue.component("timeline-component", {
       context
         .append("g")
         .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + height + ")")
+        .attr("transform", "translate(-1," + (height - margin.bottom) + ")")
         .call(xAxis);
 
       context
         .append("g")
         .attr("class", "axis axis--y")
-        .attr("transform", "translate(" + (margin.left - 10) + "," + 0 + ")")
+        .attr("transform", "translate(" + (margin.left - 1) + "," + 0 + ")")
         .call(yAxis);
 
       vm.drawAreas();
@@ -190,6 +221,16 @@ Vue.component("timeline-component", {
 
       d3.selectAll(".brush .handle--e").remove();
 
+<<<<<<< HEAD
+=======
+      this.togglePlayPause();
+
+      d3.select(window).on("resize", vm.resize);
+    },
+    resize: function() {
+      d3.select("svg").remove();
+      this.initTimeline();
+>>>>>>> 11ec502e4899f3f62dd42eca6d6cc16fd838b93f
     },
     /********** draw areas **********/
     drawAreas: function() {
@@ -251,8 +292,8 @@ Vue.component("timeline-component", {
         let t0, t1;
         if (!d3.event.selection) {
           if (d3.event.sourceEvent) {
-            t1 = x.invert(d3.event.sourceEvent.layerX);
-            t0 = new Date(t1.getTime() - windowStep);
+            t1 = x.invert(d3.event.sourceEvent.layerX - marginLeftCorr);
+            t0 = new Date(t1.getTime() - defaultWindow);
             d3.select(this).call(d3.event.target.move, [t0, t1].map(x));
             if (t1.getTime() !== vm.time.getTime() && !vm.isPlaying) {
               vm.$emit("update:time-seek", t1);
