@@ -9,7 +9,7 @@ let communitiesState = {
 
 /******* Community component *******/
 Vue.component("community-component", {
-  props: ["community", "ismean", "time", "editsCountMax"],
+  props: ["community", "ismean", "currentFrame", "editsCountMax"],
   data: function() {
     return {
       isExpanded: false
@@ -17,9 +17,9 @@ Vue.component("community-component", {
   },
   computed: {
     editsRatio: function() {
-      if (this.time) {
-        const i = Math.floor((this.time.getTime() - startTs) / windowStep);
-        const ratio = this.community.counts[i] / this.editsCountMax;
+      if (this.currentFrame) {
+        const ratio =
+          this.community.counts[this.currentFrame] / this.editsCountMax;
         return Math.round(ratio * 100) + "%";
       }
     }
@@ -37,8 +37,8 @@ Vue.component("community-component", {
   },
   template: `
     <div class="community-component" @click="toggleExpanded">
-      <div class="edits-bar" style="height: 8px;">
-        <div class="progress-bar" role="progressbar" v-if="time" :style="{width: editsRatio, height: '8px'}"></div>
+      <div class="edits-bar" style="height: 8px;" data-toggle="tooltip" :title="community.counts[currentFrame]">
+        <div class="progress-bar" role="progressbar" v-if="currentFrame" :style="{width: editsRatio, height: '8px'}"></div>
       </div>
       <div class="community">
         <div class="handle fas fa-grip-vertical" data-toggle="tooltip" title="Click and move this handle to choose a specific community"></div>

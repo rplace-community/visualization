@@ -97,6 +97,12 @@
                 ></community-component>
               </draggable>
 
+              <i
+                id="sort-communities"
+                class="fas fa-sort-amount-down"
+                :style="{'color' : (isSortByEditsCounts ? '' : '#777')}"
+                @click="isSortByEditsCounts = !isSortByEditsCounts"
+              ></i>
               <draggable
                 id="filtered-communities"
                 v-if="communities.communities.length>0 && communities.isVisible"
@@ -111,7 +117,7 @@
                   :key="community.id"
                   v-bind:community.sync="community"
                   :edits-count-max="editsCountMax"
-                  :time="time"
+                  :current-frame="currentFrame"
                   class="item"
                   :class="{'hidden':!community.isVisible}"
                 ></community-component>
@@ -134,12 +140,18 @@
                   />
                 </div>
                 <div class="param justify-content-between">
-                  <div data-toggle="tooltip" title="Exponential moving average : in the selected time window, give more weight to more recent edits">
+                  <div
+                    data-toggle="tooltip"
+                    title="Exponential moving average : in the selected time window, give more weight to more recent edits"
+                  >
                     <input type="checkbox" id="checkbox" v-model="ema" />
                     <label for="checkbox">EMA</label>
                   </div>
 
-                  <div data-toggle="tooltip" title="Select another drawing model">
+                  <div
+                    data-toggle="tooltip"
+                    title="Select another drawing model"
+                  >
                     <input
                       type="checkbox"
                       id="checkboxSpikes"
@@ -148,7 +160,10 @@
                     <label for="checkboxSpikes">Spiky</label>
                   </div>
 
-                  <div data-toggle="tooltip" title="Disable interactions with the map, and rotate around its center">
+                  <div
+                    data-toggle="tooltip"
+                    title="Disable interactions with the map, and rotate around its center"
+                  >
                     <input
                       type="checkbox"
                       id="checkboxAutorotate"
@@ -165,7 +180,7 @@
       <draggable
         v-if="isDragging"
         :list="displayedCommunities_"
-        :options="{put:'true', group:'community'}"
+        :options="{group:'community'}"
         class="dropzone"
         @add="showCommunity"
       >
@@ -182,7 +197,12 @@
 
       <div class="top-left-pannel" v-if="loaded">
         <div>
-          <label style="color:#fff;" data-toggle="tooltip" title="/r/place event time">{{ time.toLocaleString() }}</label>
+          <label
+            style="color:#fff;"
+            data-toggle="tooltip"
+            title="/r/place event time"
+            >{{ time.toLocaleString() }}</label
+          >
         </div>
 
         <button
@@ -191,14 +211,14 @@
           data-toggle="tooltip"
           title="Resize"
         >
-
           <i class="fas fa-expand"></i>
         </button>
 
         <button
           class="reset-map-position"
           v-on:click="centerMap()"
-          data-toggle="tooltip" title="Reset the map position"
+          data-toggle="tooltip"
+          title="Reset the map position"
         >
           <label>Reset view</label>
         </button>
@@ -261,8 +281,11 @@
         </div>
       </div>
 
-      <div v-if="tutorialState == 1" class="tutorial-fs-block" onclick="event.stopPropagation()"></div>
-
+      <div
+        v-if="tutorialState == 1"
+        class="tutorial-fs-block"
+        onclick="event.stopPropagation()"
+      ></div>
     </div>
 
     <script src="assets/js/src/gaussian_blur.js"></script>
