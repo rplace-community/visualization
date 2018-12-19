@@ -3,6 +3,9 @@ const colors = [...Array(MAX_DISP_COMMUNITIES).keys()].map(
   d3.scaleOrdinal(d3.schemeCategory10)
 );
 
+let TutorialStates = {"Loading": 0, "Start":1, "ShowTimeline":2, "ZoomAndTimeWindow":3, "ChooseCommunities": 4, "GoodLuck": 5, "End": 6}
+Object.freeze(TutorialStates)
+
 var appState = {
   loaded: false,
   showExtLinks: true,
@@ -24,7 +27,9 @@ var appState = {
   drawSpikes: false,
   sidebarHidden: true,
   autoRotate: false,
-  isDragging: false
+  isDragging: false,
+
+  tutorialState: TutorialStates.Loading,
 };
 
 /******* Vue component *******/
@@ -160,6 +165,36 @@ var vm = new Vue({
       cmdWorker
         .send("blurImages", { images: this.currentLevelmaps, radius: v })
         .then(result => mapSetLevelmaps(result));
+    },
+
+    tutorialState: function() {
+      switch(this.tutorialState) {
+        case TutorialStates.Start:
+          this.autoRotate = true;
+          mapPlay(false);
+          mapSeekTime(new Date(endTs - windowStep - 1));
+          break;
+
+        case TutorialStates.ShowTimeline:
+
+          break;
+
+        case TutorialStates.ZoomAndTimeWindow:
+
+          break;
+
+        case TutorialStates.ChooseCommunities:
+
+          break;
+
+        case TutorialStates.GoodLuck:
+
+          break;
+
+        case TutorialStates.End:
+
+          break;
+      }
     }
   },
   /******** lifecycle events ********/
@@ -183,7 +218,7 @@ var vm = new Vue({
         appState.globalCommunity = globalCommunity;
 
         appState.currentLevelmaps = globalCommunity.levelmaps.blobs;
-        cmdWorker
+        return cmdWorker
           .send("blurImages", {
             images: appState.currentLevelmaps,
             radius: appState.smoothing
@@ -200,6 +235,7 @@ var vm = new Vue({
     ]).then(() => {
       console.log("Visualization loaded!");
       this.loaded = true;
+      this.tutorialState = TutorialStates.Start;
     });
   },
   ready: function() {}

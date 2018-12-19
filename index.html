@@ -120,22 +120,28 @@
                   />
                 </div>
                 <div class="param justify-content-between">
-                  <input type="checkbox" id="checkbox" v-model="ema" />
-                  <label for="checkbox">EMA</label>
+                  <div data-toggle="tooltip" title="Exponential moving average : in the selected time window, give more weight to more recent edits">
+                    <input type="checkbox" id="checkbox" v-model="ema" />
+                    <label for="checkbox">EMA</label>
+                  </div>
 
-                  <input
-                    type="checkbox"
-                    id="checkboxSpikes"
-                    v-model="drawSpikes"
-                  />
-                  <label for="checkboxSpikes">Spiky</label>
+                  <div data-toggle="tooltip" title="Select another drawing model">
+                    <input
+                      type="checkbox"
+                      id="checkboxSpikes"
+                      v-model="drawSpikes"
+                    />
+                    <label for="checkboxSpikes">Spiky</label>
+                  </div>
 
-                  <input
-                    type="checkbox"
-                    id="checkboxAutorotate"
-                    v-model="autoRotate"
-                  />
-                  <label for="checkboxAutorotate">Auto-rotate</label>
+                  <div data-toggle="tooltip" title="Disable interactions with the map, and rotate around its center">
+                    <input
+                      type="checkbox"
+                      id="checkboxAutorotate"
+                      v-model="autoRotate"
+                    />
+                    <label for="checkboxAutorotate">Auto-rotate</label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -159,19 +165,19 @@
         v-on:window-updated="windowUpdated"
       ></timeline-component>
 
-      <div class="top-left-pannel">
-        <div v-if="loaded">
-          <label style="color:#fff;">{{ time.toLocaleString() }}</label>
+      <div class="top-left-pannel" v-if="loaded">
+        <div>
+          <label style="color:#fff;" data-toggle="tooltip" title="/r/place event time">{{ time.toLocaleString() }}</label>
         </div>
 
-        <button class="fullscreen-position" onclick="toggleFullScreen()" data-placement="top" data-toggle="tooltip" title="Resize">
+        <button class="fullscreen-position" onclick="toggleFullScreen()" data-toggle="tooltip" title="Fullscreen mode">
           <i class="fas fa-expand"></i>
         </button>
 
         <button
           class="reset-map-position"
-          v-if="loaded"
           v-on:click="centerMap()"
+          data-toggle="tooltip" title="Reset the map position"
         >
           <label>Reset view</label>
         </button>
@@ -185,7 +191,7 @@
           src="assets/img/loadingscreen/back_small.png"
         />
         <div class="tuto">
-          <div class="tuto-pan">
+          <div class="tuto-pan" data-toggle="tooltip" title="How to move">
             <i class="fas fa-info-circle"></i> <label>Move</label>
             <img
               class="ctrl-key"
@@ -199,7 +205,7 @@
             />
           </div>
 
-          <div class="tuto-rotate">
+          <div class="tuto-rotate" data-toggle="tooltip" title="How to rotate">
             <i class="fas fa-info-circle"></i> <label>Rotate</label>
             <img
               class="mouse-cursor"
@@ -208,7 +214,7 @@
             />
           </div>
 
-          <div class="tuto-zoom">
+          <div class="tuto-zoom" data-toggle="tooltip" title="How to zoom">
             <i class="fas fa-info-circle"></i> <label>Zoom</label>
             <div class="tuto-touchpad">
               <div class="tuto-separation"></div>
@@ -233,6 +239,9 @@
           <div class="lds-trivia"></div>
         </div>
       </div>
+
+      <div v-if="tutorialState == 1" class="tutorial-fs-block" onclick="event.stopPropagation()"></div>
+
     </div>
 
     <script src="assets/js/src/gaussian_blur.js"></script>

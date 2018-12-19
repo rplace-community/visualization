@@ -28,7 +28,7 @@ Vue.component("community-component", {
   },
   template: `
     <div class="community-component" @click="toggleExpanded">
-      <div class="handle fas fa-grip-vertical"></div>
+      <div class="handle fas fa-grip-vertical" data-toggle="tooltip" title="Click and move this handle to choose a specific community"></div>
       <div>
         <div class="community-header" @mouseover="communityClicked" @mouseleave="communityOut" :style="{ color: community.color }">
           <div class="community-name">{{ community.name }}</div>

@@ -6,7 +6,7 @@ const endDate = new Date(endTs);
 const ticksInterval = 40.0;
 const defaultSpeed = 4380;
 const windowStep = 30 * 60 * 1000;
-const addedAfterEnd = 0; //2 * windowStep;
+const addedAfterEnd = 0;
 
 let d3ctx = {
   x: null,
@@ -24,7 +24,7 @@ Vue.component("timeline-component", {
     <div id="timeline-container">
       <div class="timeline blur"></div>
       <div id="time-controls">
-        <button id="speed" @click="speedUp()">
+        <button id="speed" @click="speedUp()" data-toggle="tooltip" title="Change the visualization speed">
           1x
         </button>
         <button id="play" @click="togglePlayPause()">
@@ -190,7 +190,6 @@ Vue.component("timeline-component", {
 
       d3.selectAll(".brush .handle--e").remove();
 
-      this.togglePlayPause();
     },
     /********** draw areas **********/
     drawAreas: function() {
@@ -308,7 +307,7 @@ Vue.component("timeline-component", {
         default:
           x = 4;
       }
-      mapSetSpeed(defaultSpeed * x);
+    mapSetSpeed(defaultSpeed * x);
       d3.select("#speed").text(`${x}x`);
     }
   }
