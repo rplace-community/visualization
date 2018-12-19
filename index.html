@@ -80,29 +80,18 @@
                 placeholder="Search community..."
                 @keyup="filterCommunities"
               />
-              <draggable
-                id="selected-communities"
-                class="dragArea"
-                :list="displayedCommunities_"
-                :options="{draggable:'.item', group:'community', handle:'.handle'}"
-                @remove="unshowCommunity"
-                @add="showCommunity"
-              >
-                <community-component
-                  v-for="community in displayedCommunities_"
-                  :key="community.id"
-                  v-bind:community.sync="community"
-                  class="item"
-                  @hide="hideCommunity"
-                ></community-component>
-              </draggable>
 
-              <i
-                id="sort-communities"
-                class="fas fa-sort-amount-down"
-                :style="{'color' : (isSortByEditsCounts ? '' : '#777')}"
-                @click="isSortByEditsCounts = !isSortByEditsCounts"
-              ></i>
+              <div id="communities-header">
+                <i
+                  id="sort-communities"
+                  class="fas fa-sort-amount-down"
+                  :style="{'color' : (isSortByEditsCounts ? '' : '#777')}"
+                  @click="isSortByEditsCounts = !isSortByEditsCounts"
+                ></i>
+                <p>Current max: {{ currentEditsCountMax }}</p>
+                <p>All time max: {{ editsCountMax }}</p>
+              </div>
+
               <draggable
                 id="filtered-communities"
                 v-if="communities.communities.length>0 && communities.isVisible"
@@ -120,6 +109,27 @@
                   :current-frame="currentFrame"
                   class="item"
                   :class="{'hidden':!community.isVisible}"
+                ></community-component>
+              </draggable>
+
+              <span>Displayed communities</span>
+              <p v-if="displayedCommunities_.length == 0" class="grayed">
+                Drop a community on the map to show its edits
+              </p>
+              <draggable
+                id="selected-communities"
+                class="dragArea"
+                :list="displayedCommunities_"
+                :options="{draggable:'.item', group:'community', handle:'.handle'}"
+                @remove="unshowCommunity"
+                @add="showCommunity"
+              >
+                <community-component
+                  v-for="community in displayedCommunities_"
+                  :key="community.id"
+                  v-bind:community.sync="community"
+                  class="item"
+                  @hide="hideCommunity"
                 ></community-component>
               </draggable>
 

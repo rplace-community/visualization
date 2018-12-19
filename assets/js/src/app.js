@@ -42,7 +42,7 @@ var appState = {
   isDragging: false,
   tutorialState: TutorialStates.Loading,
   isSettingsShown: false,
-  editsCountMax: 1,
+  editsCountMax: 0,
   isSortByEditsCounts: false
 };
 
@@ -139,6 +139,13 @@ var vm = new Vue({
     },
     currentFrame: function() {
       return Math.floor((this.time.getTime() - startTs) / windowStep);
+    },
+    currentEditsCountMax: function() {
+      return Math.max(
+        ...this.communities.communities.map(c =>
+          c.isVisible ? c.counts[this.currentFrame] : 0
+        )
+      );
     }
   },
   /******** watchers ********/

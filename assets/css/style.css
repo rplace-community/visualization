@@ -537,6 +537,21 @@ g.axis {
   max-height: 100%;
 }
 
+.sidebar-content p {
+  font-size: 0.8em;
+  margin-bottom: 0px;
+}
+
+.sidebar-content .grayed {
+  color: #777;
+}
+
+.sidebar-content span {
+  border-color: #777;
+  border-style: dotted;
+  border-width: 0px 0px 1px 0px;
+}
+
 .blur {
   left: -10px;
   width: 105%;
@@ -583,13 +598,34 @@ g.axis {
   min-height: 200px;
 }
 
-#sort-communities {
-  height: 0px;
-  margin-left: -30px;
+#filtered-communities > span {
+  border-bottom: #555;
+  border-width: 0px 0px 1px 0px;
+  border-style: dotted;
+  padding-bottom: 3px;
+}
+
+#communities-header {
+  display: flex;
+  flex-direction: row;
+  border-bottom: #555;
+  border-width: 0px 0px 1px 0px;
+  border-style: dotted;
+  padding-bottom: 3px;
+}
+
+#communities-header i {
+  flex: 0;
   color: #ccc;
-  align-self: flex-start;
   font-size: 20px;
-  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+#communities-header p {
+  flex: 1;
+  align-self: flex-end;
+  font-size: 0.8em;
+  padding-right: 5px;
+  margin-bottom: 1px;
 }
 
 /* width */
