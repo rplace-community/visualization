@@ -33,7 +33,7 @@ var appState = {
   communities: communitiesState,
   displayedCommunities_: [],
   currentLevelmaps: [],
-  smoothing: 0.75,
+  smoothing: 1,
   ema: true,
   ismean: false,
   drawSpikes: false,
