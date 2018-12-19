@@ -217,8 +217,10 @@ function onWindowResize() {
 const updateAppTime = throttle(() => appSetTime(new Date(currentTime + startTs)), 60);
 
 function _seekTime(t) {
-  if (t + startTs > endTs + windowStep || t < 0) {
+  if (t + startTs > endTs || t < 0) {
     currentTime = 0;
+  } else if (t + startTs == endTs) {
+    currentTime = t - 1;
   } else {
     currentTime = t;
   }
@@ -262,9 +264,6 @@ function generatePlaneHeightsBuffered() {
   }
 }
 
-function pow(x) {
-  return Math.pow(x, 1.5);
-}
 function generatePlaneHeightsSpikesBuffered() {
   if (planeGeometry) {
     let positions = planeGeometry.attributes.position.array;
@@ -275,9 +274,8 @@ function generatePlaneHeightsSpikesBuffered() {
       for (let j = 0; j < FILTER_SIZE; j++) {
         const iIm = i * 2 + 1;
         const jIm = j * 2 + 1;
-        positions[(iIm + jIm * twoFSP1) * 3 + 2] = pow(
-          arr[i + j * FILTER_SIZE] / 3
-        );
+        positions[(iIm + jIm * twoFSP1) * 3 + 2] = 
+          arr[i + j * FILTER_SIZE];
       }
     }
     planeGeometry.attributes.position.needsUpdate = true;
