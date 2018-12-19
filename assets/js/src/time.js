@@ -18,27 +18,35 @@ class Time {
     return (partitionNumber + 1) % this._array.length;
   };
 
-  //Returns the partition number,
-  //and the [0,1[ value to say how close to the next one we are.
+  //Returns the partition number
   _getPartition(t) {
-    if(this._array.length == 0) {
+
+    let length = this._array.length - 1;
+
+    if(length <= 0) {
       return 0;
     }
 
+
     const timeAsked = ((t % this._totalTime) + this._totalTime) % this._totalTime;
-    const distBetElems = this._totalTime / this._array.length;
+    const distBetElems = this._totalTime / length;
     const timeToPartition = timeAsked / distBetElems;
+    
     const partition = Math.floor(timeToPartition);
     return partition;
   };
 
+  //Returns the [0,1[ value to say how close to the next partition we are.
   _getInterTime(t) {
-    if(this._array.length == 0) {
+
+    let length = this._array.length - 1;
+
+    if(length <= 0) {
       return 0;
     }
 
     const timeAsked = ((t % this._totalTime) + this._totalTime) % this._totalTime;
-    const distBetElems = this._totalTime / this._array.length;
+    const distBetElems = this._totalTime / length;
     const timeToPartition = timeAsked / distBetElems;
     return timeToPartition % 1;
   }
@@ -53,7 +61,7 @@ class Time {
     this._array = arr;
     this._totalTime = totalTime > 0 ? totalTime : 1;
 
-    this._interpolate = (arr1, _) => (t) => arr1;
+    this._interpolate = (arr1, arr2) => (t) => t <= 0.5 ? arr1 : arr2;
     this._setInterpolateBuffer(this._partitionIdx, this._nextPartition(this._partitionIdx));
 
     return this;
@@ -74,7 +82,6 @@ class Time {
   };
 
   seekTime(t) {
-
     let partition = this._getPartition(t);
     if(partition != this._partitionIdx) {
       this._partitionIdx = partition;

@@ -57,18 +57,28 @@ if ("undefined" === typeof window) {
     // first item is just the same as the first item in the input
     let res = [arr[0]];
     // for the rest of the items, they are computed with the previous one
+    let max = 1;
+    let second = 1;
+
     for (var i = 1; i < arr.length; i++) {
       arr[i].forEach((v, j) => {
         arr[i][j] = arr[i][j] + res[i - 1][j] * (1 - k);
+        if (arr[i][j] > max) {
+          second = max;
+        }
+        max = Math.max(max, arr[i][j]);
       });
       res.push(arr[i]);
     }
-    return res;
+    
+    return [res, max];
   }
 
   function flatSum(arr, range) {
     let buffer = [arr[0].slice(0)];
     let res = [arr[0]];
+    let max = 1;
+    
     // for the rest of the items, they are computed with the previous one
     for (var i = 1; i < arr.length; i++) {
       buffer.push(arr[i].slice(0));
@@ -77,13 +87,14 @@ if ("undefined" === typeof window) {
         if (buffer.length > range) {
           arr[i][j] -= buffer[0][j];
         }
+        max = Math.max(max, arr[i][j]);
       });
       if (buffer.length > range) {
         buffer = buffer.slice(1);
       }
       res.push(arr[i]);
     }
-    return res;
+    return [res, max];
   }
 
   function blurImages(images, radius) {

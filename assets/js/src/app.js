@@ -3,6 +3,13 @@ const colors = [...Array(MAX_DISP_COMMUNITIES).keys()].map(
   d3.scaleOrdinal(d3.schemeCategory10)
 );
 
+const MAX_EDIT_THRESHOLD = 200;
+
+const MAX_HEIGHT_MAP = 500;
+
+let TutorialStates = {"Loading": 0, "Start":1, "ShowTimeline":2, "ZoomAndTimeWindow":3, "ChooseCommunities": 4, "GoodLuck": 5, "End": 6}
+Object.freeze(TutorialStates)
+
 var appState = {
   loaded: false,
   showExtLinks: true,
@@ -25,6 +32,7 @@ var appState = {
   sidebarHidden: true,
   autoRotate: false,
   isDragging: false,
+  tutorialState: TutorialStates.Loading,
   isSettingsShown: false,
   editsCountMax: 1
 };
@@ -133,6 +141,7 @@ var vm = new Vue({
 
     recomputeLevelmap: function(unused) {
       let arr = this.displayedCommunities;
+      
       if (!arr || arr.length < 1) {
         const global = this.globalCommunity.levelmaps.blobs;
         if (global && global.length > 0) {
@@ -149,11 +158,19 @@ var vm = new Vue({
             range: window,
             ema: this.ema
           })
-          .then(result => {
+          .then(([result, max]) => {
             this.currentLevelmaps = result;
+
+            this.currentLevelmaps.forEach(levelmap => {
+              levelmap.forEach((value, i) => {
+                levelmap[i] = Math.min(MAX_EDIT_THRESHOLD, value) / Math.min(MAX_EDIT_THRESHOLD, max) * MAX_HEIGHT_MAP;
+              });
+            });
+
+
             cmdWorker
               .send("blurImages", {
-                images: result,
+                images: this.currentLevelmaps,
                 radius: this.smoothing
               })
               .then(result => mapSetLevelmaps(result));
@@ -165,6 +182,36 @@ var vm = new Vue({
       cmdWorker
         .send("blurImages", { images: this.currentLevelmaps, radius: v })
         .then(result => mapSetLevelmaps(result));
+    },
+
+    tutorialState: function() {
+      switch(this.tutorialState) {
+        case TutorialStates.Start:
+          this.autoRotate = true;
+          mapPlay(false);
+          mapSeekTime(new Date(endTs - windowStep - 1));
+          break;
+
+        case TutorialStates.ShowTimeline:
+
+          break;
+
+        case TutorialStates.ZoomAndTimeWindow:
+
+          break;
+
+        case TutorialStates.ChooseCommunities:
+
+          break;
+
+        case TutorialStates.GoodLuck:
+
+          break;
+
+        case TutorialStates.End:
+
+          break;
+      }
     }
   },
   /******** lifecycle events ********/
@@ -207,6 +254,7 @@ var vm = new Vue({
     ]).then(() => {
       console.log("Visualization loaded!");
       this.loaded = true;
+      this.tutorialState = TutorialStates.End;
     });
   },
   ready: function() {}

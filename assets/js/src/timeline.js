@@ -45,7 +45,7 @@ Vue.component("timeline-component", {
     <div id="timeline-container" :style="{ 'width' : (fullWidth ? '105%' : '82%') }">
       <div class="timeline blur"></div>
       <div id="time-controls">
-        <button id="speed" @click="speedUp()">
+        <button id="speed" @click="speedUp()" data-toggle="tooltip" title="Change the visualization speed">
           1x
         </button>
         <button id="play" @click="togglePlayPause()">
@@ -220,9 +220,6 @@ Vue.component("timeline-component", {
         );
 
       d3.selectAll(".brush .handle--e").remove();
-
-      this.togglePlayPause();
-
       d3.select(window).on("resize", vm.resize);
     },
     resize: function() {
@@ -345,7 +342,7 @@ Vue.component("timeline-component", {
         default:
           x = 4;
       }
-      mapSetSpeed(defaultSpeed * x);
+    mapSetSpeed(defaultSpeed * x);
       d3.select("#speed").text(`${x}x`);
     }
   }

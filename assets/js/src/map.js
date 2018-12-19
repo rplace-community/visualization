@@ -2,7 +2,7 @@ if (WEBGL.isWebGLAvailable() === false) {
   document.body.appendChild(WEBGL.getWebGLErrorMessage());
 }
 
-const TOTAL_TIME = endTs - startTs + 2 * windowStep;
+const TOTAL_TIME = endTs - startTs;
 const FILTER_SIZE = 200;
 const PLANE_SIZE = 1000;
 const TOT_IMAGES = 145;
@@ -58,7 +58,7 @@ function mapSetDrawingMethod(spikes) {
 }
 
 function mapSetBackgrounds(arr) {
-  back_images = arr;
+  back_images = arr.slice(0, -1);
   timeBack.setArray(back_images);
 }
 
@@ -214,8 +214,10 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+const updateAppTime = throttle(() => appSetTime(new Date(currentTime + startTs)), 60);
+
 function _seekTime(t) {
-  if (t + startTs > endTs || t < 0) {
+  if (t + startTs > endTs + windowStep || t < 0) {
     currentTime = 0;
   } else {
     currentTime = t;
@@ -226,9 +228,9 @@ function _seekTime(t) {
 
   drawBackground();
   drawLevelMaps();
-}
 
-const updateAppTime = throttle(() => appSetTime(new Date(currentTime + startTs)), 60);
+  updateAppTime();
+}
 
 function animate() {
   requestAnimationFrame(animate);
@@ -238,7 +240,6 @@ function animate() {
   if (playing && !temporaryPause && cumulDt > interval) {
     _seekTime(currentTime + speed * (1000 / cumulDt));
     cumulDt = 0;
-    updateAppTime();
   }
 
   render();

@@ -41,7 +41,7 @@ Vue.component("community-component", {
         <div class="progress-bar" role="progressbar" v-if="time" :style="{width: editsRatio, height: '8px'}"></div>
       </div>
       <div class="community">
-        <div class="handle fas fa-grip-vertical"></div>
+        <div class="handle fas fa-grip-vertical" data-toggle="tooltip" title="Click and move this handle to choose a specific community"></div>
         <div @mouseover="communityClicked" @mouseleave="communityOut">
           <div class="community-header" :style="{ color: community.color }">
             <div class="community-name">{{ community.name }}</div>
