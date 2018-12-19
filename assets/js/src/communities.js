@@ -44,7 +44,7 @@ Vue.component("community-component", {
         <div class="handle fas fa-grip-vertical"></div>
         <div @mouseover="communityClicked" @mouseleave="communityOut">
           <div class="community-header" :style="{ color: community.color }">
-            <div class="community-name"  :class="{ 'truncate': !isExpanded }">{{ community.name }}</div>
+            <div class="community-name">{{ community.name }}</div>
             <div class="fas fa-trash" :class="{ 'hidden':!community.withTrashBtn }" @click="$emit('hide', community)"></div>
           </div>
           <div class="description" :class="{ 'truncate': !isExpanded }" :style="{ color: community.color}">{{ community.description }}</div>

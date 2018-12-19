@@ -661,9 +661,8 @@ g.axis {
 }
 
 .community-name {
-  flex: 1;
   text-align: start;
-  cursor: context-menu;
+  overflow-wrap: normal;
 }
 
 .community-component .handle {
@@ -700,7 +699,6 @@ g.axis {
 }
 
 .community-component .truncate {
-  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
