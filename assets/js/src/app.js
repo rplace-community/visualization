@@ -268,6 +268,7 @@ var vm = new Vue({
           index: index,
           isLoaded: true
         };
+        globalCommunity.color = "rgb(200, 200, 200)";
         appState.globalCommunity = globalCommunity;
 
         appState.currentLevelmaps = globalCommunity.levelmaps.blobs;
