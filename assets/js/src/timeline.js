@@ -220,17 +220,11 @@ Vue.component("timeline-component", {
         );
 
       d3.selectAll(".brush .handle--e").remove();
-
-<<<<<<< HEAD
-=======
-      this.togglePlayPause();
-
       d3.select(window).on("resize", vm.resize);
     },
     resize: function() {
       d3.select("svg").remove();
       this.initTimeline();
->>>>>>> 11ec502e4899f3f62dd42eca6d6cc16fd838b93f
     },
     /********** draw areas **********/
     drawAreas: function() {

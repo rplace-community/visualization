@@ -241,7 +241,7 @@ var vm = new Vue({
     ]).then(() => {
       console.log("Visualization loaded!");
       this.loaded = true;
-      this.tutorialState = TutorialStates.Start;
+      this.tutorialState = TutorialStates.End;
     });
   },
   ready: function() {}
