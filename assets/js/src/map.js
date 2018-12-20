@@ -28,7 +28,6 @@ let timeBack = new Time([], TOTAL_TIME);
 let timeLevels = new Time([], TOTAL_TIME).setArrayInterpolation();
 
 let plane_images;
-let back_images;
 let interpolator_images;
 
 function mapSetDrawingMethod(spikes) {
@@ -55,11 +54,6 @@ function mapSetDrawingMethod(spikes) {
   }
   planeMesh.geometry = planeGeometry;
   drawLevelMaps();
-}
-
-function mapSetBackgrounds(arr) {
-  back_images = arr.slice(0, -1);
-  timeBack.setArray(back_images);
 }
 
 function mapSetLevelmaps(arr) {
@@ -94,14 +88,14 @@ function mapTemporaryPause(pause) {
 function drawBackground() {
   if (timeBack.hasData()) {
     let textr = new THREE.DataTexture(
-      new Uint8Array(timeBack.get()),
+      timeBack.get(),
       1000,
       1000,
       THREE.RGBAFormat
     );
+    textr.needsUpdate = true;
     textr.flipX = true;
     textr.flipY = true;
-    textr.needsUpdate = true;
     planeMaterial.map = textr;
     planeMaterial.needsUpdate = true;
   }
@@ -118,17 +112,41 @@ function drawLevelMaps() {
 }
 
 function mapPreload() {
-  return fetch("assets/img/frames.png")
-    .then(response => response.arrayBuffer())
-    .then(buffer => {
-      const apng = UPNG.decode(buffer); // put ArrayBuffer of the PNG file into UPNG.decode
-      return UPNG.toRGBA8(apng);
-    })
-    .then(images => {
-      mapSetBackgrounds(images);
-      init();
-      animate();
-    });
+  return require(["assets/js/lib/apng.js"], function(parseAPNGLib) {
+    var parseAPNG = parseAPNGLib.default;
+    let cnt = 0;
+
+    init();
+    animate();
+
+    return fetch("assets/img/frames.png")
+      .then(response => response.arrayBuffer())
+      .then(buffer => {
+        const apng = parseAPNG(buffer);
+        return apng.createImages().then(() => {
+          const canvas = window.document.createElement("canvas");
+          canvas.width = 1000;
+          canvas.height = 1000;
+          const ctx = canvas.getContext("2d");
+
+          //const newImgs = [imgs.shift()];
+          let promise = new Promise(function(resolve) {
+            resolve();
+          });
+          apng.frames
+            .map(frame => frame.imageElement)
+            .forEach((img, i) => {
+              promise = promise.then(() => {
+                ctx.drawImage(img, 0, 0);
+                timeBack.pushArrayElement(
+                  new Uint8Array(ctx.getImageData(0, 0, 1000, 1000).data.buffer)
+                );
+              });
+            });
+          return promise;
+        });
+      });
+  });
 }
 
 function init() {

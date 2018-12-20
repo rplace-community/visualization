@@ -709,7 +709,7 @@ g.axis {
   flex-grow: 1;
 }
 
-.community-component .handle {
+.community-component .handle-dots {
   flex: 0;
   align-self: center;
   font-size: 1.5em;
