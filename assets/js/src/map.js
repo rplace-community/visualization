@@ -7,7 +7,6 @@ const FILTER_SIZE = 200;
 const PLANE_SIZE = 1000;
 const TOT_IMAGES = 145;
 
-let i = 0;
 const interval = 30;
 const clock = new THREE.Clock();
 let cumulDt = 0;
@@ -64,19 +63,22 @@ function mapSetBackgrounds(arr) {
 
 function mapSetLevelmaps(arr) {
   plane_images = arr;
+  console.log(arr.length);
   timeLevels.setArray(plane_images);
   drawLevelMaps();
 }
 
+function mapSetInteraction(interactable) {
+  controls.enabled = interactable;
+}
+
 function mapSetAutorotate(autorotate) {
-  mapResetPosition();
+  //mapResetPosition();
   if (autorotate) {
-    controls.enabled = false;
     controls.autoRotate = true;
     camera.zoom = 1.5;
     camera.updateProjectionMatrix();
   } else {
-    controls.enabled = true;
     controls.autoRotate = false;
     camera.zoom = 1;
     camera.updateProjectionMatrix();
@@ -158,13 +160,11 @@ function init() {
   controls.maxZoom = 10;
 
   controls.maxPolarAngle = (Math.PI * 4.5) / 10.0;
-  controls.autoRotateSpeed = 0.6;
+  controls.autoRotateSpeed = 0.2;
 
   controls.panSpeed = 0.5;
   controls.rotateSpeed = 0.5;
   controls.zoomSpeed = 0.8;
-
-  mapSetAutorotate(false);
 
   // world ***********************************************************************************************************
 
@@ -246,6 +246,14 @@ function animate() {
 
   render();
 }
+
+
+function setFrenchGerman() {
+  camera.position.set(-43.4, 3.5, 335.8);
+  controls.target.set(-41.1, 0, 333.1);
+  controls.update();
+}
+
 
 function generatePlaneHeightsBuffered() {
   if (planeGeometry) {

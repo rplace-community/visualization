@@ -52,6 +52,7 @@ button {
 }
 
 .fullscreen-position {
+  margin: 2px;
   width: 40px;
   height: 40px;
   color: #333;
@@ -62,6 +63,7 @@ button {
 }
 
 .reset-map-position {
+  margin: 2px;
   width: auto;
   height: 40px;
   color: #333;
@@ -70,6 +72,34 @@ button {
 .reset-map-position label {
   display: block;
   margin: 0;
+}
+
+.next-step-tuto, .prev-step-tuto, .end-tuto, .begin-tuto {
+  font-size: 15px;
+  margin: 2px;
+  width: auto;
+  height: 40px;
+  color: #333;
+  vertical-align: middle;
+  min-width: 70px;
+}
+.next-step-tuto label, .end-tuto label, .prev-step-tuto label, .begin-tuto label {
+  display: block;
+  margin: 0;
+}
+
+.end-tuto {
+  background-color:#FFF0F0;
+}
+
+.next-step-tuto {
+  animation: glowing 4.5s infinite 2s;
+}
+
+@keyframes glowing {
+  0% { background-color: #F1F1F1; box-shadow: 0 0 3px #F1F1F1; }
+  10% { background-color: #FFFFFF; box-shadow: 0 0 20px #FFFFFF; }
+  20% { background-color: #F1F1F1; box-shadow: 0 0 3px #F1F1F1; }
 }
 
 /* ------- LOADING SCREEN --------- */
@@ -445,12 +475,11 @@ i.fas {
   width: 100%;
   bottom: 10px;
   padding-left: 20px;
-  pointer-events: none;
 }
 
 #time-controls {
   color: black;
-  pointer-events: all;
+  pointer-events: inherit;
   position: absolute;
   left: 0px;
   width: 100px;
@@ -508,20 +537,18 @@ g.axis {
   right: 0%;
   width: 20%;
   min-width: 200px;
-  -webkit-transition: width 0.5s; /* Safari */
-  transition: width 0.5s;
+  -webkit-transition: width 0.2s; /* Safari */
+  transition: width 0.2s;
 }
 
 .sidebarReduce {
   width: 0;
   min-width: 0;
-  -webkit-transition: width 0.5s; /* Safari */
-  transition: width 0.5s;
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s;
+  transition: opacity 0.2s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
@@ -797,4 +824,65 @@ g.axis {
   right:0;
   left:0;
   overflow:hidden;
+}
+
+
+.no-pointerevent {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.no-pointerevent .overlay, .no-pointerevent .selection, .no-pointerevent .brush, #speed, #play {
+  pointer-events: inherit;
+}
+
+.tutorial-text {
+  position: absolute;
+  top: 10px;
+  left: 200px;
+  pointer-events: none;
+  max-width: 35%;
+  max-height: 35%;
+  overflow: hidden;
+}
+
+.tutorial-text div {
+  position: relative;
+  overflow: hidden;
+  background-color: #333;
+  transition: opacity 1s linear;
+  text-align: left;
+}
+
+.tutorial-show {
+  opacity: 0.9;
+}
+
+.tutorial-hide {
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+.tutorial-text label {
+  top: 50%;
+  padding: 10px;
+  font-size: calc(7px + 0.8vw);
+  display: block;
+}
+
+.video-tuto {
+  position: absolute;
+  pointer-events: none;
+  top: 10px;
+  left: -320px;
+  transition: opacity 1s linear;
+  text-align: center;
+  border: 1px dotted black;
+}
+
+.video-tuto label {
+    position: absolute;
+    left: 0;
+    padding: 2px 10px;
 }

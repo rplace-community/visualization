@@ -7,7 +7,7 @@ const MAX_EDIT_THRESHOLD = 200;
 
 const MAX_HEIGHT_MAP = 500;
 
-let TutorialStates = {"Loading": 0, "Start":1, "ShowTimeline":2, "ZoomAndTimeWindow":3, "ChooseCommunities": 4, "GoodLuck": 5, "End": 6}
+let TutorialStates = {"Loading": 0, "Start":1, "MapInteractions":2, "ShowTimeline":3, "ChooseCommunities": 4, "CaseStudy": 5, "GoodLuck": 6, "End": 7}
 Object.freeze(TutorialStates)
 
 var appState = {
@@ -34,7 +34,11 @@ var appState = {
   isDragging: false,
   tutorialState: TutorialStates.Loading,
   isSettingsShown: false,
-  editsCountMax: 1
+  editsCountMax: 1,
+
+  disableTimeLine: false,
+  disableMapInteractions: false,
+  disableMenu: false,
 };
 
 /******* Vue component *******/
@@ -111,6 +115,38 @@ var vm = new Vue({
 
     toggleSidebar: function(event) {
       this.sidebarHidden = !this.sidebarHidden;
+    },
+
+    prevTutoStep: function() {
+      this.tutorialState = Math.max(this.tutorialState - 1, TutorialStates.Start);
+    },
+
+    nextTutoStep: function() {
+      this.tutorialState = Math.min(this.tutorialState + 1, TutorialStates.End);
+    },
+
+    beginTuto: function() {
+      this.tutorialState = TutorialStates.Start;
+    },
+
+    endTuto: function() {
+      this.tutorialState = TutorialStates.End;
+    },
+
+    disableEverything: function() {
+      this.disableTimeLine = true;
+      this.disableMapInteractions = true;
+      this.disableMenu = true;
+      this.autoRotate = false;
+      this.displayedCommunities_ = [];
+    },
+
+    enableEverything: function() {
+      this.disableTimeLine = false;
+      this.disableMapInteractions = false;
+      this.disableMenu = false;
+      this.autoRotate = false;
+      this.displayedCommunities_ = [];
     }
   },
   /******** computed properties ********/
@@ -123,6 +159,7 @@ var vm = new Vue({
       return res;
     },
     recomputeLevelmap: function() {
+      console.log("from here");
       this.displayedCommunities;
       this.window;
       this.ema;
@@ -137,6 +174,16 @@ var vm = new Vue({
 
     autoRotate: function() {
       mapSetAutorotate(this.autoRotate);
+    },
+
+    disableMapInteractions: function() {
+      mapSetInteraction(!this.disableMapInteractions);
+    },
+
+    disableMenu: function() {
+      if(this.disableMenu) {
+        this.sidebarHidden = true;
+      }
     },
 
     recomputeLevelmap: function(unused) {
@@ -186,30 +233,71 @@ var vm = new Vue({
 
     tutorialState: function() {
       switch(this.tutorialState) {
-        case TutorialStates.Start:
+        case TutorialStates.Loading:
+          this.disableEverything();
           this.autoRotate = true;
           mapPlay(false);
-          mapSeekTime(new Date(endTs - windowStep - 1));
+
+        case TutorialStates.Start:
+          this.disableEverything();
+          this.autoRotate = true;
+          mapPlay(false);
+
+          mapSeekTime(new Date(endTs));
+          break;
+
+        case TutorialStates.MapInteractions:
+          this.disableEverything();
+          this.disableMapInteractions = false;
+          mapPlay(false);
+
+          mapSeekTime(new Date(endTs));
           break;
 
         case TutorialStates.ShowTimeline:
+          this.disableEverything();
+          this.disableMapInteractions = false;
+          this.disableTimeLine = false;
 
-          break;
-
-        case TutorialStates.ZoomAndTimeWindow:
-
+          document.getElementById('play').click();
+          
+          mapSeekTime(new Date(startTs));
           break;
 
         case TutorialStates.ChooseCommunities:
+          this.disableEverything();
+          this.disableMapInteractions = false;
+          this.disableMenu = false;
+          this.disableTimeLine = false;
+          break;
+        
+        case TutorialStates.CaseStudy:
+          this.disableEverything();
+          this.autoRotate = true;
+          setFrenchGerman();
+          mapSeekTime(new Date(startTs));
+
+          document.getElementById('speed').click();
+          document.getElementById('speed').click();
 
           break;
 
         case TutorialStates.GoodLuck:
 
+          document.getElementById('play').click();
+
+          document.getElementById('speed').click();
+          document.getElementById('speed').click();
+          document.getElementById('speed').click();
+
           break;
 
         case TutorialStates.End:
+          this.enableEverything();
+          mapResetPosition();
+          document.getElementById('play').click();
 
+          mapSeekTime(new Date(startTs));
           break;
       }
     }
@@ -234,9 +322,10 @@ var vm = new Vue({
           index: index,
           isLoaded: true
         };
-        appState.globalCommunity = globalCommunity;
 
+        appState.globalCommunity = globalCommunity;
         appState.currentLevelmaps = globalCommunity.levelmaps.blobs;
+        
         return cmdWorker
           .send("blurImages", {
             images: appState.currentLevelmaps,
@@ -253,8 +342,8 @@ var vm = new Vue({
       })
     ]).then(() => {
       console.log("Visualization loaded!");
+      this.tutorialState = TutorialStates.Start;
       this.loaded = true;
-      this.tutorialState = TutorialStates.End;
     });
   },
   ready: function() {}
