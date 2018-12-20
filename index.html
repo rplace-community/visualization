@@ -44,6 +44,7 @@
     <script src="assets/js/lib/dat.gui.min.js"></script>
 
     <script src="assets/js/src/utils.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
   </head>
 
   <body>
@@ -89,22 +90,17 @@
                 placeholder="Search community..."
                 @keyup="filterCommunities"
               />
-              <draggable
-                id="selected-communities"
-                class="dragArea"
-                :list="displayedCommunities_"
-                :options="{draggable:'.item', group:'community', handle:'.handle'}"
-                @remove="unshowCommunity"
-                @add="showCommunity"
-              >
-                <community-component
-                  v-for="community in displayedCommunities_"
-                  :key="community.id"
-                  v-bind:community.sync="community"
-                  class="item"
-                  @hide="hideCommunity"
-                ></community-component>
-              </draggable>
+
+              <div id="communities-header">
+                <i
+                  id="sort-communities"
+                  class="fas fa-sort-amount-down"
+                  :style="{'color' : (isSortByEditsCounts ? '' : '#777')}"
+                  @click="isSortByEditsCounts = !isSortByEditsCounts"
+                ></i>
+                <p>Current max: {{ currentEditsCountMax }}</p>
+                <p>All time max: {{ editsCountMax }}</p>
+              </div>
 
               <draggable
                 id="filtered-communities"
@@ -120,9 +116,30 @@
                   :key="community.id"
                   v-bind:community.sync="community"
                   :edits-count-max="editsCountMax"
-                  :time="time"
+                  :current-frame="currentFrame"
                   class="item"
                   :class="{'hidden':!community.isVisible}"
+                ></community-component>
+              </draggable>
+
+              <span>Displayed communities</span>
+              <p v-if="displayedCommunities_.length == 0" class="grayed">
+                Drop a community on the map to show its edits
+              </p>
+              <draggable
+                id="selected-communities"
+                class="dragArea"
+                :list="displayedCommunities_"
+                :options="{draggable:'.item', group:'community', handle:'.handle'}"
+                @remove="unshowCommunity"
+                @add="showCommunity"
+              >
+                <community-component
+                  v-for="community in displayedCommunities_"
+                  :key="community.id"
+                  v-bind:community.sync="community"
+                  class="item"
+                  @hide="hideCommunity"
                 ></community-component>
               </draggable>
 
@@ -143,12 +160,18 @@
                   />
                 </div>
                 <div class="param justify-content-between">
-                  <div data-toggle="tooltip" title="Exponential moving average : in the selected time window, give more weight to more recent edits">
+                  <div
+                    data-toggle="tooltip"
+                    title="Exponential moving average : in the selected time window, give more weight to more recent edits"
+                  >
                     <input type="checkbox" id="checkbox" v-model="ema" />
                     <label for="checkbox">EMA</label>
                   </div>
 
-                  <div data-toggle="tooltip" title="Select another drawing model">
+                  <div
+                    data-toggle="tooltip"
+                    title="Select another drawing model"
+                  >
                     <input
                       type="checkbox"
                       id="checkboxSpikes"
@@ -157,7 +180,10 @@
                     <label for="checkboxSpikes">Spiky</label>
                   </div>
 
-                  <div data-toggle="tooltip" title="Disable interactions with the map, and rotate around its center">
+                  <div
+                    data-toggle="tooltip"
+                    title="Disable interactions with the map, and rotate around its center"
+                  >
                     <input
                       type="checkbox"
                       id="checkboxAutorotate"
@@ -174,7 +200,7 @@
       <draggable
         v-if="isDragging"
         :list="displayedCommunities_"
-        :options="{put:'true', group:'community'}"
+        :options="{group:'community'}"
         class="dropzone"
         @add="showCommunity"
       >
@@ -193,7 +219,11 @@
       <div class="top-left-pannel" v-if="loaded">
         <div>
           <div>
-            <label data-toggle="tooltip" title="/r/place event time">{{ time.toLocaleString() }}</label>
+            <label
+              data-toggle="tooltip"
+              title="/r/place event time"
+              >{{ time.toLocaleString() }}</label
+            >
           </div>
 
           <button
@@ -305,10 +335,7 @@
               width="42"
             />
           </div>
-          <div class="w3-border">
-            <div class="w3-orange" style="height:24px;width:0%"></div>
-          </div>
-          <div class="lds-trivia"></div>
+          <div><span>Loading files...</span></div>
         </div>
       </div>
 
@@ -347,7 +374,6 @@
         </div>
 
       </div>
-
     </div>
 
     <script src="assets/js/src/gaussian_blur.js"></script>

@@ -27,7 +27,6 @@ let timeBack = new Time([], TOTAL_TIME);
 let timeLevels = new Time([], TOTAL_TIME).setArrayInterpolation();
 
 let plane_images;
-let back_images;
 let interpolator_images;
 
 function mapSetDrawingMethod(spikes) {
@@ -54,11 +53,6 @@ function mapSetDrawingMethod(spikes) {
   }
   planeMesh.geometry = planeGeometry;
   drawLevelMaps();
-}
-
-function mapSetBackgrounds(arr) {
-  back_images = arr.slice(0, -1);
-  timeBack.setArray(back_images);
 }
 
 function mapSetLevelmaps(arr) {
@@ -95,9 +89,15 @@ function mapTemporaryPause(pause) {
 
 function drawBackground() {
   if (timeBack.hasData()) {
-    let textr = new THREE.CanvasTexture(timeBack.get());
-    textr.minFilter = THREE.NearestFilter;
-    textr.magFilter = THREE.NearestFilter;
+    let textr = new THREE.DataTexture(
+      timeBack.get(),
+      1000,
+      1000,
+      THREE.RGBAFormat
+    );
+    textr.needsUpdate = true;
+    textr.flipX = true;
+    textr.flipY = true;
     planeMaterial.map = textr;
     planeMaterial.needsUpdate = true;
   }
@@ -113,16 +113,41 @@ function drawLevelMaps() {
   }
 }
 
-function mapPreload(observer) {
-  const urls = Array.from(Array(TOT_IMAGES * 2).keys()).map(
-    i => `assets/img/frames/${i}.png`
-  );
-
-  return fetchImages(urls, observer).then(images => {
-    mapSetBackgrounds(images);
+function mapPreload() {
+  return require(["assets/js/lib/apng.js"], function(parseAPNGLib) {
+    var parseAPNG = parseAPNGLib.default;
+    let cnt = 0;
 
     init();
     animate();
+
+    return fetch("assets/img/frames.png")
+      .then(response => response.arrayBuffer())
+      .then(buffer => {
+        const apng = parseAPNG(buffer);
+        return apng.createImages().then(() => {
+          const canvas = window.document.createElement("canvas");
+          canvas.width = 1000;
+          canvas.height = 1000;
+          const ctx = canvas.getContext("2d");
+
+          //const newImgs = [imgs.shift()];
+          let promise = new Promise(function(resolve) {
+            resolve();
+          });
+          apng.frames
+            .map(frame => frame.imageElement)
+            .forEach((img, i) => {
+              promise = promise.then(() => {
+                ctx.drawImage(img, 0, 0);
+                timeBack.pushArrayElement(
+                  new Uint8Array(ctx.getImageData(0, 0, 1000, 1000).data.buffer)
+                );
+              });
+            });
+          return promise;
+        });
+      });
   });
 }
 
@@ -214,7 +239,10 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-const updateAppTime = throttle(() => appSetTime(new Date(currentTime + startTs)), 60);
+const updateAppTime = throttle(
+  () => appSetTime(new Date(currentTime + startTs)),
+  60
+);
 
 function _seekTime(t) {
   if (t + startTs > endTs || t < 0) {
@@ -282,8 +310,7 @@ function generatePlaneHeightsSpikesBuffered() {
       for (let j = 0; j < FILTER_SIZE; j++) {
         const iIm = i * 2 + 1;
         const jIm = j * 2 + 1;
-        positions[(iIm + jIm * twoFSP1) * 3 + 2] = 
-          arr[i + j * FILTER_SIZE];
+        positions[(iIm + jIm * twoFSP1) * 3 + 2] = arr[i + j * FILTER_SIZE];
       }
     }
     planeGeometry.attributes.position.needsUpdate = true;

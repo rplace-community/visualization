@@ -42,14 +42,14 @@ let d3ctx = {
 
 Vue.component("timeline-component", {
   template: `
-    <div id="timeline-container" :style="{ 'width' : (fullWidth ? '105%' : '82%') }">
+    <div id="timeline-container">
       <div class="timeline blur"></div>
       <div id="time-controls">
-        <button id="speed" @click="speedUp()" data-toggle="tooltip" title="Change the visualization speed">
-          1x
-        </button>
         <button id="play" @click="togglePlayPause()">
           <i class="fas" :class="{ 'fa-play': !isPlaying, 'fa-pause': isPlaying }"></i>
+        </button>
+        <button id="speed" @click="speedUp()" data-toggle="tooltip" title="Change the visualization speed">
+          1x
         </button>
       </div>
     </div>`,
@@ -116,10 +116,15 @@ Vue.component("timeline-component", {
     /********** timeline initialization **********/
     initTimeline: function() {
       const vm = this;
-      const container = d3.select("#timeline-container");
 
       let winWidth = window.innerWidth;
-      winWidth *= this.fullWidth ? 0.8 : 0.65;
+      if (this.fullWidth) {
+        winWidth = winWidth - 150;
+      } else {
+        winWidth = winWidth - Math.max(200, winWidth * 0.35);
+      }
+
+      const container = d3.select("#timeline-container");
 
       const margin = {
           top: 10,
@@ -128,16 +133,16 @@ Vue.component("timeline-component", {
           left: 10 + marginLeftCorr
         },
         width = winWidth - margin.left - margin.right,
-        height = 100;
+        height = 120;
 
       const svg = container
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
-      d3.select(".timeline.blur")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom);
+      d3.selectAll(".timeline.blur")
+        .style("width", width + margin.left + margin.right + 100 + "px")
+        .style("height", height + margin.top + margin.bottom + "px");
 
       const x = d3.scaleTime().range([margin.left, width - margin.right]);
 
@@ -181,7 +186,7 @@ Vue.component("timeline-component", {
         .append("clipPath")
         .attr("id", "clip")
         .append("rect")
-        .attr("width", width - margin.left - margin.right)
+        .attr("width", width - margin.left - margin.right + 1)
         .attr("transform", "translate(" + margin.left + "," + 0 + ")")
         .attr("height", height);
 
@@ -342,7 +347,7 @@ Vue.component("timeline-component", {
         default:
           x = 4;
       }
-    mapSetSpeed(defaultSpeed * x);
+      mapSetSpeed(defaultSpeed * x);
       d3.select("#speed").text(`${x}x`);
     }
   }

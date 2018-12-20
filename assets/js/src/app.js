@@ -7,8 +7,17 @@ const MAX_EDIT_THRESHOLD = 200;
 
 const MAX_HEIGHT_MAP = 500;
 
-let TutorialStates = {"Loading": 0, "Start":1, "MapInteractions":2, "ShowTimeline":3, "ChooseCommunities": 4, "CaseStudy": 5, "GoodLuck": 6, "End": 7}
-Object.freeze(TutorialStates)
+let TutorialStates = {
+  Loading: 0,
+  Start: 1,
+  MapInteractions: 2,
+  ShowTimeline: 3,
+  ChooseCommunities: 4,
+  CaseStudy: 5,
+  GoodLuck: 6,
+  End: 7
+};
+Object.freeze(TutorialStates);
 
 var appState = {
   loaded: false,
@@ -34,7 +43,8 @@ var appState = {
   isDragging: false,
   tutorialState: TutorialStates.Loading,
   isSettingsShown: false,
-  editsCountMax: 1,
+  editsCountMax: 0,
+  isSortByEditsCounts: false,
 
   disableTimeLine: false,
   disableMapInteractions: false,
@@ -164,10 +174,38 @@ var vm = new Vue({
       this.window;
       this.ema;
       return performance.now();
+    },
+    currentFrame: function() {
+      return Math.floor((this.time.getTime() - startTs) / windowStep);
+    },
+    currentEditsCountMax: function() {
+      return Math.max(
+        ...this.communities.communities.map(c =>
+          c.isVisible ? c.counts[this.currentFrame] : 0
+        )
+      );
     }
   },
   /******** watchers ********/
   watch: {
+    isSortByEditsCounts: function(v) {
+      if (v) {
+        this.communities.communities = this.communities.communities.sort(
+          (a, b) => b.counts[this.currentFrame] - a.counts[this.currentFrame]
+        );
+      } else {
+        this.communities.communities = this.communities.communities.sort(
+          (a, b) => a.name.localeCompare(b.name)
+        );
+      }
+    },
+    currentFrame: function() {
+      if (!this.isDragging && this.isSortByEditsCounts) {
+        this.communities.communities = this.communities.communities.sort(
+          (a, b) => b.counts[this.currentFrame] - a.counts[this.currentFrame]
+        );
+      }
+    },
     drawSpikes: function() {
       mapSetDrawingMethod(this.drawSpikes);
     },
@@ -188,7 +226,7 @@ var vm = new Vue({
 
     recomputeLevelmap: function(unused) {
       let arr = this.displayedCommunities;
-      
+
       if (!arr || arr.length < 1) {
         const global = this.globalCommunity.levelmaps.blobs;
         if (global && global.length > 0) {
@@ -210,10 +248,12 @@ var vm = new Vue({
 
             this.currentLevelmaps.forEach(levelmap => {
               levelmap.forEach((value, i) => {
-                levelmap[i] = Math.min(MAX_EDIT_THRESHOLD, value) / Math.min(MAX_EDIT_THRESHOLD, max) * MAX_HEIGHT_MAP;
+                levelmap[i] =
+                  (Math.min(MAX_EDIT_THRESHOLD, value) /
+                    Math.min(MAX_EDIT_THRESHOLD, max)) *
+                  MAX_HEIGHT_MAP;
               });
             });
-
 
             cmdWorker
               .send("blurImages", {
@@ -322,6 +362,8 @@ var vm = new Vue({
           index: index,
           isLoaded: true
         };
+        globalCommunity.color = "rgb(200, 200, 200)";
+        appState.globalCommunity = globalCommunity;
 
         appState.globalCommunity = globalCommunity;
         appState.currentLevelmaps = globalCommunity.levelmaps.blobs;
@@ -335,11 +377,7 @@ var vm = new Vue({
             mapSetLevelmaps(result);
           });
       }),
-      mapPreload(() => {
-        loaded_backs++;
-        let loadingBar = document.getElementsByClassName("w3-orange")[0];
-        loadingBar.style.width = `${(50 * loaded_backs) / (TOT_IMAGES + 1)}%`;
-      })
+      mapPreload()
     ]).then(() => {
       console.log("Visualization loaded!");
       this.tutorialState = TutorialStates.Start;
