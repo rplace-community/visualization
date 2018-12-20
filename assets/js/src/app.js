@@ -281,11 +281,7 @@ var vm = new Vue({
             mapSetLevelmaps(result);
           });
       }),
-      mapPreload(() => {
-        loaded_backs++;
-        let loadingBar = document.getElementsByClassName("w3-orange")[0];
-        loadingBar.style.width = `${(50 * loaded_backs) / (TOT_IMAGES + 1)}%`;
-      })
+      mapPreload()
     ]).then(() => {
       console.log("Visualization loaded!");
       this.loaded = true;

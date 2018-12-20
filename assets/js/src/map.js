@@ -93,9 +93,15 @@ function mapTemporaryPause(pause) {
 
 function drawBackground() {
   if (timeBack.hasData()) {
-    let textr = new THREE.CanvasTexture(timeBack.get());
-    textr.minFilter = THREE.NearestFilter;
-    textr.magFilter = THREE.NearestFilter;
+    let textr = new THREE.DataTexture(
+      new Uint8Array(timeBack.get()),
+      1000,
+      1000,
+      THREE.RGBAFormat
+    );
+    textr.flipX = true;
+    textr.flipY = true;
+    textr.needsUpdate = true;
     planeMaterial.map = textr;
     planeMaterial.needsUpdate = true;
   }
@@ -111,17 +117,18 @@ function drawLevelMaps() {
   }
 }
 
-function mapPreload(observer) {
-  const urls = Array.from(Array(TOT_IMAGES * 2).keys()).map(
-    i => `assets/img/frames/${i}.png`
-  );
-
-  return fetchImages(urls, observer).then(images => {
-    mapSetBackgrounds(images);
-
-    init();
-    animate();
-  });
+function mapPreload() {
+  return fetch("assets/img/frames.png")
+    .then(response => response.arrayBuffer())
+    .then(buffer => {
+      const apng = UPNG.decode(buffer); // put ArrayBuffer of the PNG file into UPNG.decode
+      return UPNG.toRGBA8(apng);
+    })
+    .then(images => {
+      mapSetBackgrounds(images);
+      init();
+      animate();
+    });
 }
 
 function init() {
@@ -214,7 +221,10 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-const updateAppTime = throttle(() => appSetTime(new Date(currentTime + startTs)), 60);
+const updateAppTime = throttle(
+  () => appSetTime(new Date(currentTime + startTs)),
+  60
+);
 
 function _seekTime(t) {
   if (t + startTs > endTs || t < 0) {
@@ -274,8 +284,7 @@ function generatePlaneHeightsSpikesBuffered() {
       for (let j = 0; j < FILTER_SIZE; j++) {
         const iIm = i * 2 + 1;
         const jIm = j * 2 + 1;
-        positions[(iIm + jIm * twoFSP1) * 3 + 2] = 
-          arr[i + j * FILTER_SIZE];
+        positions[(iIm + jIm * twoFSP1) * 3 + 2] = arr[i + j * FILTER_SIZE];
       }
     }
     planeGeometry.attributes.position.needsUpdate = true;
