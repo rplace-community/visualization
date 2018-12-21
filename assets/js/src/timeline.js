@@ -321,8 +321,9 @@ Vue.component("timeline-component", {
       };
     },
     togglePlayPause: function() {
-      this.$emit("update:isplaying", !this.isplaying);
-      d3ctx.wasPlaying = this.isplaying;
+      const play = !this.isplaying;
+      this.$emit("update:isplaying", play);
+      d3ctx.wasPlaying = play;
       //mapPlay(this.isplaying);
     },
     speedUp: function() {
