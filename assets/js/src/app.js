@@ -330,7 +330,6 @@ var vm = new Vue({
           this.disableMapInteractions = false;
           this.disableMenu = false;
           this.disableTimeLine = false;
-          this.autoRotate = true;
           setFrenchGerman();
           mapSeekTime(new Date(startTs));
           this.isplaying = true;
