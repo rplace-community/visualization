@@ -57,7 +57,6 @@ function mapSetDrawingMethod(spikes) {
 
 function mapSetLevelmaps(arr) {
   plane_images = arr;
-  console.log(arr.length);
   timeLevels.setArray(plane_images);
   drawLevelMaps();
 }
@@ -116,7 +115,7 @@ function drawLevelMaps() {
 function mapPreload() {
   return new Promise(function(resolve_g) {
     require(["assets/js/lib/apng.js"], function(parseAPNGLib) {
-    var parseAPNG = parseAPNGLib.default;
+    let parseAPNG = parseAPNGLib.default;
 
     return fetch("assets/img/frames.png")
       .then(response => response.arrayBuffer())
@@ -143,11 +142,11 @@ function mapPreload() {
               });
             });
 
-          init();
-          animate();
-          console.log("finished");
-
-          return promise.then(resolve_g());
+          return promise.then(() => {
+            init();
+            animate();
+            resolve_g();
+          });
         });
       });
     });

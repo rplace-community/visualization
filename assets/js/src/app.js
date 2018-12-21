@@ -169,7 +169,6 @@ var vm = new Vue({
       return res;
     },
     recomputeLevelmap: function() {
-      console.log("from here");
       this.displayedCommunities;
       this.window;
       this.ema;
@@ -279,6 +278,7 @@ var vm = new Vue({
           mapPlay(false);
 
         case TutorialStates.Start:
+          mapResetPosition();
           this.disableEverything();
           this.autoRotate = true;
           mapPlay(false);
@@ -379,7 +379,7 @@ var vm = new Vue({
       }),
       mapPreload()
     ]).then(() => {
-      console.log("Visualization loaded!");
+      //console.log("Visualization loaded!");
       this.tutorialState = TutorialStates.Start;
       this.loaded = true;
     });

@@ -272,6 +272,7 @@
             class="prev-step-tuto"
             v-on:click="prevTutoStep()"
             data-toggle="tooltip" title="Go to the previous tutorial step"
+            :class="{'no-pointerevent': tutorialState <= 1}"
           >
             <label>Previous</label>
           </button>
