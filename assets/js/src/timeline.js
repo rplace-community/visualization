@@ -22,7 +22,6 @@ const formatTime = d3.timeFormat("%H:%M");
 const formatDate = d3.timeFormat("%e %b");
 
 const ticksInterval = 40.0;
-const defaultSpeed = 4380;
 const windowStep = 30 * 60 * 1000;
 const addedAfterEnd = 0; //2 * windowStep;
 const defaultWindow = 3 * windowStep;
@@ -45,21 +44,19 @@ Vue.component("timeline-component", {
     <div id="timeline-container">
       <div class="timeline blur"></div>
       <div id="time-controls">
-        <button id="play" @click="togglePlayPause()">
-          <i class="fas" :class="{ 'fa-play': !isPlaying, 'fa-pause': isPlaying }"></i>
+        <button class="btn btn-light" id="play" @click="togglePlayPause">
+          <i class="fas" :class="{ 'fa-play': !isplaying, 'fa-pause': isplaying }"></i>
         </button>
-        <button id="speed" @click="speedUp()" data-toggle="tooltip" title="Change the visualization speed">
-          1x
-        </button>
+        <button class="btn btn-light" id="speed" @click="speedUp()" data-toggle="tooltip" title="Change the visualization speed">{{this.speed}}x</button>
       </div>
     </div>`,
 
-  props: ["communities", "time", "fullWidth"],
+  props: ["communities", "time", "fullWidth", "isplaying", "speed"],
   data: function() {
     return {
       window: defaultWindow,
-      isPlaying: false,
-      speed: defaultSpeed,
+      //isplaying: false,
+      //speed: defaultSpeed,
       speeding: 3
     };
   },
@@ -100,7 +97,7 @@ Vue.component("timeline-component", {
     },
     time: function() {
       this.drawBrush();
-      if (!this.isPlaying) {
+      if (!this.isplaying) {
         this.$emit("update:time-seek", this.time);
         mapSeekTime(this.time);
       }
@@ -213,7 +210,7 @@ Vue.component("timeline-component", {
         .attr("class", "brush")
         .attr("clip-path", "url(#clip)")
         .on("mousedown touchstart", function() {
-          if (vm.isPlaying) {
+          if (vm.isplaying) {
             vm.togglePlayPause();
             d3ctx.wasPlaying = true;
           }
@@ -279,7 +276,7 @@ Vue.component("timeline-component", {
 
         [t0, t1] = d3.event.selection.map(x.invert);
         const newWindow = t1 - t0;
-        if (newWindow === d3ctx.oldWindow && !vm.isPlaying) {
+        if (newWindow === d3ctx.oldWindow && !vm.isplaying) {
           vm.$emit("update:time-seek", t1);
           mapSeekTime(t1);
         }
@@ -294,7 +291,7 @@ Vue.component("timeline-component", {
             t1 = x.invert(d3.event.sourceEvent.layerX - marginLeftCorr);
             t0 = new Date(t1.getTime() - defaultWindow);
             d3.select(this).call(d3.event.target.move, [t0, t1].map(x));
-            if (t1.getTime() !== vm.time.getTime() && !vm.isPlaying) {
+            if (t1.getTime() !== vm.time.getTime() && !vm.isplaying) {
               vm.$emit("update:time-seek", t1);
               mapSeekTime(t1);
             }
@@ -318,37 +315,30 @@ Vue.component("timeline-component", {
           }
         }
 
-        if (d3ctx.wasPlaying && !vm.isPlaying) {
+        if (d3ctx.wasPlaying && !vm.isplaying) {
           vm.togglePlayPause();
         }
       };
     },
     togglePlayPause: function() {
-      this.isPlaying = !this.isPlaying;
-      d3ctx.wasPlaying = this.isPlaying;
-      mapPlay(this.isPlaying);
+      this.$emit("update:isplaying", !this.isplaying);
+      d3ctx.wasPlaying = this.isplaying;
+      //mapPlay(this.isplaying);
     },
     speedUp: function() {
-      this.speeding = (this.speeding + 1) % 5;
-      let x = undefined;
-      switch (this.speeding) {
-        case 1:
-          x = 0.25;
-          break;
-        case 2:
-          x = 0.5;
-          break;
-        case 3:
-          x = 1;
-          break;
-        case 4:
-          x = 2;
-          break;
-        default:
-          x = 4;
+      let s = this.speed;
+      if (s <= 0.25) {
+        s = 0.5;
+      } else if (s <= 0.5) {
+        s = 1.0;
+      } else if (s <= 1.0) {
+        s = 2.0;
+      } else if (s <= 2.0) {
+        s = 4.0;
+      } else if (s <= 4.0) {
+        s = 0.25;
       }
-      mapSetSpeed(defaultSpeed * x);
-      d3.select("#speed").text(`${x}x`);
+      this.$emit("update:speed", s);
     }
   }
 });

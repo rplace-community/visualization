@@ -6,13 +6,14 @@ const TOTAL_TIME = endTs - startTs;
 const FILTER_SIZE = 200;
 const PLANE_SIZE = 1000;
 const TOT_IMAGES = 145;
+const BASE_SPEED = 4380;
 
 const interval = 30;
 const clock = new THREE.Clock();
 let cumulDt = 0;
 let playing = false;
 let currentTime = 0;
-let speed = defaultSpeed;
+let speed = BASE_SPEED;
 
 let drawSpikes = false;
 
@@ -25,9 +26,6 @@ let planeMaterial;
 
 let timeBack = new Time([], TOTAL_TIME);
 let timeLevels = new Time([], TOTAL_TIME).setArrayInterpolation();
-
-let plane_images;
-let interpolator_images;
 
 function mapSetDrawingMethod(spikes) {
   if (planeGeometry) {
@@ -56,8 +54,7 @@ function mapSetDrawingMethod(spikes) {
 }
 
 function mapSetLevelmaps(arr) {
-  plane_images = arr;
-  timeLevels.setArray(plane_images);
+  timeLevels.setArray(arr);
   drawLevelMaps();
 }
 
@@ -115,40 +112,42 @@ function drawLevelMaps() {
 function mapPreload() {
   return new Promise(function(resolve_g) {
     require(["assets/js/lib/apng.js"], function(parseAPNGLib) {
-    let parseAPNG = parseAPNGLib.default;
+      let parseAPNG = parseAPNGLib.default;
 
-    return fetch("assets/img/frames.png")
-      .then(response => response.arrayBuffer())
-      .then(buffer => {
-        const apng = parseAPNG(buffer);
-        return apng.createImages().then(() => {
-          const canvas = window.document.createElement("canvas");
-          canvas.width = 1000;
-          canvas.height = 1000;
-          const ctx = canvas.getContext("2d");
+      return fetch("assets/img/frames.png")
+        .then(response => response.arrayBuffer())
+        .then(buffer => {
+          const apng = parseAPNG(buffer);
+          return apng.createImages().then(() => {
+            const canvas = window.document.createElement("canvas");
+            canvas.width = 1000;
+            canvas.height = 1000;
+            const ctx = canvas.getContext("2d");
 
-          //const newImgs = [imgs.shift()];
-          let promise = new Promise(function(resolve) {
-            resolve();
-          });
-          apng.frames
-            .map(frame => frame.imageElement)
-            .forEach((img, i) => {
-              promise = promise.then(() => {
-                ctx.drawImage(img, 0, 0);
-                timeBack.pushArrayElement(
-                  new Uint8Array(ctx.getImageData(0, 0, 1000, 1000).data.buffer)
-                );
-              });
+            //const newImgs = [imgs.shift()];
+            let promise = new Promise(function(resolve) {
+              resolve();
             });
+            apng.frames
+              .map(frame => frame.imageElement)
+              .forEach((img, i) => {
+                promise = promise.then(() => {
+                  ctx.drawImage(img, 0, 0);
+                  timeBack.pushArrayElement(
+                    new Uint8Array(
+                      ctx.getImageData(0, 0, 1000, 1000).data.buffer
+                    )
+                  );
+                });
+              });
 
-          return promise.then(() => {
-            init();
-            animate();
-            resolve_g();
+            return promise.then(() => {
+              init();
+              animate();
+              resolve_g();
+            });
           });
         });
-      });
     });
   });
 }
@@ -277,13 +276,11 @@ function animate() {
   render();
 }
 
-
 function setFrenchGerman() {
   camera.position.set(-43.4, 3.5, 335.8);
   controls.target.set(-41.1, 0, 333.1);
   controls.update();
 }
-
 
 function generatePlaneHeightsBuffered() {
   if (planeGeometry) {
@@ -345,7 +342,7 @@ function mapSeekTime(t) {
 }
 
 function mapSetSpeed(s) {
-  speed = s;
+  speed = BASE_SPEED * s;
 }
 
 function mapPlay(play) {
