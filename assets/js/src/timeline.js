@@ -1,20 +1,21 @@
+/*****************************************************************************
+ * VueJs component used to display the timeline of the edits of the diplayed communities
+ * It use the D3.js library for drawing a SVG stacked area chart.
+ *****************************************************************************/
+
 const startTs = 1490979533000;
 const endTs = 1491238733000;
 const startDate = new Date(startTs);
 const endDate = new Date(endTs);
 
+// x axis time ticks, we defined them statically to add the ticks at the begining and end of the axis
 const datesTicks = [
   startDate,
   new Date(2017, 3, 1, 0, 0, 0, 0),
-  // new Date(2017, 3, 1, 6, 0, 0, 0),
   new Date(2017, 3, 1, 12, 0, 0, 0),
-  // new Date(2017, 3, 1, 18, 0, 0, 0),
   new Date(2017, 3, 2, 0, 0, 0, 0),
-  // new Date(2017, 3, 2, 6, 0, 0, 0),
   new Date(2017, 3, 2, 12, 0, 0, 0),
-  // new Date(2017, 3, 2, 18, 0, 0, 0),
   new Date(2017, 3, 3, 0, 0, 0, 0),
-  //new Date(2017, 3, 3, 6, 0, 0, 0),
   new Date(2017, 3, 3, 12, 0, 0, 0),
   endDate
 ];
@@ -23,7 +24,7 @@ const formatDate = d3.timeFormat("%e %b");
 
 const ticksInterval = 40.0;
 const windowStep = 30 * 60 * 1000;
-const addedAfterEnd = 0; //2 * windowStep;
+const addedAfterEnd = 0;
 const defaultWindow = 3 * windowStep;
 
 const marginLeftCorr = 20;
@@ -51,7 +52,14 @@ Vue.component("timeline-component", {
       </div>
     </div>`,
 
-  props: ["communities", "time", "fullWidth", "isplaying", "speed"],
+  props: [
+    "communities", // array of currently displayed communities
+    "time", // current time (used to position the brush)
+    "fullWidth", // if the sidebar is currently closed, this prop is true
+    "isplaying", // equals true if the animation is playing
+    "speed" // current speed
+  ],
+  // internal state of the component
   data: function() {
     return {
       window: defaultWindow,
@@ -60,10 +68,12 @@ Vue.component("timeline-component", {
       speeding: 3
     };
   },
+  // this callback is called by VueJs when the DOM tree is created
   mounted: function() {
     this.initTimeline();
   },
   computed: {
+    // here we recompute the bounds of the stacked areas that are used to draw the chart
     paths: function() {
       const res = this.communities
         .map(function(c) {
@@ -92,9 +102,11 @@ Vue.component("timeline-component", {
     }
   },
   watch: {
+    // reactively called when communities are added/removed
     paths: function() {
       this.drawAreas();
     },
+    // when time change, redraw the brush
     time: function() {
       this.drawBrush();
       if (!this.isplaying) {
@@ -102,6 +114,7 @@ Vue.component("timeline-component", {
         mapSeekTime(this.time);
       }
     },
+    // when the brush is resized, emit a vuejs event to main vuejs instance
     window: function() {
       this.$emit("window-updated", this.window);
     },
@@ -273,6 +286,8 @@ Vue.component("timeline-component", {
         [new Date(vm.time - vm.window), vm.time].map(d3ctx.x)
       );
     },
+    // the following two methods are somewhat complex due to handling
+    // the different play/pause, seekTime, brush window states changes
     brushing: function(x) {
       const vm = this;
       return function() {
@@ -325,12 +340,13 @@ Vue.component("timeline-component", {
         }
       };
     },
+    // play/pause the time animation
     togglePlayPause: function() {
       const play = !this.isplaying;
       this.$emit("update:isplaying", play);
       d3ctx.wasPlaying = play;
-      //mapPlay(this.isplaying);
     },
+    // speed FSM
     speedUp: function() {
       let s = this.speed;
       if (s <= 0.25) {

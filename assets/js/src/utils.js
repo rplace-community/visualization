@@ -1,8 +1,16 @@
+/******************************************************************************
+ * This file is composed of tow parts:
+ * 1. the WebWorker context that contain a producer/consumer worker
+ * 2. the browser window context that contain the client of the web worker and utilities methods
+ ******************************************************************************/
+
 let cmdWorker;
 const _worker = self;
 
 if ("undefined" === typeof window) {
-  // we are in the WebWorker context
+  /********************************************************************
+   * we are in the WebWorker context
+   ********************************************************************/
   importScripts("gaussian_blur.js");
   _worker.onmessage = function(event) {
     const { id, data } = event.data;
@@ -70,7 +78,7 @@ if ("undefined" === typeof window) {
       });
       res.push(arr[i]);
     }
-    
+
     return [res, max];
   }
 
@@ -78,7 +86,7 @@ if ("undefined" === typeof window) {
     let buffer = [arr[0].slice(0)];
     let res = [arr[0]];
     let max = 1;
-    
+
     // for the rest of the items, they are computed with the previous one
     for (var i = 1; i < arr.length; i++) {
       buffer.push(arr[i].slice(0));
@@ -123,7 +131,9 @@ if ("undefined" === typeof window) {
   }
   //
 } else {
-  // we are in the webpage context
+  /********************************************************************
+   * we are in the webpage context
+   ********************************************************************/
   class CommandWorker {
     constructor() {
       this.requests = {};

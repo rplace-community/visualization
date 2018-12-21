@@ -1,7 +1,9 @@
-//Class used to work with array elements throughout time.
-//It will return (with interpolation or not) an element from
-//the internal array, after having specified the animation time we want
-//in seekTime.
+/************************************************************************
+ * Class used to work with array elements throughout time.
+ * It will return (with interpolation or not) an element from
+ * the internal array, after having specified the animation time we want
+ * in seekTime.
+ ************************************************************************/
 class Time {
   _setInterpolateBuffer(partition, nextPartition) {
     if (this._array.length > partition && this._array.length > nextPartition) {

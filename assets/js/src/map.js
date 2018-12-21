@@ -1,3 +1,7 @@
+/*********************************************************************
+ * This script contain all the 3D map functionnality of the visualization.
+ *********************************************************************/
+
 if (WEBGL.isWebGLAvailable() === false) {
   document.body.appendChild(WEBGL.getWebGLErrorMessage());
 }
