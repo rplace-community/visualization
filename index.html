@@ -42,7 +42,6 @@
     <script src="assets/js/lib/d3.min.js"></script>
     <script src="assets/js/lib/Fullscreen.js"></script>
     <script src="assets/js/lib/dat.gui.min.js"></script>
-    
 
     <script src="assets/js/src/utils.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
@@ -55,25 +54,33 @@
         v-if="loaded"
         v-bind:class="{ sidebarReduce: sidebarHidden }"
       >
-        <button class="showhide" v-on:click="toggleSidebar()" :class="{'no-pointerevent': disableMenu}">
+        <button
+          class="showhide btn btn-default btn-circle"
+          v-on:click="toggleSidebar()"
+          :class="{'no-pointerevent': disableMenu}"
+        >
           <i
             class="fa"
             v-bind:class="{ 'fa-angle-left': sidebarHidden, 'fa-angle-right': !sidebarHidden }"
           ></i>
         </button>
 
-        <div class="video-tuto" :class="{'tutorial-show': tutorialState == 4, 'tutorial-hide': tutorialState != 4}">
-          <video width="279" height="271" autoplay preload="auto" loop muted> 
-            <source src="assets/img/tutorial/comm_tuto.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-          </video> 
-          <label>Tutorial Cam</label> 
+        <div
+          class="video-tuto"
+          :class="{'tutorial-show': tutorialState == 4, 'tutorial-hide': tutorialState != 4}"
+        >
+          <video width="279" height="271" autoplay preload="auto" loop muted>
+            <source src="assets/img/tutorial/comm_tuto.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <label>Tutorial Cam</label>
         </div>
 
         <transition name="fade">
           <div class="sidebar-hider" v-if="!sidebarHidden">
             <button
               id="settings-button"
+              class="btn btn-default btn-circle"
               @click="isSettingsShown = !isSettingsShown"
             >
               <i
@@ -212,6 +219,8 @@
         :communities="displayedCommunities"
         :full-width="sidebarHidden"
         v-bind:time.sync="time"
+        v-bind:speed.sync="speed"
+        v-bind:isplaying.sync="isplaying"
         v-on:time-seek="timeSeek"
         v-on:window-updated="windowUpdated"
         :class="{'no-pointerevent': disableTimeLine}"
@@ -220,27 +229,25 @@
       <div class="top-left-pannel" v-if="loaded">
         <div>
           <div>
-            <label
-              data-toggle="tooltip"
-              title="/r/place event time"
-              >{{ time.toLocaleString() }}</label
-            >
+            <label data-toggle="tooltip" title="/r/place event time">{{
+              time.toLocaleString()
+            }}</label>
           </div>
 
           <button
-            class="fullscreen-position"
+            class="fullscreen-position  btn btn-light"
             onclick="toggleFullScreen()"
             data-toggle="tooltip"
             title="Fullscreen"
           >
-
             <i class="fas fa-expand"></i>
           </button>
 
           <button
-            class="reset-map-position"
+            class="reset-map-position  btn btn-light"
             v-on:click="centerMap()"
-            data-toggle="tooltip" title="Reset the map position"
+            data-toggle="tooltip"
+            title="Reset the map position"
             :class="{'no-pointerevent': disableMapInteractions}"
           >
             <label>Reset view</label>
@@ -249,18 +256,20 @@
 
         <div>
           <button
-            class="end-tuto"
+            class="end-tuto btn btn-sm btn-outline-danger"
             v-on:click="endTuto()"
-            data-toggle="tooltip" title="Stop now the tutorial"
+            data-toggle="tooltip"
+            title="Stop now the tutorial"
             v-if="tutorialState != 7"
           >
             <label>End tutorial</label>
           </button>
 
           <button
-            class="begin-tuto"
+            class="begin-tuto btn btn-sm btn-outline-success"
             v-on:click="beginTuto()"
-            data-toggle="tooltip" title="Show the tutorial"
+            data-toggle="tooltip"
+            title="Show the tutorial"
             v-if="tutorialState == 7"
           >
             <label>Show tutorial</label>
@@ -269,18 +278,20 @@
 
         <div v-if="tutorialState != 7">
           <button
-            class="prev-step-tuto"
+            class="prev-step-tuto btn btn-sm btn-light"
             v-on:click="prevTutoStep()"
-            data-toggle="tooltip" title="Go to the previous tutorial step"
+            data-toggle="tooltip"
+            title="Go to the previous tutorial step"
             :class="{'no-pointerevent': tutorialState <= 1}"
           >
             <label>Previous</label>
           </button>
 
           <button
-            class="next-step-tuto"
+            class="next-step-tuto btn btn-sm btn-light"
             v-on:click="nextTutoStep()"
-            data-toggle="tooltip" title="Go to the next tutorial step"
+            data-toggle="tooltip"
+            title="Go to the next tutorial step"
           >
             <label>Next</label>
           </button>
@@ -342,39 +353,68 @@
       </div>
 
       <div class="tutorial-text">
-        <div :class="{'tutorial-show': tutorialState == 1, 'tutorial-hide': tutorialState != 1}">
-            <label class="tutorial-text-label">Welcome to our /r/place visualization !<br>
-              The /r/place event is a Reddit event that took place on April 2017.<br>
-              Let's join the million of users and online communities, all of them competing, cooperating and fighting !
-            </label>
+        <div
+          :class="{'tutorial-show': tutorialState == 1, 'tutorial-hide': tutorialState != 1}"
+        >
+          <label class="tutorial-text-label"
+            >Welcome to our /r/place visualization !<br />
+            The /r/place event is a Reddit event that took place on April
+            2017.<br />
+            Let's join the million of users and online communities, all of them
+            competing, cooperating and fighting !
+          </label>
         </div>
-        <div :class="{'tutorial-show': tutorialState == 2, 'tutorial-hide': tutorialState != 2}">
-            <label>To begin our journey, we must first learn to manipulate the 3D map.<br>
-              You can use your mouse, and the CTRL button to do so,<br>or your fingers if your device allows you to do so.
-            </label>
+        <div
+          :class="{'tutorial-show': tutorialState == 2, 'tutorial-hide': tutorialState != 2}"
+        >
+          <label
+            >To begin our journey, we must first learn to manipulate the 3D
+            map.<br />
+            You can use your mouse, and the CTRL button to do so,<br />or your
+            fingers if your device allows you to do so.
+          </label>
         </div>
-        <div :class="{'tutorial-show': tutorialState == 3, 'tutorial-hide': tutorialState != 3}">
-            <label>Now that you know how to control the map, here is the timeline.<br>By default, it is in play mode, but you can stop it and change its speed.<br>
-              Also, you can move the white brush (the time cursor), and resize it to show edits made in a bigger time period.
-            </label>
+        <div
+          :class="{'tutorial-show': tutorialState == 3, 'tutorial-hide': tutorialState != 3}"
+        >
+          <label
+            >Now that you know how to control the map, here is the timeline.<br />By
+            default, it is in play mode, but you can stop it and change its
+            speed.<br />
+            Also, you can move the white brush (the time cursor), and resize it
+            to show edits made in a bigger time period.
+          </label>
         </div>
-        <div :class="{'tutorial-show': tutorialState == 4, 'tutorial-hide': tutorialState != 4}">
-            <label>Until now, it was only possible to see edits from everyone.<br>But we want to look at the Swiss community..<br>What am I gonna do ?
-            </label>
+        <div
+          :class="{'tutorial-show': tutorialState == 4, 'tutorial-hide': tutorialState != 4}"
+        >
+          <label
+            >Until now, it was only possible to see edits from everyone.<br />But
+            we want to look at the Swiss community..<br />What am I gonna do ?
+          </label>
         </div>
-        <div :class="{'tutorial-show': tutorialState == 5, 'tutorial-hide': tutorialState != 5}">
-            <label>Now that we perfectly know how to interact with the visualization, a little case study : the french-german battle.<br>
-              German people tried to drive out french people by invading their flag.<br>
-              After some time, the french flag is separated into two parts. Later, the two communities
-              make peace, as we can see with the new EU flag drawn between the two flags, and the peace dove within it.
-            </label>
+        <div
+          :class="{'tutorial-show': tutorialState == 5, 'tutorial-hide': tutorialState != 5}"
+        >
+          <label
+            >Now that we perfectly know how to interact with the visualization,
+            a little case study : the french-german battle.<br />
+            German people tried to drive out french people by invading their
+            flag.<br />
+            After some time, the french flag is separated into two parts. Later,
+            the two communities make peace, as we can see with the new EU flag
+            drawn between the two flags, and the peace dove within it.
+          </label>
         </div>
-        <div :class="{'tutorial-show': tutorialState == 6, 'tutorial-hide': tutorialState != 6}">
-            <label>That's it for the tutorial. You are now free to explore !<br>
-              You might want to have a look at the US flag, Mona Lisa, OSU, the Blue Empire and Darth Plague is The Wise !
-            </label>
+        <div
+          :class="{'tutorial-show': tutorialState == 6, 'tutorial-hide': tutorialState != 6}"
+        >
+          <label
+            >That's it for the tutorial. You are now free to explore !<br />
+            You might want to have a look at the US flag, Mona Lisa, OSU, the
+            Blue Empire and Darth Plague is The Wise !
+          </label>
         </div>
-
       </div>
     </div>
 

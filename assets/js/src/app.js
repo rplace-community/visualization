@@ -49,6 +49,9 @@ var appState = {
   disableTimeLine: false,
   disableMapInteractions: false,
   disableMenu: false,
+
+  speed: 1,
+  isplaying: false
 };
 
 /******* Vue component *******/
@@ -128,7 +131,10 @@ var vm = new Vue({
     },
 
     prevTutoStep: function() {
-      this.tutorialState = Math.max(this.tutorialState - 1, TutorialStates.Start);
+      this.tutorialState = Math.max(
+        this.tutorialState - 1,
+        TutorialStates.Start
+      );
     },
 
     nextTutoStep: function() {
@@ -218,7 +224,7 @@ var vm = new Vue({
     },
 
     disableMenu: function() {
-      if(this.disableMenu) {
+      if (this.disableMenu) {
         this.sidebarHidden = true;
       }
     },
@@ -269,19 +275,26 @@ var vm = new Vue({
         .send("blurImages", { images: this.currentLevelmaps, radius: v })
         .then(result => mapSetLevelmaps(result));
     },
+    isplaying: function() {
+      mapPlay(this.isplaying);
+    },
+    speed: function() {
+      mapSetSpeed(this.speed);
+    },
 
     tutorialState: function() {
-      switch(this.tutorialState) {
+      this.speed = 1;
+      switch (this.tutorialState) {
         case TutorialStates.Loading:
           this.disableEverything();
           this.autoRotate = true;
-          mapPlay(false);
+          this.isplaying = false;
 
         case TutorialStates.Start:
           mapResetPosition();
           this.disableEverything();
           this.autoRotate = true;
-          mapPlay(false);
+          this.isplaying = false;
 
           mapSeekTime(new Date(endTs));
           break;
@@ -289,7 +302,7 @@ var vm = new Vue({
         case TutorialStates.MapInteractions:
           this.disableEverything();
           this.disableMapInteractions = false;
-          mapPlay(false);
+          this.isplaying = false;
 
           mapSeekTime(new Date(endTs));
           break;
@@ -299,8 +312,8 @@ var vm = new Vue({
           this.disableMapInteractions = false;
           this.disableTimeLine = false;
 
-          document.getElementById('play').click();
-          
+          this.isplaying = true;
+
           mapSeekTime(new Date(startTs));
           break;
 
@@ -309,8 +322,9 @@ var vm = new Vue({
           this.disableMapInteractions = false;
           this.disableMenu = false;
           this.disableTimeLine = false;
+          this.isplaying = true;
           break;
-        
+
         case TutorialStates.CaseStudy:
           this.disableEverything();
           this.disableMapInteractions = false;
@@ -319,28 +333,19 @@ var vm = new Vue({
           this.autoRotate = true;
           setFrenchGerman();
           mapSeekTime(new Date(startTs));
-
-          document.getElementById('speed').click();
-          document.getElementById('speed').click();
-
+          this.isplaying = true;
+          this.speed = 4;
           break;
 
         case TutorialStates.GoodLuck:
-
-          document.getElementById('play').click();
-
-          document.getElementById('speed').click();
-          document.getElementById('speed').click();
-          document.getElementById('speed').click();
-
+          this.isplaying = true;
           break;
 
         case TutorialStates.End:
           this.enableEverything();
           mapResetPosition();
-          document.getElementById('play').click();
-
           mapSeekTime(new Date(startTs));
+          this.isplaying = true;
           break;
       }
     }
@@ -370,7 +375,7 @@ var vm = new Vue({
 
         appState.globalCommunity = globalCommunity;
         appState.currentLevelmaps = globalCommunity.levelmaps.blobs;
-        
+
         return cmdWorker
           .send("blurImages", {
             images: appState.currentLevelmaps,
