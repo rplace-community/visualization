@@ -1,10 +1,17 @@
+/****************************************************************************
+ * This file contain the main vuejs instance. All the cores functionalities
+ * of the visualization are controlled from this file.
+ ****************************************************************************/
+
+// we choose to limit the maximum number of communities displayed at the same time
+// because each time a new community is displayed we need to sum all the levelmaps
 const MAX_DISP_COMMUNITIES = 10;
 const colors = [...Array(MAX_DISP_COMMUNITIES).keys()].map(
   d3.scaleOrdinal(d3.schemeCategory10)
 );
 
+// constants used to normalize the levelmaps displayed in 3D
 const MAX_EDIT_THRESHOLD = 200;
-
 const MAX_HEIGHT_MAP = 500;
 
 let TutorialStates = {
@@ -19,6 +26,7 @@ let TutorialStates = {
 };
 Object.freeze(TutorialStates);
 
+// VueJs application state object
 var appState = {
   loaded: false,
   showExtLinks: true,
@@ -54,11 +62,12 @@ var appState = {
   isplaying: false
 };
 
-/******* Vue component *******/
+/******* Vue instance *******/
 var vm = new Vue({
   el: "#app",
   data: appState,
   methods: {
+    // filter the communities list based on the search text input
     filterCommunities: function() {
       this.communities.communities.forEach(c => (c.isVisible = false));
       const comm = communitiesSearch(this.communities.search);
@@ -69,11 +78,13 @@ var vm = new Vue({
       });
       this.editsCountMax = max;
     },
+    // this method is called when we start the drag of a community
     dragStart: function(event) {
       this.isDragging = true;
       const community = event.item._underlying_vm_;
       const mode = this.ismean ? "mean" : "max";
       if (!community.levelmaps.isLoaded) {
+        // asynchronously load the levelmaps
         fetchLevelmaps(community.id, mode).then(([index, levelmaps]) => {
           community.levelmaps.index = index;
           community.levelmaps.blobs = levelmaps;
@@ -85,6 +96,7 @@ var vm = new Vue({
     dragEnd: function() {
       this.isDragging = false;
     },
+    // called when a community is dropped on the map
     showCommunity: function(event) {
       const community = event.item._underlying_vm_;
       if (this.displayedCommunities_.length <= MAX_DISP_COMMUNITIES) {
@@ -103,6 +115,7 @@ var vm = new Vue({
     unshowCommunity: function(evt) {
       this.hideCommunity(evt.item._underlying_vm_);
     },
+    // called when a community is removed from the displayed communities
     hideCommunity: function(community) {
       community.color = null;
       community.withTrashBtn = false;
@@ -111,44 +124,45 @@ var vm = new Vue({
         this.displayedCommunities_.splice(i, 1);
         this.communities.communities.splice(0, 0, community);
       }
+      mapCommunityHighlight(null);
     },
+    // handler of the time-seek event
     timeSeek: function(time) {
       this.time = time;
     },
+    // handler of the window-updated event (from timeline component)
     windowUpdated: function(window) {
       this.window = window;
     },
+    // center-map button handler
     centerMap: function(event) {
       mapResetPosition();
     },
-
+    // play button handler
     pauseMap: function(pause) {
       mapTemporaryPause(pause);
     },
-
+    // toggle sidebar button handler
     toggleSidebar: function(event) {
       this.sidebarHidden = !this.sidebarHidden;
     },
 
+    // tutorial buttons handler
     prevTutoStep: function() {
       this.tutorialState = Math.max(
         this.tutorialState - 1,
         TutorialStates.Start
       );
     },
-
     nextTutoStep: function() {
       this.tutorialState = Math.min(this.tutorialState + 1, TutorialStates.End);
     },
-
     beginTuto: function() {
       this.tutorialState = TutorialStates.Start;
     },
-
     endTuto: function() {
       this.tutorialState = TutorialStates.End;
     },
-
     disableEverything: function() {
       this.disableTimeLine = true;
       this.disableMapInteractions = true;
@@ -156,7 +170,6 @@ var vm = new Vue({
       this.autoRotate = false;
       this.displayedCommunities_ = [];
     },
-
     enableEverything: function() {
       this.disableTimeLine = false;
       this.disableMapInteractions = false;
@@ -166,7 +179,9 @@ var vm = new Vue({
     }
   },
   /******** computed properties ********/
+  // these are reactively computed when properties are modified
   computed: {
+    // compute the list of currently displayed communities
     displayedCommunities: function() {
       let res = this.displayedCommunities_.filter(c => c.levelmaps.isLoaded);
       if (res.length == 0) {
@@ -174,12 +189,15 @@ var vm = new Vue({
       }
       return res;
     },
+    // compound properties, used to react to change of any of these properties
+    // and recompute the levelmap in a webworker
     recomputeLevelmap: function() {
       this.displayedCommunities;
       this.window;
       this.ema;
       return performance.now();
     },
+    // return the current levelmap informations
     currentFrame: function() {
       return Math.floor((this.time.getTime() - startTs) / windowStep);
     },
@@ -192,7 +210,9 @@ var vm = new Vue({
     }
   },
   /******** watchers ********/
+  // these functions are called when a properties changed
   watch: {
+    // called when the user enable the sorting in the communities list
     isSortByEditsCounts: function(v) {
       if (v) {
         this.communities.communities = this.communities.communities.sort(
@@ -214,21 +234,18 @@ var vm = new Vue({
     drawSpikes: function() {
       mapSetDrawingMethod(this.drawSpikes);
     },
-
     autoRotate: function() {
       mapSetAutorotate(this.autoRotate);
     },
-
     disableMapInteractions: function() {
       mapSetInteraction(!this.disableMapInteractions);
     },
-
     disableMenu: function() {
       if (this.disableMenu) {
         this.sidebarHidden = true;
       }
     },
-
+    // recompute the level map in background in a web worker
     recomputeLevelmap: function(unused) {
       let arr = this.displayedCommunities;
 
@@ -242,6 +259,9 @@ var vm = new Vue({
       }
       if (arr && arr.length > 0) {
         const window = Math.max(1, Math.floor(this.window / windowStep));
+
+        // first merge the levelmap either by a linear or exponential average over
+        // the time window (brush size of timeline component)
         cmdWorker
           .send("mergeLevelmaps", {
             images: arr,
@@ -260,6 +280,8 @@ var vm = new Vue({
               });
             });
 
+            // then smooth the image using a Gaussian kernel with a sigma
+            // parametrized by the slider in the settings
             cmdWorker
               .send("blurImages", {
                 images: this.currentLevelmaps,
@@ -269,19 +291,22 @@ var vm = new Vue({
           });
       }
     },
-
+    // if the smoothing slider change, recomputed the smoothed levelmaps
     smoothing: function(v) {
       cmdWorker
         .send("blurImages", { images: this.currentLevelmaps, radius: v })
         .then(result => mapSetLevelmaps(result));
     },
+    // respond to play/pause button
     isplaying: function() {
       mapPlay(this.isplaying);
     },
+    // respond to speed change
     speed: function() {
       mapSetSpeed(this.speed);
     },
 
+    // tutorial FSM
     tutorialState: function() {
       this.speed = 1;
       switch (this.tutorialState) {
