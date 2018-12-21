@@ -209,10 +209,15 @@ Vue.component("timeline-component", {
         .append("g")
         .attr("class", "brush")
         .attr("clip-path", "url(#clip)")
-        .on("mousedown touchstart", function() {
+        .on("mouseover touchstart", function() {
           if (vm.isplaying) {
             vm.togglePlayPause();
             d3ctx.wasPlaying = true;
+          }
+        })
+        .on("mouseout", function() {
+          if (d3ctx.wasPlaying && !vm.isplaying) {
+            vm.togglePlayPause();
           }
         })
         .call(brush)
