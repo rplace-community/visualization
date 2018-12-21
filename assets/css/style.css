@@ -937,6 +937,7 @@ g.axis {
   pointer-events: none;
   top: 10px;
   left: -395px;
+  height: 428px;
   transition: opacity 1s linear;
   text-align: center;
   border: 1px dotted black;
