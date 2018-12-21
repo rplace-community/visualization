@@ -1,3 +1,7 @@
+/*****************************************************************************
+ * VueJs component used to display a community in the sidebar
+ *****************************************************************************/
+
 const MAPS_COUNT = 145;
 
 /******* Communities state *******/
@@ -9,7 +13,13 @@ let communitiesState = {
 
 /******* Community component *******/
 Vue.component("community-component", {
-  props: ["community", "ismean", "currentFrame", "editsCountMax"],
+  props: [
+    "community", // this is the community displayed by the commponent
+    "ismean", // set to true for mean levelmap / false for max levelmaps
+    "currentFrame", // indice of the current levelmap frame (for edits counts bar)
+    "editsCountMax" // used to normalize the edits counts bar
+  ],
+  // component internal state
   data: function() {
     return {
       isExpanded: false,
@@ -19,6 +29,7 @@ Vue.component("community-component", {
     };
   },
   computed: {
+    // compute the edits count bar position
     editsRatio: function() {
       if (this.currentFrame) {
         const ratio =
@@ -28,9 +39,11 @@ Vue.component("community-component", {
     }
   },
   methods: {
+    // toggle the description
     toggleExpanded: function() {
       this.isExpanded = !this.isExpanded;
     },
+    // these two methods are used to show the mask that locate the community
     communityClicked: function() {
       mapCommunityHighlight(this.community.mask);
     },
@@ -106,6 +119,7 @@ function communitiesSearch(text) {
     });
 }
 
+// Asynchronously load the levelmaps of a community
 function fetchLevelmaps(community, mode) {
   return fetch(`assets/json/levelmaps/${mode}/${community}.json`)
     .then(response => {
