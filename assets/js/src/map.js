@@ -114,12 +114,9 @@ function drawLevelMaps() {
 }
 
 function mapPreload() {
-  return require(["assets/js/lib/apng.js"], function(parseAPNGLib) {
+  return new Promise(function(resolve_g) {
+    require(["assets/js/lib/apng.js"], function(parseAPNGLib) {
     var parseAPNG = parseAPNGLib.default;
-    let cnt = 0;
-
-    init();
-    animate();
 
     return fetch("assets/img/frames.png")
       .then(response => response.arrayBuffer())
@@ -145,9 +142,15 @@ function mapPreload() {
                 );
               });
             });
-          return promise;
+
+          init();
+          animate();
+          console.log("finished");
+
+          return promise.then(resolve_g());
         });
       });
+    });
   });
 }
 

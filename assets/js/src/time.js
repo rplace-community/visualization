@@ -82,7 +82,6 @@ class Time {
 
   pushArrayElement(el) {
     this._array.push(el);
-    console.log("pushed");
   }
 
   setArrayInterpolation() {
