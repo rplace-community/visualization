@@ -313,6 +313,9 @@ var vm = new Vue({
         
         case TutorialStates.CaseStudy:
           this.disableEverything();
+          this.disableMapInteractions = false;
+          this.disableMenu = false;
+          this.disableTimeLine = false;
           this.autoRotate = true;
           setFrenchGerman();
           mapSeekTime(new Date(startTs));
