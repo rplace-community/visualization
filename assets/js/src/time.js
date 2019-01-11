@@ -28,26 +28,18 @@ class Time {
   //Returns the partition number
   _getPartition(t) {
     let length = this._array.length - 1;
-
-    if (length <= 0) {
-      return 0;
-    }
-
     const timeAsked =
       ((t % this._totalTime) + this._totalTime) % this._totalTime;
     const distBetElems = this._totalTime / length;
     const timeToPartition = timeAsked / distBetElems;
 
     let partition = Math.floor(timeToPartition);
-
-    partition = Math.min(this._array.length, partition);
     return partition;
   }
 
   //Returns the [0,1[ value to say how close to the next partition we are.
   _getInterTime(t) {
     let length = this._array.length - 1;
-
     if (length <= 0) {
       return 0;
     }
@@ -70,6 +62,8 @@ class Time {
       this._partitionIdx,
       this._nextPartition(this._partitionIdx)
     );
+    this._hasInterpolator = false;
+    this._hasChanged = true;
 
     return this;
   }
@@ -80,10 +74,12 @@ class Time {
       this._partitionIdx,
       this._nextPartition(this._partitionIdx)
     );
+    this._hasChanged = true;
   }
 
   pushArrayElement(el) {
     this._array.push(el);
+    this._hasChanged = true;
   }
 
   setArrayInterpolation() {
@@ -92,12 +88,14 @@ class Time {
       this._partitionIdx,
       this._nextPartition(this._partitionIdx)
     );
+    this._hasInterpolator = true;
     return this;
   }
 
   seekTime(t) {
     let partition = this._getPartition(t);
-    if (partition != this._partitionIdx) {
+    if (this._hasChanged || partition != this._partitionIdx) {
+      this._hasChanged = true;
       this._partitionIdx = partition;
       this._setInterpolateBuffer(
         this._partitionIdx,
@@ -105,15 +103,27 @@ class Time {
       );
     }
 
+    if (this._hasInterpolator && t != this._t) {
+      this._hasChanged = true;
+    }
     this._t = t;
   }
 
   get() {
+    this._hasChanged = false;
     let interTime = this._getInterTime(this._t);
     return this._interpolateBuffer(interTime);
   }
 
   hasData() {
     return this._array.length > 0;
+  }
+
+  hasChanged() {
+    return this._hasChanged;
+  }
+
+  setChanged() {
+    this._hasChanged = true;
   }
 }

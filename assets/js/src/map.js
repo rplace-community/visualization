@@ -11,6 +11,8 @@ const FILTER_SIZE = 200;
 const PLANE_SIZE = 1000;
 const TOT_IMAGES = 145;
 const BASE_SPEED = 4380;
+const LVLMAP_REFRESH_RATE = 1000 / 15;
+const GLOBAL_TIME_REFRESH_RATE = 1000 / 10;
 
 const interval = 30;
 const clock = new THREE.Clock();
@@ -88,7 +90,7 @@ function mapTemporaryPause(pause) {
 }
 
 function drawBackground() {
-  if (timeBack.hasData()) {
+  if (timeBack.hasData() && timeBack.hasChanged()) {
     let textr = new THREE.DataTexture(
       timeBack.get(),
       1000,
@@ -103,15 +105,15 @@ function drawBackground() {
   }
 }
 
-function drawLevelMaps() {
-  if (timeLevels.hasData()) {
+const drawLevelMaps = throttle(() => {
+  if (timeLevels.hasData() && timeLevels.hasChanged()) {
     if (drawSpikes) {
       generatePlaneHeightsSpikesBuffered();
     } else {
       generatePlaneHeightsBuffered();
     }
   }
-}
+}, LVLMAP_REFRESH_RATE);
 
 function mapPreload() {
   return new Promise(function(resolve_g) {
@@ -128,28 +130,18 @@ function mapPreload() {
             canvas.height = 1000;
             const ctx = canvas.getContext("2d");
 
-            //const newImgs = [imgs.shift()];
-            let promise = new Promise(function(resolve) {
-              resolve();
-            });
             apng.frames
               .map(frame => frame.imageElement)
               .forEach((img, i) => {
-                promise = promise.then(() => {
-                  ctx.drawImage(img, 0, 0);
-                  timeBack.pushArrayElement(
-                    new Uint8Array(
-                      ctx.getImageData(0, 0, 1000, 1000).data.buffer
-                    )
-                  );
-                });
+                ctx.drawImage(img, 0, 0);
+                timeBack.pushArrayElement(
+                  new Uint8Array(ctx.getImageData(0, 0, 1000, 1000).data.buffer)
+                );
               });
 
-            return promise.then(() => {
-              init();
-              animate();
-              resolve_g();
-            });
+            init();
+            animate();
+            resolve_g();
           });
         });
     });
@@ -246,7 +238,7 @@ function onWindowResize() {
 
 const updateAppTime = throttle(
   () => appSetTime(new Date(currentTime + startTs)),
-  60
+  GLOBAL_TIME_REFRESH_RATE
 );
 
 function _seekTime(t) {
@@ -269,7 +261,7 @@ function _seekTime(t) {
 
 function animate() {
   requestAnimationFrame(animate);
-  controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+  controls.update();
 
   cumulDt += clock.getDelta() * 1000;
   if (playing && !temporaryPause && cumulDt > interval) {

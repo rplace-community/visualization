@@ -370,6 +370,12 @@ var vm = new Vue({
           mapResetPosition();
           mapSeekTime(new Date(startTs));
           this.isplaying = true;
+
+          var d = new Date();
+          d.setTime(d.getTime() + 30 * 24 * 3600 * 1000);
+          document.cookie =
+            "skip-tutorial;expires=" + d.toUTCString() + ";path=/";
+
           break;
       }
     }
@@ -412,7 +418,13 @@ var vm = new Vue({
       mapPreload()
     ]).then(() => {
       //console.log("Visualization loaded!");
+      const cookie = document.cookie;
+      console.log(cookie);
+      if (cookie.includes("skip-tutorial")) {
+        this.tutorialState = TutorialStates.End;
+      } else {
       this.tutorialState = TutorialStates.Start;
+      }
       this.loaded = true;
     });
   },
