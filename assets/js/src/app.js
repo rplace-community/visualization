@@ -106,6 +106,11 @@ var vm = new Vue({
         const availableColors = colors.filter(c => !usedColors.has(c));
         community.color = availableColors.values().next().value;
         community.withTrashBtn = true;
+
+        gtag("event", "show", {
+          event_category: "communities",
+          event_label: community.name
+        });
       } else {
         // cancel move
         this.communities.communities.splice(event.oldIndex, 0, community);
@@ -125,6 +130,10 @@ var vm = new Vue({
         this.communities.communities.splice(0, 0, community);
       }
       mapCommunityHighlight(null);
+      gtag("event", "unshow", {
+        event_category: "communities",
+        event_label: community.name
+      });
     },
     // handler of the time-seek event
     timeSeek: function(time) {
@@ -423,12 +432,14 @@ var vm = new Vue({
       if (cookie.includes("skip-tutorial")) {
         this.tutorialState = TutorialStates.End;
       } else {
-      this.tutorialState = TutorialStates.Start;
+        this.tutorialState = TutorialStates.Start;
       }
       this.loaded = true;
     });
   },
-  ready: function() {}
+  ready: function() {
+    ga("send", "pageview", location.pathname);
+  }
 });
 
 function appSetTime(t) {
