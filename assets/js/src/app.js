@@ -382,8 +382,6 @@ var vm = new Vue({
   },
   /******** lifecycle events ********/
   created: function() {
-    //console.log(endTs - startTs + 2 * windowStep);
-    let loaded_backs = 0;
     const mode = this.ismean ? "mean" : "max";
 
     Promise.all([
@@ -417,9 +415,7 @@ var vm = new Vue({
       }),
       mapPreload()
     ]).then(() => {
-      //console.log("Visualization loaded!");
       const cookie = document.cookie;
-      console.log(cookie);
       if (cookie.includes("skip-tutorial")) {
         this.tutorialState = TutorialStates.End;
       } else {

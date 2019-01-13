@@ -11,10 +11,10 @@ const FILTER_SIZE = 200;
 const PLANE_SIZE = 1000;
 const TOT_IMAGES = 145;
 const BASE_SPEED = 4380;
-const LVLMAP_REFRESH_RATE = 1000 / 15;
-const GLOBAL_TIME_REFRESH_RATE = 1000 / 10;
+const FRAME_RATE = 24;
+const LVLMAP_REFRESH_RATE = FRAME_RATE / 2;
+const GLOBAL_TIME_REFRESH_RATE = FRAME_RATE;
 
-const interval = 30;
 const clock = new THREE.Clock();
 let cumulDt = 0;
 let playing = false;
@@ -93,8 +93,8 @@ function drawBackground() {
   if (timeBack.hasData() && timeBack.hasChanged()) {
     let textr = new THREE.DataTexture(
       timeBack.get(),
-      1000,
-      1000,
+      PLANE_SIZE,
+      PLANE_SIZE,
       THREE.RGBAFormat
     );
     textr.needsUpdate = true;
@@ -113,7 +113,7 @@ const drawLevelMaps = throttle(() => {
       generatePlaneHeightsBuffered();
     }
   }
-}, LVLMAP_REFRESH_RATE);
+}, 1000 / LVLMAP_REFRESH_RATE);
 
 function mapPreload() {
   return new Promise(function(resolve_g) {
@@ -126,8 +126,8 @@ function mapPreload() {
           const apng = parseAPNG(buffer);
           return apng.createImages().then(() => {
             const canvas = window.document.createElement("canvas");
-            canvas.width = 1000;
-            canvas.height = 1000;
+            canvas.width = PLANE_SIZE;
+            canvas.height = PLANE_SIZE;
             const ctx = canvas.getContext("2d");
 
             apng.frames
@@ -135,7 +135,7 @@ function mapPreload() {
               .forEach((img, i) => {
                 ctx.drawImage(img, 0, 0);
                 timeBack.pushArrayElement(
-                  new Uint8Array(ctx.getImageData(0, 0, 1000, 1000).data.buffer)
+                  new Uint8Array(ctx.getImageData(0, 0, PLANE_SIZE, PLANE_SIZE).data.buffer)
                 );
               });
 
@@ -188,6 +188,8 @@ function init() {
   controls.rotateSpeed = 0.5;
   controls.zoomSpeed = 0.8;
 
+  controls.addEventListener( 'change', render ); 
+
   // world ***********************************************************************************************************
 
   planeMaterial = new THREE.MeshPhongMaterial({
@@ -238,7 +240,7 @@ function onWindowResize() {
 
 const updateAppTime = throttle(
   () => appSetTime(new Date(currentTime + startTs)),
-  GLOBAL_TIME_REFRESH_RATE
+  1000 / GLOBAL_TIME_REFRESH_RATE
 );
 
 function _seekTime(t) {
@@ -255,21 +257,19 @@ function _seekTime(t) {
 
   drawBackground();
   drawLevelMaps();
-
+  render();
+  
   updateAppTime();
 }
 
 function animate() {
   requestAnimationFrame(animate);
-  controls.update();
-
+  controls.update()
   cumulDt += clock.getDelta() * 1000;
-  if (playing && !temporaryPause && cumulDt > interval) {
-    _seekTime(currentTime + speed * (1000 / cumulDt));
-    cumulDt = 0;
+  if (playing && !temporaryPause && cumulDt > 1000 / FRAME_RATE) {
+    _seekTime(currentTime + speed * cumulDt);
+    cumulDt = clock.getDelta() * 1000;
   }
-
-  render();
 }
 
 function setFrenchGerman() {
