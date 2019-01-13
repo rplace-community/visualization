@@ -62,6 +62,7 @@ function mapSetDrawingMethod(spikes) {
 function mapSetLevelmaps(arr) {
   timeLevels.setArray(arr);
   drawLevelMaps();
+  render();
 }
 
 function mapSetInteraction(interactable) {
@@ -313,7 +314,9 @@ function generatePlaneHeightsSpikesBuffered() {
 }
 
 function render() {
-  renderer.render(scene, camera);
+  if(renderer){
+    renderer.render(scene, camera);
+  }
 }
 
 function mapCommunityHighlight(communityMask) {
