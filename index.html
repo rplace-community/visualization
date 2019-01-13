@@ -238,13 +238,12 @@
           </a>: created by Damien, Marc and Yassin -- r/place logo by <a href="https://www.reddit.com/user/Archist-" target="_blank">u/Archist</a>
       </div>
 
+      <div id="app-time">
+        <label data-toggle="tooltip" title="/r/place event time">{{ time.toLocaleString() }}</label>
+      </div>
+
       <div class="top-left-pannel" v-if="loaded">
         <div>
-          <div>
-            <label data-toggle="tooltip" title="/r/place event time">{{
-              time.toLocaleString()
-            }}</label>
-          </div>
 
           <button
             class="fullscreen-position  btn btn-light"

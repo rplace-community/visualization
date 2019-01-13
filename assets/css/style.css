@@ -45,6 +45,19 @@ button {
 
 /* ------- TOP LEFT PANNEL --------- */
 
+#app-time{
+  position: absolute;
+  left: 50%;
+}
+
+#app-time label {
+  position: relative;
+  left: -50%;
+  padding: 0px 5px 0px 5px;
+  background: rgba(48, 48, 48, 0.7);
+  border-radius: 0px 0px 5px 5px; 
+}
+
 .top-left-pannel {
   position: absolute;
   left: 5px;
